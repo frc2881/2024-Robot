@@ -1,0 +1,35 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Robot/Auto/Command": "String Chooser",
+      "/SmartDashboard/Robot/Drive/Orientation": "String Chooser",
+      "/SmartDashboard/Robot/Drive/SpeedMode": "String Chooser"
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "SmartDashboard": {
+        "Robot": {
+          "Auto": {
+            "Command": {
+              "open": true,
+              "string[]##v_/SmartDashboard/Robot/Auto/Command/options": {
+                "open": true
+              }
+            },
+            "open": true
+          },
+          "Battery": {
+            "open": true
+          },
+          "open": true
+        },
+        "Timing": {
+          "open": true
+        },
+        "open": true
+      }
+    }
+  }
+}
