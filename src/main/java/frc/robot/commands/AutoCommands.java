@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.DriveSubsystem.LockState;
 
 public class AutoCommands {
     
@@ -20,11 +21,14 @@ public class AutoCommands {
       PathPlannerPath path = PathPlannerPath.fromPathFile("Test");
       return Commands.sequence(
         Commands.runOnce(() -> m_driveSubsystem.resetPose(path.getPreviewStartingHolonomicPose())),
-        AutoBuilder.followPathWithEvents(path)
-      );
+        AutoBuilder.followPathWithEvents(path),
+        Commands.runOnce(() -> m_driveSubsystem.setLockState(LockState.LOCKED))
+      )
+      .withName("RunAutoTestPath");
     }
 
     public Command testAuto() {
-      return AutoBuilder.buildAuto("Test");
+      return AutoBuilder.buildAuto("Test")
+      .withName("RunAutoTestAuto");
     }
 }

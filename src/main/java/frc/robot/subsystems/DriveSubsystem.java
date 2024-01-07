@@ -238,7 +238,7 @@ public class DriveSubsystem extends SubsystemBase {
       .withName("ToggleDriveLockState");
   }
 
-  private void setLockState(LockState lockState) {
+  public void setLockState(LockState lockState) {
     m_lockState = lockState;
     if (m_lockState == LockState.LOCKED) {
       setSwerveModuleStatesToLocked();
