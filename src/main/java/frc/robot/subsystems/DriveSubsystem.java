@@ -26,7 +26,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.lib.Utils;
 import frc.robot.lib.drive.SwerveModule;
-import frc.robot.lib.logging.Logger;
 import frc.robot.lib.sensors.Gyro;
 import frc.robot.Constants;
 
@@ -113,6 +112,20 @@ public class DriveSubsystem extends SubsystemBase {
     );
   }
 
+  @Override
+  public void periodic() {
+    updatePose();
+    updateTelemetry();
+  }
+
+  public void setOrientation(Orientation orientation) {
+    m_orientation = orientation;
+  }
+
+  public void setSpeedMode(DriveSubsystem.SpeedMode speedMode) {
+    m_speedMode = speedMode;
+  }
+
   public Command driveWithControllerCommand(XboxController controller) {
     return Commands.run(
       () -> {
@@ -150,32 +163,12 @@ public class DriveSubsystem extends SubsystemBase {
       .withName("DriveWithController");
   }
 
-  public Command toggleLockStateCommand() {
-    return Commands.runOnce(
-      () -> {
-        m_lockState = (m_lockState == LockState.UNLOCKED) ? LockState.LOCKED : LockState.UNLOCKED; 
-        if (m_lockState == LockState.LOCKED) {
-          setSwerveModuleStatesToLocked();
-        }
-      })
-      .withName("ToggleDriveLockState");
-  }
-
-  public Command setForCalibrationCommand() {
-    return Commands.runOnce(
-      () -> { 
-        m_lockState = LockState.LOCKED;
-        setSwerveModuleStatesForCalibration(); 
-      })
-      .withName("SetForCalibration");
-  }
-
   public void drive(double speedX, double speedY, double rotation) {
     speedX *= Constants.Drive.kMaxSpeedMetersPerSecond;
     speedY *= Constants.Drive.kMaxSpeedMetersPerSecond;
     rotation *= Constants.Drive.kMaxAngularSpeed;
     drive((m_orientation == Orientation.FIELD)
-      ? ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, rotation, Rotation2d.fromDegrees(m_gyro.getAngle()))
+      ? ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, rotation, Rotation2d.fromDegrees(m_gyro.getYaw()))
       : new ChassisSpeeds(speedX, speedY, rotation)
     );
   }
@@ -186,12 +179,6 @@ public class DriveSubsystem extends SubsystemBase {
         ChassisSpeeds.discretize(chassisSpeeds, 0.02)
       )
     );
-  }
-
-  @Override
-  public void periodic() {
-    updatePose();
-    updateTelemetry();
   }
 
   public Pose2d getPose() {
@@ -208,15 +195,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void resetPose(Pose2d pose) {
     m_poseEstimator.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
-    Logger.log("Pose reset to: " + pose.toString());
-  }
-
-  public void setOrientation(Orientation orientation) {
-    m_orientation = orientation;
-  }
-
-  public void setSpeedMode(DriveSubsystem.SpeedMode speedMode) {
-    m_speedMode = speedMode;
   }
 
   public ChassisSpeeds getSpeeds() {
@@ -239,16 +217,31 @@ public class DriveSubsystem extends SubsystemBase {
     return states;
   }
 
+  public void setSwerveModuleStates(SwerveModuleState[] swerveModuleStates) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Drive.kMaxSpeedMetersPerSecond);
+    for (int i = 0; i < m_swerveModules.length; i++) {
+      m_swerveModules[i].setTargetState(swerveModuleStates[i]);
+    }
+  }
+
   public SwerveModuleState[] convertToSwerveModuleStates(double xTranslation, double yTranslation, double rotation) {
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xTranslation, yTranslation, rotation);
     SwerveModuleState[] moduleStates = m_swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
     return moduleStates;
   }
 
-  public void setSwerveModuleStates(SwerveModuleState[] swerveModuleStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Drive.kMaxSpeedMetersPerSecond);
-    for (int i = 0; i < m_swerveModules.length; i++) {
-      m_swerveModules[i].setTargetState(swerveModuleStates[i]);
+  public Command toggleLockStateCommand() {
+    return Commands.runOnce(
+      () -> {
+        setLockState((m_lockState == LockState.UNLOCKED) ? LockState.LOCKED : LockState.UNLOCKED);
+      })
+      .withName("ToggleDriveLockState");
+  }
+
+  private void setLockState(LockState lockState) {
+    m_lockState = lockState;
+    if (m_lockState == LockState.LOCKED) {
+      setSwerveModuleStatesToLocked();
     }
   }
 
@@ -258,6 +251,15 @@ public class DriveSubsystem extends SubsystemBase {
         new SwerveModuleState(0, Rotation2d.fromDegrees(( i == 0 || i == 3) ? 45 : -45))
       );
     }
+  }
+
+  public Command setForCalibrationCommand() {
+    return Commands.runOnce(
+      () -> { 
+        m_lockState = LockState.LOCKED;
+        setSwerveModuleStatesForCalibration(); 
+      })
+      .withName("SetForCalibration");
   }
 
   private void setSwerveModuleStatesForCalibration() {
@@ -275,7 +277,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  public void resetEncoders() {
+  private void resetEncoders() {
     for (int i = 0; i < m_swerveModules.length; i++) {
       m_swerveModules[i].resetEncoders();
     }
@@ -283,7 +285,8 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void reset() {
     resetEncoders();
-    m_lockState = LockState.UNLOCKED; 
+    setLockState(LockState.UNLOCKED); 
+    setIdleMode(IdleMode.kBrake);
   }
 
   private void updateTelemetry() {

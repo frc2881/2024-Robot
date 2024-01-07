@@ -17,9 +17,10 @@ public class AutoCommands {
     }
 
     public Command testPath() {
+      PathPlannerPath path = PathPlannerPath.fromPathFile("Test");
       return Commands.sequence(
-        Commands.run(() -> m_driveSubsystem.resetPose()),
-        AutoBuilder.followPathWithEvents(PathPlannerPath.fromPathFile("Test"))
+        Commands.runOnce(() -> m_driveSubsystem.resetPose(path.getPreviewStartingHolonomicPose())),
+        AutoBuilder.followPathWithEvents(path)
       );
     }
 

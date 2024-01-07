@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoCommands;
-import frc.robot.lib.logging.Logger;
 import frc.robot.lib.sensors.Gyro;
 import frc.robot.subsystems.DriveSubsystem;
 
@@ -25,7 +24,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
-    m_gyro = new Gyro(Constants.Gyro.kIMUAxis, Constants.Gyro.kSPIPort, Constants.Gyro.kCalibrationTime);
+    m_gyro = new Gyro(Constants.Gyro.kIMUAxisYaw, Constants.Gyro.kIMUAxisPitch, Constants.Gyro.kIMUAxisRoll, Constants.Gyro.kSPIPort, Constants.Gyro.kCalibrationTime);
     m_driveSubsystem = new DriveSubsystem(m_gyro);
 
     m_driverController = new XboxController(Constants.Controllers.kDriverControllerPort);
@@ -81,11 +80,10 @@ public class RobotContainer {
 
   public Command getSelectedAutoCommand() {
     Command command = m_autoChooser.getSelected();
-    Logger.log("Auto command selected:" + command.getName());
     return command;
   }
 
-  public void resetRobot() {
+  public void reset() {
     m_driveSubsystem.reset();
   }
 }

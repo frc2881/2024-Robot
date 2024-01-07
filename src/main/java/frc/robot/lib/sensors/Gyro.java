@@ -15,8 +15,8 @@ public class Gyro extends ADIS16470_IMU {
 
   private double m_angleAdjustment = 0.0;
 
-  public Gyro(IMUAxis imuAxis, SPI.Port port, CalibrationTime calibrationTime) {
-    super(imuAxis, port, calibrationTime);
+  public Gyro(IMUAxis imuAxisYaw, IMUAxis imuAxisPitch, IMUAxis imuAxisRoll, SPI.Port port, CalibrationTime calibrationTime) {
+    super(imuAxisYaw, imuAxisPitch, imuAxisRoll, port, calibrationTime);
   }
 
   @Override
@@ -45,16 +45,11 @@ public class Gyro extends ADIS16470_IMU {
   }
 
   public double getYaw() {
-    return getAngle();
-  }
-
-  @Override
-  public double getAngle() {
-    return super.getAngle() + m_angleAdjustment;
+    return getAngle(getYawAxis()) + m_angleAdjustment;
   }
 
   public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(getAngle());
+    return Rotation2d.fromDegrees(getYaw());
   }
 
   public Rotation3d getRotation3d() {
@@ -70,7 +65,7 @@ public class Gyro extends ADIS16470_IMU {
   }
 
   public double getTurnRate() {
-    return super.getRate();
+    return super.getRate(getYawAxis());
   }
 
   public void updateTelemetry() {

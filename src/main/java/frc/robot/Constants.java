@@ -88,7 +88,9 @@ public final class Constants {
   }
 
   public static final class Gyro {
-    public static final IMUAxis kIMUAxis = IMUAxis.kZ;
+    public static final IMUAxis kIMUAxisYaw = IMUAxis.kZ;
+    public static final IMUAxis kIMUAxisRoll = IMUAxis.kY;
+    public static final IMUAxis kIMUAxisPitch = IMUAxis.kX;
     public static final SPI.Port kSPIPort = SPI.Port.kOnboardCS0;
     public static final CalibrationTime kCalibrationTime = CalibrationTime._2s;
   }
