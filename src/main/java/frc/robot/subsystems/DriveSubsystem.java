@@ -161,6 +161,15 @@ public class DriveSubsystem extends SubsystemBase {
       .withName("ToggleDriveLockState");
   }
 
+  public Command setForCalibrationCommand() {
+    return Commands.runOnce(
+      () -> { 
+        m_lockState = LockState.LOCKED;
+        setSwerveModuleStatesForCalibration(); 
+      })
+      .withName("SetForCalibration");
+  }
+
   public void drive(double speedX, double speedY, double rotation) {
     speedX *= Constants.Drive.kMaxSpeedMetersPerSecond;
     speedY *= Constants.Drive.kMaxSpeedMetersPerSecond;
@@ -237,7 +246,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void setSwerveModuleStates(SwerveModuleState[] swerveModuleStates) {
-    if (m_lockState == LockState.LOCKED) { return; }
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Drive.kMaxSpeedMetersPerSecond);
     for (int i = 0; i < m_swerveModules.length; i++) {
       m_swerveModules[i].setTargetState(swerveModuleStates[i]);
@@ -248,6 +256,14 @@ public class DriveSubsystem extends SubsystemBase {
     for (int i = 0; i < m_swerveModules.length; i++) {
       m_swerveModules[i].setTargetState(
         new SwerveModuleState(0, Rotation2d.fromDegrees(( i == 0 || i == 3) ? 45 : -45))
+      );
+    }
+  }
+
+  private void setSwerveModuleStatesForCalibration() {
+    for (int i = 0; i < m_swerveModules.length; i++) {
+      m_swerveModules[i].setTargetState(
+        new SwerveModuleState(0, Rotation2d.fromRadians(m_swerveModules[i].getChassisAngularOffset()))
       );
     }
   }
@@ -263,6 +279,11 @@ public class DriveSubsystem extends SubsystemBase {
     for (int i = 0; i < m_swerveModules.length; i++) {
       m_swerveModules[i].resetEncoders();
     }
+  }
+
+  public void reset() {
+    resetEncoders();
+    m_lockState = LockState.UNLOCKED; 
   }
 
   private void updateTelemetry() {

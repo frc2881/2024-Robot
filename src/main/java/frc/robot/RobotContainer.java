@@ -49,6 +49,9 @@ public class RobotContainer {
     new Trigger(m_driverController::getRightStickButton)
       .onFalse(m_gyro.resetCommand());
 
+    new Trigger(m_driverController::getStartButton)
+      .onTrue(m_driveSubsystem.setForCalibrationCommand());
+
     // OPERATOR =========================
 
 
@@ -83,6 +86,6 @@ public class RobotContainer {
   }
 
   public void resetRobot() {
-    m_driveSubsystem.resetEncoders();
+    m_driveSubsystem.reset();
   }
 }

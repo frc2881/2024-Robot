@@ -85,6 +85,10 @@ public class SwerveModule implements Sendable {
     resetEncoders();
   }
 
+  public double getChassisAngularOffset() {
+    return m_chassisAngularOffset;
+  }
+
   public void setTargetState(SwerveModuleState targetState) {
     SwerveModuleState correctedTargetState = new SwerveModuleState();
     correctedTargetState.speedMetersPerSecond = targetState.speedMetersPerSecond;
