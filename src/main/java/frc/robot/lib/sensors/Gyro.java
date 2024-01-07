@@ -13,8 +13,6 @@ import frc.robot.lib.Utils;
 
 public class Gyro extends ADIS16470_IMU {
 
-  private double m_angleAdjustment = 0.0;
-
   public Gyro(IMUAxis imuAxisYaw, IMUAxis imuAxisPitch, IMUAxis imuAxisRoll, SPI.Port port, CalibrationTime calibrationTime) {
     super(imuAxisYaw, imuAxisPitch, imuAxisRoll, port, calibrationTime);
   }
@@ -25,8 +23,7 @@ public class Gyro extends ADIS16470_IMU {
   }
 
   public void reset(double value) {
-    m_angleAdjustment = value;
-    super.reset();
+    super.setGyroAngle(getYawAxis(), value);
   }
 
   public Command resetCommand() {
@@ -37,15 +34,15 @@ public class Gyro extends ADIS16470_IMU {
   }
 
   public double getRoll() {
-    return super.getYComplementaryAngle();
+    return super.getAngle(getRollAxis());
   }
 
   public double getPitch() {
-    return super.getXComplementaryAngle();
+    return super.getAngle(getPitchAxis());
   }
 
   public double getYaw() {
-    return getAngle(getYawAxis()) + m_angleAdjustment;
+    return getAngle(getYawAxis());
   }
 
   public Rotation2d getRotation2d() {
