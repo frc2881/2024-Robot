@@ -21,7 +21,7 @@ public class AutoCommands {
       PathPlannerPath path = PathPlannerPath.fromPathFile("Test");
       return Commands.sequence(
         Commands.runOnce(() -> m_driveSubsystem.resetPose(path.getPreviewStartingHolonomicPose())),
-        AutoBuilder.followPathWithEvents(path),
+        AutoBuilder.followPath(path),
         Commands.runOnce(() -> m_driveSubsystem.setLockState(LockState.LOCKED))
       )
       .withName("RunAutoTestPath");

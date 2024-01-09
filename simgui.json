@@ -9,6 +9,9 @@
   },
   "NetworkTables": {
     "transitory": {
+      "FMSInfo": {
+        "open": true
+      },
       "SmartDashboard": {
         "Robot": {
           "Auto": {
@@ -22,8 +25,7 @@
           },
           "Battery": {
             "open": true
-          },
-          "open": true
+          }
         },
         "Timing": {
           "open": true
@@ -31,5 +33,8 @@
         "open": true
       }
     }
+  },
+  "NetworkTables Info": {
+    "visible": true
   }
 }
