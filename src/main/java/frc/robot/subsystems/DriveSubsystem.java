@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import org.opencv.core.Algorithm;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -19,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -28,6 +31,7 @@ import frc.robot.lib.Utils;
 import frc.robot.lib.drive.SwerveModule;
 import frc.robot.lib.sensors.Gyro;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class DriveSubsystem extends SubsystemBase {
   public static enum Orientation { FIELD, ROBOT; }
@@ -107,7 +111,8 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.Drive.kMaxSpeedMetersPerSecond, 
         Constants.Drive.kDriveBaseRadius, 
         new ReplanningConfig()
-      ), 
+      ),
+      () -> Robot.getAlliance() == Alliance.Red,
       this
     );
   }
