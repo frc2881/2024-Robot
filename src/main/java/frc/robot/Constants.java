@@ -60,10 +60,10 @@ public final class Constants {
     public static final double kThetaControllerPositionTolerance = 0.5;
     public static final double kThetaControllerVelocityTolerance = 0.5;
 
-    public static final double kPathFollowerTranslationP = 0.1;
+    public static final double kPathFollowerTranslationP = 2.5;
     public static final double kPathFollowerTranslationI = 0;
     public static final double kPathFollowerTranslationD = 0;
-    public static final double kPathFollowerRotationP = 2.5;
+    public static final double kPathFollowerRotationP = 5;
     public static final double kPathFollowerRotationI = 0;
     public static final double kPathFollowerRotationD = 0;
 
