@@ -1,22 +1,29 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoCommands;
 import frc.robot.lib.sensors.Gyro;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.PoseSubsystem;
 
 public class RobotContainer {
   private final PowerDistribution m_powerDistribution;
   private final Gyro m_gyro;
   private final DriveSubsystem m_driveSubsystem;
+  private final PoseSubsystem m_poseSubsystem;
   private final XboxController m_driverController;
   private final XboxController m_operatorController;
   private final AutoCommands m_autoCommands;
@@ -26,12 +33,29 @@ public class RobotContainer {
     m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
     m_gyro = new Gyro(Constants.Gyro.kIMUAxisYaw, Constants.Gyro.kIMUAxisPitch, Constants.Gyro.kIMUAxisRoll, Constants.Gyro.kSPIPort, Constants.Gyro.kCalibrationTime);
     m_driveSubsystem = new DriveSubsystem(m_gyro);
+    m_poseSubsystem = new PoseSubsystem(m_gyro::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
 
     m_driverController = new XboxController(Constants.Controllers.kDriverControllerPort);
     m_operatorController = new XboxController(Constants.Controllers.kOperatorControllerPort);
     setupControls();
 
-    m_autoCommands = new AutoCommands(m_driveSubsystem);
+    AutoBuilder.configureHolonomic(
+      m_poseSubsystem::getPose, 
+      m_poseSubsystem::resetPose, 
+      m_driveSubsystem::getSpeeds, 
+      m_driveSubsystem::drive, 
+      new HolonomicPathFollowerConfig(
+        new PIDConstants(Constants.Drive.kPathFollowerTranslationP, Constants.Drive.kPathFollowerTranslationI, Constants.Drive.kPathFollowerTranslationD),
+        new PIDConstants(Constants.Drive.kPathFollowerRotationP, Constants.Drive.kPathFollowerRotationI, Constants.Drive.kPathFollowerRotationD), 
+        Constants.Drive.kMaxSpeedMetersPerSecond, 
+        Constants.Drive.kDriveBaseRadius, 
+        new ReplanningConfig()
+      ),
+      () -> Robot.getAlliance() == Alliance.Red,
+      m_driveSubsystem
+    );
+
+    m_autoCommands = new AutoCommands(m_driveSubsystem, m_poseSubsystem);
     m_autoChooser = new SendableChooser<Command>();
     setupAutos();
   }

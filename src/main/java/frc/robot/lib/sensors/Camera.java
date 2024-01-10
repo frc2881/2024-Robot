@@ -18,13 +18,13 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
-public class Vision {
+public class Camera {
   private final PhotonCamera m_photonCamera;
   private final PhotonPoseEstimator m_photonPoseEstimator;
   private final Matrix<N3, N1> m_singleTagStandardDeviations;
   private final Matrix<N3, N1> m_multiTagStandardDeviations; 
 
-  public Vision(
+  public Camera(
     String cameraName, 
     Transform3d cameraTransform, 
     PoseStrategy poseStrategy, 

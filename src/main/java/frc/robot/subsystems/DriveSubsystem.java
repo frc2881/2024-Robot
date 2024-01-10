@@ -1,35 +1,30 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkBase.IdleMode;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.lib.Utils;
 import frc.robot.lib.drive.SwerveModule;
 import frc.robot.lib.sensors.Gyro;
-import frc.robot.Constants;
-import frc.robot.Robot;
 
 public class DriveSubsystem extends SubsystemBase {
   public static enum Orientation { FIELD, ROBOT; }
@@ -38,8 +33,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   private final Gyro m_gyro;
   private final SwerveModule[] m_swerveModules;
-  private final SwerveDriveKinematics m_swerveDriveKinematics;
-  private final SwerveDrivePoseEstimator m_poseEstimator;
   private final PIDController m_thetaController;
   private final SlewRateLimiter m_driveInputXFilter;
   private final SlewRateLimiter m_driveInputYFilter;
@@ -77,19 +70,6 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.Drive.kRearRightChassisAngularOffset)
     };
 
-    m_swerveDriveKinematics = new SwerveDriveKinematics(
-      new Translation2d(Constants.Drive.kWheelBase / 2, Constants.Drive.kTrackWidth / 2),
-      new Translation2d(Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2),
-      new Translation2d(-Constants.Drive.kWheelBase / 2, Constants.Drive.kTrackWidth / 2),
-      new Translation2d(-Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2)
-    );
-
-    m_poseEstimator = new SwerveDrivePoseEstimator(
-      m_swerveDriveKinematics, 
-      m_gyro.getRotation2d(), 
-      getSwerveModulePositions(), 
-      new Pose2d());
-
     m_thetaController = new PIDController(Constants.Drive.kThetaControllerP, Constants.Drive.kThetaControllerI, Constants.Drive.kThetaControllerD);
     m_thetaController.enableContinuousInput(-180.0, 180.0);
     m_thetaController.setTolerance(Constants.Drive.kThetaControllerPositionTolerance, Constants.Drive.kThetaControllerVelocityTolerance);
@@ -97,27 +77,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_driveInputXFilter = new SlewRateLimiter(Constants.Controllers.kDriveInputRateLimit);
     m_driveInputYFilter = new SlewRateLimiter(Constants.Controllers.kDriveInputRateLimit);
     m_driveInputRotFilter = new SlewRateLimiter(Constants.Controllers.kDriveInputRateLimit);
-
-    AutoBuilder.configureHolonomic(
-      this::getPose, 
-      this::resetPose, 
-      this::getSpeeds, 
-      this::drive, 
-      new HolonomicPathFollowerConfig(
-        new PIDConstants(Constants.Drive.kPathFollowerTranslationP, Constants.Drive.kPathFollowerTranslationI, Constants.Drive.kPathFollowerTranslationD),
-        new PIDConstants(Constants.Drive.kPathFollowerRotationP, Constants.Drive.kPathFollowerRotationI, Constants.Drive.kPathFollowerRotationD), 
-        Constants.Drive.kMaxSpeedMetersPerSecond, 
-        Constants.Drive.kDriveBaseRadius, 
-        new ReplanningConfig()
-      ),
-      () -> Robot.getAlliance() == Alliance.Red,
-      this
-    );
   }
 
   @Override
   public void periodic() {
-    updatePose();
     updateTelemetry();
   }
 
@@ -178,33 +141,17 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void drive(ChassisSpeeds chassisSpeeds) {
     setSwerveModuleStates(
-      m_swerveDriveKinematics.toSwerveModuleStates(
+      Constants.Drive.kSwerveDriveKinematics.toSwerveModuleStates(
         ChassisSpeeds.discretize(chassisSpeeds, 0.02)
       )
     );
   }
 
-  public Pose2d getPose() {
-    return m_poseEstimator.getEstimatedPosition();
-  }
-
-  public void updatePose() {
-    m_poseEstimator.update(m_gyro.getRotation2d(), getSwerveModulePositions());
-  }
-
-  public void resetPose() {
-    resetPose(new Pose2d());
-  }
-
-  public void resetPose(Pose2d pose) {
-    m_poseEstimator.resetPosition(m_gyro.getRotation2d(), getSwerveModulePositions(), pose);
-  }
-
   public ChassisSpeeds getSpeeds() {
-    return m_swerveDriveKinematics.toChassisSpeeds(getSwerveModuleStates());
+    return Constants.Drive.kSwerveDriveKinematics.toChassisSpeeds(getSwerveModuleStates());
   }
 
-  private SwerveModulePosition[] getSwerveModulePositions() {
+  public SwerveModulePosition[] getSwerveModulePositions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[m_swerveModules.length];
     for (int i = 0; i < m_swerveModules.length; i++) {
       positions[i] = m_swerveModules[i].getPosition();
@@ -229,7 +176,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public SwerveModuleState[] convertToSwerveModuleStates(double xTranslation, double yTranslation, double rotation) {
     ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xTranslation, yTranslation, rotation);
-    SwerveModuleState[] moduleStates = m_swerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+    SwerveModuleState[] moduleStates = Constants.Drive.kSwerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
     return moduleStates;
   }
 
@@ -296,7 +243,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_gyro.updateTelemetry();
     SmartDashboard.putString("Robot/Drive/LockState", m_lockState.toString());
     SmartDashboard.putString("Robot/Drive/IdleMode", m_idleMode.toString().toUpperCase().substring(1));
-    SmartDashboard.putString("Robot/Drive/Pose", Utils.objectToJson(getPose()));
+    
   }
 
   @Override
