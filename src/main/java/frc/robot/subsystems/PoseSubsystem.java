@@ -1,38 +1,37 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.photonvision.EstimatedRobotPose;
-
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.lib.Utils;
 import frc.robot.lib.sensors.Camera;
-import edu.wpi.first.math.Matrix;
-
 
 public class PoseSubsystem extends SubsystemBase {
   private final SwerveDrivePoseEstimator m_poseEstimator;
   private final Supplier<Rotation2d> m_rotationSupplier;
   private final Supplier<SwerveModulePosition[]> m_swerveModulePositionSupplier;
   private final List<Camera> m_cameras;
+  private Alliance m_alliance;
 
-  /** Creates a new Pose. */
   public PoseSubsystem(
     Supplier<Rotation2d> rotationSupplier, 
     Supplier<SwerveModulePosition[]> swerveModulePositionSupplier
@@ -54,16 +53,41 @@ public class PoseSubsystem extends SubsystemBase {
           Constants.Vision.kFallbackPoseStrategy, 
           Constants.Vision.kSingleTagStandardDeviations, 
           Constants.Vision.kMultiTagStandardDeviations, 
-          Constants.Vision.kTagLayout)
+          Constants.Vision.kAprilTagFieldLayout)
         );
     });
-    
+
+    updateAprilTagFieldLayoutData();
   }
 
   @Override
   public void periodic() {
+    updateAlliance();
     updatePose();
     updateTelemetry();
+  }
+
+  private void updateAprilTagFieldLayoutData() {
+    try {
+      Path filePath = Paths.get("april-tag-field-layout.json");
+      Constants.Vision.kAprilTagFieldLayout.serialize(filePath);
+      SmartDashboard.putString("Robot/Pose/AprilTagFieldLayout", new String(Files.readAllBytes(filePath), StandardCharsets.UTF_8));
+      Files.delete(filePath);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void updateAlliance() {
+    Alliance alliance = Robot.getAlliance();
+    if (m_alliance != alliance) {
+      m_alliance = alliance;
+      Constants.Vision.kAprilTagFieldLayout.setOrigin(
+        m_alliance == Alliance.Red 
+          ? OriginPosition.kRedAllianceWallRightSide
+          : OriginPosition.kBlueAllianceWallRightSide
+      );
+    }
   }
 
   public Pose2d getPose() {
@@ -78,9 +102,9 @@ public class PoseSubsystem extends SubsystemBase {
         m_poseEstimator.addVisionMeasurement(
           pose, 
           globalPose.timestampSeconds, 
-          camera.getEstimatedStandardDeviations(pose));
+          camera.getEstimatedStandardDeviations(pose)
+        );
       });
-
     });
   }
 
@@ -93,16 +117,16 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public void reset() {
-    // TODO: reset the subsystem
+    // TODO: reset the subsystem if needed
   }
 
   private void updateTelemetry() {
-    SmartDashboard.putString("Robot/Pose", Utils.objectToJson(getPose()));
+    SmartDashboard.putString("Robot/Pose/CurrentPose", Utils.objectToJson(getPose()));
   }
 
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
-  // TODO: Determine how pose needs to be sent to log for match replay
+    // TODO: determine how pose needs to be sent to log for match replay
   }
 }

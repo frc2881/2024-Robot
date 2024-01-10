@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    DriverStation.getAlliance().ifPresent(a -> m_alliance = a);
+    DriverStation.getAlliance().ifPresent(alliance -> m_alliance = alliance);
   }
 
   @Override

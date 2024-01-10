@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import frc.robot.lib.Utils;
 
 public class Camera {
   private final PhotonCamera m_photonCamera;
@@ -54,10 +55,12 @@ public class Camera {
     int tagCount = 0;
     double averageDistance = 0;
     for (var target : targets) {
-      var tagPose = m_photonPoseEstimator.getFieldTags().getTagPose(target.getFiducialId());
-      if (tagPose.isPresent()) {
-        tagCount++;
-        averageDistance += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+      if (Utils.isValueBetween(target.getPoseAmbiguity(), 0, 0.2)) {
+        var tagPose = m_photonPoseEstimator.getFieldTags().getTagPose(target.getFiducialId());
+        if (tagPose.isPresent()) {
+          tagCount++;
+          averageDistance += tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+        }
       }
     }
     if (tagCount > 0) {

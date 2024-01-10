@@ -29,7 +29,7 @@ public class ExampleSubsystem extends SubsystemBase {
   }
 
   public void reset() {
-    // TODO: reset the subsystem
+    // TODO: reset the subsystem if needed
   }
 
   private void updateTelemetry() {

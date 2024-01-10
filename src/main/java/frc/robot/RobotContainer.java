@@ -54,7 +54,6 @@ public class RobotContainer {
       () -> Robot.getAlliance() == Alliance.Red,
       m_driveSubsystem
     );
-
     m_autoCommands = new AutoCommands(m_driveSubsystem, m_poseSubsystem);
     m_autoChooser = new SendableChooser<Command>();
     setupAutos();
@@ -103,11 +102,11 @@ public class RobotContainer {
   }
 
   public Command getSelectedAutoCommand() {
-    Command command = m_autoChooser.getSelected();
-    return command;
+    return m_autoChooser.getSelected();
   }
 
   public void reset() {
     m_driveSubsystem.reset();
+    m_poseSubsystem.reset();
   }
 }
