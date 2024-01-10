@@ -13,7 +13,13 @@ import frc.robot.lib.Utils;
 
 public class Gyro extends ADIS16470_IMU {
 
-  public Gyro(IMUAxis imuAxisYaw, IMUAxis imuAxisPitch, IMUAxis imuAxisRoll, SPI.Port port, CalibrationTime calibrationTime) {
+  public Gyro(
+    IMUAxis imuAxisYaw, 
+    IMUAxis imuAxisPitch, 
+    IMUAxis imuAxisRoll, 
+    SPI.Port port, 
+    CalibrationTime calibrationTime
+  ) {
     super(imuAxisYaw, imuAxisPitch, imuAxisRoll, port, calibrationTime);
   }
 

@@ -1,8 +1,22 @@
 package frc.robot;
 
+import java.util.Map;
+import static java.util.Map.entry;
+
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.CalibrationTime;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
@@ -93,6 +107,28 @@ public final class Constants {
     public static final IMUAxis kIMUAxisPitch = IMUAxis.kX;
     public static final SPI.Port kSPIPort = SPI.Port.kOnboardCS0;
     public static final CalibrationTime kCalibrationTime = CalibrationTime._2s;
+  }
+
+  public static final class Vision {
+    public static final Map<String, Transform3d> kCameras = Map.ofEntries(
+      entry(
+        "Arducam-OV9281-2881-01",
+        new Transform3d(
+          new Translation3d(-0.16390, 0.18440, 1.19055),
+          new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(0)))
+      ),
+      entry(
+        "Arducam-OV9281-2881-02",
+        new Transform3d(
+          new Translation3d(-0.18290, 0.18298, 1.19055),
+          new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180)))
+      )
+    );
+    public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
+    public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
+    public static final Matrix<N3, N1> kSingleTagStandardDeviations = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> kMultiTagStandardDeviations = VecBuilder.fill(0.5, 0.5, 1);
+    public static final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
   }
 
 }
