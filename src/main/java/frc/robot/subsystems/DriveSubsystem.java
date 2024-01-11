@@ -24,6 +24,7 @@ public class DriveSubsystem extends SubsystemBase {
   public static enum Orientation { FIELD, ROBOT; }
   public static enum SpeedMode { COMPETITION, TRAINING; }
   public static enum LockState { UNLOCKED, LOCKED; }
+  public static enum DriftCorrection { ENABLED, DISABLED; }
 
   private final Gyro m_gyro;
   private final SwerveModule[] m_swerveModules;
@@ -36,6 +37,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SpeedMode m_speedMode = SpeedMode.COMPETITION;
   private LockState m_lockState = LockState.UNLOCKED;
   private IdleMode m_idleMode = IdleMode.kBrake;
+  private DriftCorrection m_driftCorrection = DriftCorrection.ENABLED;
   private boolean m_isRotationLocked = false;
 
   public DriveSubsystem(Gyro gyro) {
@@ -86,6 +88,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_speedMode = speedMode;
   }
 
+  public void setDriftCorrection(DriftCorrection driftCorrection) {
+    m_driftCorrection = driftCorrection;
+  }
+
   public Command driveWithControllerCommand(XboxController controller) {
     return Commands.run(
       () -> {
@@ -101,19 +107,21 @@ public class DriveSubsystem extends SubsystemBase {
           rotation = m_driveInputRotFilter.calculate(rotation * Constants.Controllers.kDriveInputLimiter);
         }
 
-        boolean isRotating = (rotation != 0.0);
-        boolean isTranslating = ((speedX != 0.0) || (speedY != 0.0));
-        if (!m_isRotationLocked && !isRotating && isTranslating) {
-          m_isRotationLocked = true;
-          m_thetaController.reset();
-          m_thetaController.setSetpoint(m_gyro.getHeading());
-        } else if (isRotating || !isTranslating) {
-          m_isRotationLocked = false;
-        }
-        if (m_isRotationLocked) {
-          rotation = m_thetaController.calculate(m_gyro.getHeading());
-          if (m_thetaController.atSetpoint()) {
-            rotation = 0.0;
+        if (m_driftCorrection == DriftCorrection.ENABLED) {
+          boolean isRotating = (rotation != 0.0);
+          boolean isTranslating = ((speedX != 0.0) || (speedY != 0.0));
+          if (!m_isRotationLocked && !isRotating && isTranslating) {
+            m_isRotationLocked = true;
+            m_thetaController.reset();
+            m_thetaController.setSetpoint(m_gyro.getHeading());
+          } else if (isRotating || !isTranslating) {
+            m_isRotationLocked = false;
+          }
+          if (m_isRotationLocked) {
+            rotation = m_thetaController.calculate(m_gyro.getHeading());
+            if (m_thetaController.atSetpoint()) {
+              rotation = 0.0;
+            }
           }
         }
 

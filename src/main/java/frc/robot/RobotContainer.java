@@ -90,6 +90,12 @@ public class RobotContainer {
     driveOrientationChooser.addOption(DriveSubsystem.Orientation.ROBOT.toString(), DriveSubsystem.Orientation.ROBOT);
     driveOrientationChooser.onChange(orientation -> m_driveSubsystem.setOrientation(orientation));
     SmartDashboard.putData("Robot/Drive/Orientation", driveOrientationChooser);
+
+    SendableChooser<DriveSubsystem.DriftCorrection> driveDriftCorrectionChooser = new SendableChooser<DriveSubsystem.DriftCorrection>();
+    driveDriftCorrectionChooser.setDefaultOption(DriveSubsystem.DriftCorrection.ENABLED.toString(), DriveSubsystem.DriftCorrection.ENABLED);
+    driveDriftCorrectionChooser.addOption(DriveSubsystem.DriftCorrection.DISABLED.toString(), DriveSubsystem.DriftCorrection.DISABLED);
+    driveDriftCorrectionChooser.onChange(driftCorrection -> m_driveSubsystem.setDriftCorrection(driftCorrection));
+    SmartDashboard.putData("Robot/Drive/DriftCorrection", driveDriftCorrectionChooser);
   }
 
   private void setupAutos() {

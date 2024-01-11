@@ -34,20 +34,20 @@ public final class Constants {
   }
 
   public static final class Drive {
-    public static final int kFrontLeftDrivingCanId = 15;
-    public static final int kFrontLeftTurningCanId = 14;
-    public static final int kRearLeftDrivingCanId = 7;
+    public static final int kFrontLeftDrivingCanId = 3;
+    public static final int kFrontLeftTurningCanId = 4;
+    public static final int kRearLeftDrivingCanId = 5;
     public static final int kRearLeftTurningCanId = 6;
-    public static final int kFrontRightDrivingCanId = 16;
-    public static final int kFrontRightTurningCanId = 17;
+    public static final int kFrontRightDrivingCanId = 7;
+    public static final int kFrontRightTurningCanId = 8;
     public static final int kRearRightDrivingCanId = 9;
-    public static final int kRearRightTurningCanId = 8;
+    public static final int kRearRightTurningCanId = 10;
 
     public static final double kTrackWidth = Units.inchesToMeters(20.5);
     public static final double kWheelBase = Units.inchesToMeters(23);
     public static final double kDriveBaseRadius = new Translation2d(kWheelBase / 2, kTrackWidth / 2).getNorm();
 
-    public static final double kMaxSpeedMetersPerSecond = 4.8;
+    public static final double kMaxSpeedMetersPerSecond = 5.7424;
     public static final double kMaxAngularSpeed = 2 * Math.PI;
 
     public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;

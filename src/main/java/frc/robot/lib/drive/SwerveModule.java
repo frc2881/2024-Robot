@@ -6,6 +6,7 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,7 +22,7 @@ public class SwerveModule implements Sendable {
 
   private final Location m_location;
 
-  private final CANSparkMax m_drivingSparkMax;
+  private final CANSparkFlex m_drivingSparkFlex;
   private final CANSparkMax m_turningSparkMax;
   private final RelativeEncoder m_drivingEncoder;
   private final AbsoluteEncoder m_turningEncoder;
@@ -34,15 +35,15 @@ public class SwerveModule implements Sendable {
   public SwerveModule(Location location, int drivingCANId, int turningCANId, double chassisAngularOffset) {
     m_location = location;
 
-    m_drivingSparkMax = new CANSparkMax(drivingCANId, MotorType.kBrushless);
+    m_drivingSparkFlex = new CANSparkFlex(drivingCANId, MotorType.kBrushless);
     m_turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
 
-    m_drivingSparkMax.restoreFactoryDefaults();
+    m_drivingSparkFlex.restoreFactoryDefaults();
     m_turningSparkMax.restoreFactoryDefaults();
 
-    m_drivingEncoder = m_drivingSparkMax.getEncoder();
+    m_drivingEncoder = m_drivingSparkFlex.getEncoder();
     m_turningEncoder = m_turningSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
-    m_drivingPIDController = m_drivingSparkMax.getPIDController();
+    m_drivingPIDController = m_drivingSparkFlex.getPIDController();
     m_turningPIDController = m_turningSparkMax.getPIDController();
     m_drivingPIDController.setFeedbackDevice(m_drivingEncoder);
     m_turningPIDController.setFeedbackDevice(m_turningEncoder);
@@ -71,13 +72,13 @@ public class SwerveModule implements Sendable {
     m_turningPIDController.setFF(Constants.Drive.SwerveModule.kTurningFF);
     m_turningPIDController.setOutputRange(Constants.Drive.SwerveModule.kTurningMinOutput, Constants.Drive.SwerveModule.kTurningMaxOutput);
 
-    m_drivingSparkMax.setIdleMode(Constants.Drive.SwerveModule.kDrivingMotorIdleMode);
+    m_drivingSparkFlex.setIdleMode(Constants.Drive.SwerveModule.kDrivingMotorIdleMode);
     m_turningSparkMax.setIdleMode(Constants.Drive.SwerveModule.kTurningMotorIdleMode);
     
-    m_drivingSparkMax.setSmartCurrentLimit(Constants.Drive.SwerveModule.kDrivingMotorCurrentLimit);
+    m_drivingSparkFlex.setSmartCurrentLimit(Constants.Drive.SwerveModule.kDrivingMotorCurrentLimit);
     m_turningSparkMax.setSmartCurrentLimit(Constants.Drive.SwerveModule.kTurningMotorCurrentLimit);
 
-    m_drivingSparkMax.burnFlash();
+    m_drivingSparkFlex.burnFlash();
     m_turningSparkMax.burnFlash();
 
     m_chassisAngularOffset = chassisAngularOffset;
@@ -100,7 +101,7 @@ public class SwerveModule implements Sendable {
   }
 
   public void setIdleMode(IdleMode idleMode) {
-    m_drivingSparkMax.setIdleMode(idleMode);
+    m_drivingSparkFlex.setIdleMode(idleMode);
     m_turningSparkMax.setIdleMode(idleMode);
   }
 
@@ -117,7 +118,7 @@ public class SwerveModule implements Sendable {
   }
 
   public IdleMode getDrivingIdleMode() {
-    return m_drivingSparkMax.getIdleMode();
+    return m_drivingSparkFlex.getIdleMode();
   }
 
   @Override
@@ -125,7 +126,7 @@ public class SwerveModule implements Sendable {
     String key = m_location.toString() + "/";
     builder.addDoubleProperty(key + "Turning/AbsolutePosition", () -> m_turningEncoder.getPosition(), null);
     builder.addDoubleProperty(key + "Driving/Velocity", () -> m_drivingEncoder.getVelocity(), null);
-    builder.addDoubleProperty(key + "Driving/AppliedOutput", m_drivingSparkMax::getAppliedOutput, null);
+    builder.addDoubleProperty(key + "Driving/AppliedOutput", m_drivingSparkFlex::getAppliedOutput, null);
     builder.addDoubleProperty(key + "Driving/SetSpeed", () -> m_setSpeed, null);
   }
 }
