@@ -16,7 +16,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoCommands;
 import frc.robot.lib.sensors.Gyro;
+import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LauncherSubsystem;
+import frc.robot.subsystems.PickupSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
 
 public class RobotContainer {
@@ -24,8 +28,14 @@ public class RobotContainer {
   private final Gyro m_gyro;
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
+  private final ArmSubsystem m_armSubsystem;
+  private final IntakeSubsystem m_intakeSubsystem;
+  private final LauncherSubsystem m_launcherSubsystem;
+  private final PickupSubsystem m_pickupSubsystem;
+
   private final XboxController m_driverController;
   private final XboxController m_operatorController;
+
   private final AutoCommands m_autoCommands;
   private final SendableChooser<Command> m_autoChooser;
 
@@ -34,6 +44,10 @@ public class RobotContainer {
     m_gyro = new Gyro(Constants.Gyro.kIMUAxisYaw, Constants.Gyro.kIMUAxisPitch, Constants.Gyro.kIMUAxisRoll, Constants.Gyro.kSPIPort, Constants.Gyro.kCalibrationTime);
     m_driveSubsystem = new DriveSubsystem(m_gyro);
     m_poseSubsystem = new PoseSubsystem(m_gyro::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
+    m_armSubsystem = new ArmSubsystem();
+    m_intakeSubsystem = new IntakeSubsystem();
+    m_launcherSubsystem = new LauncherSubsystem();
+    m_pickupSubsystem = new PickupSubsystem();
 
     m_driverController = new XboxController(Constants.Controllers.kDriverControllerPort);
     m_operatorController = new XboxController(Constants.Controllers.kOperatorControllerPort);
@@ -76,6 +90,11 @@ public class RobotContainer {
 
     // OPERATOR =========================
 
+    new Trigger(() -> Math.abs(m_operatorController.getLeftY()) > 0.1)
+      .whileTrue(m_armSubsystem.runLeadScrewCommand(m_operatorController::getLeftY));
+
+    new Trigger(() -> Math.abs(m_operatorController.getRightY()) > 0.1)
+      .whileTrue(m_launcherSubsystem.runLeadScrewCommand(m_operatorController::getRightY));
 
     // DASHBOARD =========================
 

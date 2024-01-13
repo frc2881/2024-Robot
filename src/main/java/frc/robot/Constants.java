@@ -139,4 +139,55 @@ public final class Constants {
     public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
   }
 
+  public static final class Launcher {
+    public static final int kLeadScrewMotorID = 11;
+    public static final int kUpperRollerMotorID = 12;
+    public static final int kLowerRollerMotorID = 13;
+
+    // Max distance that the launcher can tilt
+    public static final double kLeadScrewUpperLimit = 100; // TODO: update
+    // Least distance that the launcher can tilt
+    public static final double kLeadScrewLowerLimit = 0.5; // TODO: update
+
+    public static final double kRotationsToInches = 1.0 / 3.0; // TODO: update (gear ratio for the leadscrew that converts rotations to inches of extension)
+    public static final double kVelocityConversion = kRotationsToInches / 60.0;
+
+    public static final double kLeadScrewP = 0.0003;
+    public static final double kLeadScrewD = 0.00015;
+    public static final double kLeadScrewFF = 1 / (16.8);
+
+    public static final double kLeadScrewMinOutput = -1.0;
+    public static final double kLeadScrewMaxOutput = 1.0;
+  }
+
+  public static final class Intake {
+    public static int kRollerMotorID = 14;
+    public static int kIntakeMotorID = 15;
+
+  }
+  
+  public static final class Arm {
+    public static final int kLeadScrewMotorID = 16;
+    public static final int kRollerMotorID = 17;
+
+    // Max distance that the arm can lift
+    public static final double kLeadScrewUpperLimit = 100; // TODO: update
+    // Least distance that the arm can lower
+    public static final double kLeadScrewLowerLimit = 0.5; // TODO: update
+
+    public static final double kRotationsToInches = 1.0 / 3.0; // TODO: update (gear ratio for the arm that converts rotations to inches of extension)
+    public static final double kVelocityConversion = kRotationsToInches / 60.0;
+
+    public static final double kLeadScrewP = 0.0003;
+    public static final double kLeadScrewD = 0.00015;
+    public static final double kLeadScrewFF = 1 / (16.8);
+
+    public static final double kLeadScrewMinOutput = -1.0;
+    public static final double kLeadScrewMaxOutput = 1.0;
+  }
+
+  public static final class Pickup {
+    
+  }
+
 }
