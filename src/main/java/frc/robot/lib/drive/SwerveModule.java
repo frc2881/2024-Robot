@@ -3,11 +3,12 @@ package frc.robot.lib.drive;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -42,13 +43,14 @@ public class SwerveModule implements Sendable {
     m_turningSparkMax.restoreFactoryDefaults();
 
     m_drivingEncoder = m_drivingSparkFlex.getEncoder();
-    m_turningEncoder = m_turningSparkMax.getAbsoluteEncoder(Type.kDutyCycle);
+    m_turningEncoder = m_turningSparkMax.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     m_drivingPIDController = m_drivingSparkFlex.getPIDController();
     m_turningPIDController = m_turningSparkMax.getPIDController();
     m_drivingPIDController.setFeedbackDevice(m_drivingEncoder);
     m_turningPIDController.setFeedbackDevice(m_turningEncoder);
 
-    m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionFactor);
+    // TODO: wait for RevLib update to fix these methods
+    //m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionFactor);
     m_drivingEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderVelocityFactor);
 
     m_turningEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderPositionFactor);
@@ -95,8 +97,8 @@ public class SwerveModule implements Sendable {
     correctedTargetState.speedMetersPerSecond = targetState.speedMetersPerSecond;
     correctedTargetState.angle = targetState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
     SwerveModuleState optimizedTargetState = SwerveModuleState.optimize(correctedTargetState, new Rotation2d(m_turningEncoder.getPosition()));
-    m_drivingPIDController.setReference(optimizedTargetState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
-    m_turningPIDController.setReference(optimizedTargetState.angle.getRadians(), CANSparkMax.ControlType.kPosition);
+    m_drivingPIDController.setReference(optimizedTargetState.speedMetersPerSecond, CANSparkBase.ControlType.kVelocity);
+    m_turningPIDController.setReference(optimizedTargetState.angle.getRadians(), CANSparkBase.ControlType.kPosition);
     m_setSpeed = optimizedTargetState.speedMetersPerSecond;
   }
 
@@ -114,17 +116,22 @@ public class SwerveModule implements Sendable {
   }
 
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(m_drivingEncoder.getPosition(), new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
+    return new SwerveModulePosition(getPositionScaled(), new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset));
   }
 
   public IdleMode getDrivingIdleMode() {
     return m_drivingSparkFlex.getIdleMode();
   }
 
+  private double getPositionScaled() {
+    return m_drivingEncoder.getPosition() * Constants.Drive.SwerveModule.kDrivingEncoderPositionFactor;
+  }
+
   @Override
   public void initSendable(SendableBuilder builder) {
     String key = m_location.toString() + "/";
-    builder.addDoubleProperty(key + "Turning/AbsolutePosition", () -> m_turningEncoder.getPosition(), null);
+    builder.addDoubleProperty(key + "Turning/Position", () -> m_turningEncoder.getPosition(), null);
+    builder.addDoubleProperty(key + "Driving/Position", () -> getPositionScaled(), null);
     builder.addDoubleProperty(key + "Driving/Velocity", () -> m_drivingEncoder.getVelocity(), null);
     builder.addDoubleProperty(key + "Driving/AppliedOutput", m_drivingSparkFlex::getAppliedOutput, null);
     builder.addDoubleProperty(key + "Driving/SetSpeed", () -> m_setSpeed, null);
