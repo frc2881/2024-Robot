@@ -68,7 +68,7 @@ public class RobotContainer {
       () -> Robot.getAlliance() == Alliance.Red,
       m_driveSubsystem
     );
-    m_autoCommands = new AutoCommands(m_driveSubsystem, m_poseSubsystem);
+    m_autoCommands = new AutoCommands(m_driveSubsystem, m_poseSubsystem, m_gyro);
     m_autoChooser = new SendableChooser<Command>();
     setupAutos();
   }
