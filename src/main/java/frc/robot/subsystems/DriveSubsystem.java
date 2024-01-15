@@ -48,23 +48,24 @@ public class DriveSubsystem extends SubsystemBase {
         SwerveModule.Location.FrontLeft,
         Constants.Drive.kFrontLeftDrivingCanId,
         Constants.Drive.kFrontLeftTurningCanId,
-        Constants.Drive.kFrontLeftChassisAngularOffset),
+        Constants.Drive.kFrontLeftTurningOffset),
       new SwerveModule(
         SwerveModule.Location.FrontRight,
         Constants.Drive.kFrontRightDrivingCanId,
         Constants.Drive.kFrontRightTurningCanId,
-        Constants.Drive.kFrontRightChassisAngularOffset),
+        Constants.Drive.kFrontRightTurningOffset),
       new SwerveModule(
         SwerveModule.Location.RearLeft,
         Constants.Drive.kRearLeftDrivingCanId,
         Constants.Drive.kRearLeftTurningCanId,
-        Constants.Drive.kRearLeftChassisAngularOffset),
+        Constants.Drive.kRearLeftTurningOffset),
       new SwerveModule(
         SwerveModule.Location.RearRight,
         Constants.Drive.kRearRightDrivingCanId,
         Constants.Drive.kRearRightTurningCanId, 
-        Constants.Drive.kRearRightChassisAngularOffset)
+        Constants.Drive.kRearRightTurningOffset)
     };
+    SwerveModule.burnFlashForAllControllers();
 
     m_thetaController = new PIDController(Constants.Drive.kThetaControllerP, Constants.Drive.kThetaControllerI, Constants.Drive.kThetaControllerD);
     m_thetaController.enableContinuousInput(-180.0, 180.0);
@@ -217,7 +218,7 @@ public class DriveSubsystem extends SubsystemBase {
   private void setSwerveModuleStatesForCalibration() {
     for (int i = 0; i < m_swerveModules.length; i++) {
       m_swerveModules[i].setTargetState(
-        new SwerveModuleState(0, Rotation2d.fromRadians(m_swerveModules[i].getChassisAngularOffset()))
+        new SwerveModuleState(0, Rotation2d.fromRadians(m_swerveModules[i].getTurningOffset()))
       );
     }
   }
@@ -227,18 +228,6 @@ public class DriveSubsystem extends SubsystemBase {
     for (int i = 0; i < m_swerveModules.length; i++) {
       m_swerveModules[i].setIdleMode(m_idleMode);
     }
-  }
-
-  private void resetEncoders() {
-    for (int i = 0; i < m_swerveModules.length; i++) {
-      m_swerveModules[i].resetEncoders();
-    }
-  }
-
-  public void reset() {
-    resetEncoders();
-    setLockState(LockState.UNLOCKED); 
-    setIdleMode(IdleMode.kBrake);
   }
 
   private void updateTelemetry() {

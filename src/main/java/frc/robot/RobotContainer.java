@@ -129,9 +129,4 @@ public class RobotContainer {
   public Command getSelectedAutoCommand() {
     return m_autoChooser.getSelected();
   }
-
-  public void reset() {
-    m_driveSubsystem.reset();
-    m_poseSubsystem.reset();
-  }
 }

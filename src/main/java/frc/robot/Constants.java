@@ -50,10 +50,10 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond = 5.7424;
     public static final double kMaxAngularSpeed = 2 * Math.PI;
 
-    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
-    public static final double kFrontRightChassisAngularOffset = 0;
-    public static final double kRearLeftChassisAngularOffset = Math.PI;
-    public static final double kRearRightChassisAngularOffset = Math.PI / 2;
+    public static final double kFrontLeftTurningOffset = -Math.PI / 2;
+    public static final double kFrontRightTurningOffset = 0;
+    public static final double kRearLeftTurningOffset = Math.PI;
+    public static final double kRearRightTurningOffset = Math.PI / 2;
 
     public static final SwerveDriveKinematics kSwerveDriveKinematics = new SwerveDriveKinematics(
       new Translation2d(Constants.Drive.kWheelBase / 2, Constants.Drive.kTrackWidth / 2),
@@ -122,15 +122,15 @@ public final class Constants {
       entry(
         "Arducam-OV9281-2881-01",
         new Transform3d(
-          new Translation3d(-0.16390, 0.18440, 1.19055),
+          new Translation3d(0.29210, 0.00000, 0.21749),
           new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(0)))
-      ),
-      entry(
-        "Arducam-OV9281-2881-02",
-        new Transform3d(
-          new Translation3d(-0.18290, 0.18298, 1.19055),
-          new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180)))
       )
+      // entry(
+      //   "Arducam-OV9281-2881-02",
+      //   new Transform3d(
+      //     new Translation3d(-0.18290, 0.18298, 1.19055),
+      //     new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180)))
+      // )
     );
     public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
     public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;

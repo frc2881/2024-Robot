@@ -29,7 +29,7 @@ public class Gyro extends ADIS16470_IMU {
   }
 
   public void reset(double value) {
-    super.setGyroAngle(getYawAxis(), value);
+    setGyroAngle(getYawAxis(), value);
   }
 
   public Command resetCommand() {
@@ -39,12 +39,19 @@ public class Gyro extends ADIS16470_IMU {
       .withName("ResetGyro");
   }
 
+  public Command resetCommand(double value) {
+    return Commands.runOnce(
+      () -> this.reset(value))
+      .ignoringDisable(true)
+      .withName("ResetGyro");
+  }
+
   public double getRoll() {
-    return super.getAngle(getRollAxis());
+    return getAngle(getRollAxis());
   }
 
   public double getPitch() {
-    return super.getAngle(getPitchAxis());
+    return getAngle(getPitchAxis());
   }
 
   public double getYaw() {
@@ -68,7 +75,7 @@ public class Gyro extends ADIS16470_IMU {
   }
 
   public double getTurnRate() {
-    return super.getRate(getYawAxis());
+    return getRate(getYawAxis());
   }
 
   public void updateTelemetry() {

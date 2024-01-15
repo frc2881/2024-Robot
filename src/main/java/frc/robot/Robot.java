@@ -50,7 +50,6 @@ public class Robot extends TimedRobot {
     if (m_autoCommand != null) {
       m_autoCommand.schedule();
     }
-    m_robotContainer.reset();
   }
 
   @Override
@@ -65,9 +64,6 @@ public class Robot extends TimedRobot {
     if (m_autoCommand != null) {
       m_autoCommand.cancel();
     }
-    if (!isRunningMatch()) {
-      m_robotContainer.reset();
-    }
   }
 
   @Override
@@ -80,7 +76,6 @@ public class Robot extends TimedRobot {
   public void testInit() {
     Logger.log(Robot.Mode.TEST);
     CommandScheduler.getInstance().cancelAll();
-    m_robotContainer.reset();
   }
 
   @Override

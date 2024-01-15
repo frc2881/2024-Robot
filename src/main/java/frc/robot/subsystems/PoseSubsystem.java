@@ -41,7 +41,7 @@ public class PoseSubsystem extends SubsystemBase {
       Constants.Drive.kSwerveDriveKinematics, 
       m_rotationSupplier.get(), 
       m_swerveModulePositionSupplier.get(), 
-      new Pose2d());
+      new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
 
     m_cameras = new ArrayList<Camera>();
     Constants.Vision.kCameras.forEach((cameraName, cameraTransform) -> {
@@ -55,7 +55,7 @@ public class PoseSubsystem extends SubsystemBase {
         );
     });
 
-    updateAprilTagFieldLayoutData();
+    getAprilTagFieldLayoutData();
   }
 
   @Override
@@ -65,7 +65,7 @@ public class PoseSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  private void updateAprilTagFieldLayoutData() {
+  private void getAprilTagFieldLayoutData() {
     try {
       Path filePath = Paths.get("april-tag-field-layout.json");
       Constants.Vision.kAprilTagFieldLayout.serialize(filePath);
@@ -85,6 +85,7 @@ public class PoseSubsystem extends SubsystemBase {
           ? OriginPosition.kRedAllianceWallRightSide
           : OriginPosition.kBlueAllianceWallRightSide
       );
+      // TODO: validate that cameras pickup origin position change automatically or need to be reset
     }
   }
 
@@ -107,15 +108,11 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public void resetPose() {
-    resetPose(new Pose2d());
+    resetPose(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
   }
 
   public void resetPose(Pose2d pose) {
     m_poseEstimator.resetPosition(m_rotationSupplier.get(), m_swerveModulePositionSupplier.get(), pose);
-  }
-
-  public void reset() {
-    // TODO: reset the subsystem if needed
   }
 
   private void updateTelemetry() {
@@ -125,6 +122,7 @@ public class PoseSubsystem extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
+    builder.addStringProperty("CurrentPose", () -> Utils.objectToJson(getPose()), null);
     // TODO: determine how pose needs to be sent to log for match replay
   }
 }

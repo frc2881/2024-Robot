@@ -18,10 +18,6 @@ public class PickupSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public void reset() {
-    // TODO: reset the subsystem if needed
-  }
-
   private void updateTelemetry() {
     // TODO: send subsystem telemetry data to the dashboard as needed
     // ex: SmartDashboard.putString("Robot/Example/String", "TEST");

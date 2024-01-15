@@ -1,5 +1,7 @@
 package frc.robot.lib.logging;
 
+import com.revrobotics.REVLibError;
+
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -29,5 +31,12 @@ public final class Logger {
 
   public static void log(Robot.Mode mode) {
     log(">>>>>>>>>> Robot Mode Changed: " + mode + " <<<<<<<<<<");
+  }
+
+  public static void log(String source, REVLibError error) {
+    Timer.delay(0.001);
+    if (error != REVLibError.kOk) {
+      log("!!!!!!!!!! REVLibError Returned: " + source + " !!!!!!!!!!");
+    }
   }
 }

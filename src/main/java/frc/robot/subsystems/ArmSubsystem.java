@@ -140,10 +140,6 @@ public class ArmSubsystem extends SubsystemBase {
     .withName("moveArmToHeight");
   }
 
-  public void reset() {
-    m_leadScrewMotor.set(0);
-  }
-
   private void updateTelemetry() {
     // TODO: send subsystem telemetry data to the dashboard as needed
     // ex: SmartDashboard.putString("Robot/Example/String", "TEST");
