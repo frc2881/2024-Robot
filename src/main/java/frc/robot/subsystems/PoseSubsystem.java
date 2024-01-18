@@ -15,12 +15,16 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.lib.Utils;
+import frc.robot.lib.logging.Logger;
 import frc.robot.lib.sensors.Camera;
 
 public class PoseSubsystem extends SubsystemBase {
@@ -67,7 +71,7 @@ public class PoseSubsystem extends SubsystemBase {
 
   private void getAprilTagFieldLayoutData() {
     try {
-      Path filePath = Paths.get("april-tag-field-layout.json");
+      Path filePath = Paths.get(Filesystem.getOperatingDirectory().getPath() + "/april-tag-field-layout.json");
       Constants.Vision.kAprilTagFieldLayout.serialize(filePath);
       SmartDashboard.putString("Robot/Pose/AprilTagFieldLayout", new String(Files.readAllBytes(filePath), StandardCharsets.UTF_8));
       Files.delete(filePath);
@@ -105,6 +109,13 @@ public class PoseSubsystem extends SubsystemBase {
         );
       });
     });
+  }
+
+  public Command resetPoseCommand() {
+    return Commands.runOnce(
+      () -> resetPose())
+      .ignoringDisable(true)
+      .withName("ResetPose");
   }
 
   public void resetPose() {

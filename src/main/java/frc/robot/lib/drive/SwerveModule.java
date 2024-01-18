@@ -50,7 +50,8 @@ public class SwerveModule implements Sendable {
     Timer.delay(0.050);
     m_drivingEncoder = m_drivingSparkFlex.getEncoder();
     // TODO: wait for RevLib update to fix these methods
-    //m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionFactor);
+    // m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionFactor);
+    // TODO: wrap other REVLib method calls with logging to capture any errors
     Logger.log("SwerveModule:" + m_location.toString() + ":m_drivingEncoder.setVelocityConversionFactor", m_drivingEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderVelocityFactor));
     m_drivingEncoder.setMeasurementPeriod(16);
     m_drivingEncoder.setAverageDepth(2);

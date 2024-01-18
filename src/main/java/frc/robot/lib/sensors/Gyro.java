@@ -34,14 +34,14 @@ public class Gyro extends ADIS16470_IMU {
 
   public Command resetCommand() {
     return Commands.runOnce(
-      () -> this.reset(0))
+      () -> reset(0))
       .ignoringDisable(true)
       .withName("ResetGyro");
   }
 
   public Command resetCommand(double value) {
     return Commands.runOnce(
-      () -> this.reset(value))
+      () -> reset(value))
       .ignoringDisable(true)
       .withName("ResetGyro");
   }

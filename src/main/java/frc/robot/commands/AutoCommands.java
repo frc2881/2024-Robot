@@ -29,7 +29,7 @@ public class AutoCommands {
         1.0, 1.0,
         Units.degreesToRadians(540), Units.degreesToRadians(720));
       return Commands.sequence(
-        Commands.runOnce(() -> m_poseSubsystem.resetPose()), //path.getPreviewStartingHolonomicPose()
+        m_poseSubsystem.resetPoseCommand(), //path.getPreviewStartingHolonomicPose()
         //AutoBuilder.followPath(path)
         AutoBuilder.pathfindThenFollowPath(path, constraints)
         //Commands.runOnce(() -> m_driveSubsystem.setLockState(LockState.LOCKED))

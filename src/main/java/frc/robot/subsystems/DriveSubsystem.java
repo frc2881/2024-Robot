@@ -126,7 +126,7 @@ public class DriveSubsystem extends SubsystemBase {
           }
         }
 
-        this.drive(speedX, speedY, rotation);
+        drive(speedX, speedY, rotation);
       }, 
       this)
       .withName("DriveWithController");
@@ -202,23 +202,6 @@ public class DriveSubsystem extends SubsystemBase {
     for (int i = 0; i < m_swerveModules.length; i++) {
       m_swerveModules[i].setTargetState(
         new SwerveModuleState(0, Rotation2d.fromDegrees(( i == 0 || i == 3) ? 45 : -45))
-      );
-    }
-  }
-
-  public Command setForCalibrationCommand() {
-    return Commands.runOnce(
-      () -> { 
-        m_lockState = LockState.LOCKED;
-        setSwerveModuleStatesForCalibration(); 
-      })
-      .withName("SetForCalibration");
-  }
-
-  private void setSwerveModuleStatesForCalibration() {
-    for (int i = 0; i < m_swerveModules.length; i++) {
-      m_swerveModules[i].setTargetState(
-        new SwerveModuleState(0, Rotation2d.fromRadians(m_swerveModules[i].getTurningOffset()))
       );
     }
   }

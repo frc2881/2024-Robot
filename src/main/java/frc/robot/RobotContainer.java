@@ -85,9 +85,6 @@ public class RobotContainer {
     new Trigger(m_driverController::getRightStickButton)
       .onFalse(m_gyro.resetCommand());
 
-    new Trigger(m_driverController::getStartButton)
-      .onTrue(m_driveSubsystem.setForCalibrationCommand());
-
     // OPERATOR =========================
 
     // new Trigger(() -> Math.abs(m_operatorController.getLeftY()) > 0.1)
