@@ -49,8 +49,7 @@ public class SwerveModule implements Sendable {
     m_drivingSparkFlex.restoreFactoryDefaults();
     Timer.delay(0.050);
     m_drivingEncoder = m_drivingSparkFlex.getEncoder();
-    // TODO: wait for RevLib update to fix these methods
-    // m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionFactor);
+    m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionFactor);
     // TODO: wrap other REVLib method calls with logging to capture any errors
     Logger.log("SwerveModule:" + m_location.toString() + ":m_drivingEncoder.setVelocityConversionFactor", m_drivingEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderVelocityFactor));
     m_drivingEncoder.setMeasurementPeriod(16);
@@ -109,11 +108,7 @@ public class SwerveModule implements Sendable {
   }
 
   public SwerveModulePosition getPosition() {
-    return new SwerveModulePosition(getPositionScaled(), new Rotation2d(m_turningEncoder.getPosition() - m_turningOffset));
-  }
-
-  private double getPositionScaled() {
-    return m_drivingEncoder.getPosition() * Constants.Drive.SwerveModule.kDrivingEncoderPositionFactor;
+    return new SwerveModulePosition(m_drivingEncoder.getPosition(), new Rotation2d(m_turningEncoder.getPosition() - m_turningOffset));
   }
 
   public double getTurningOffset() {
@@ -138,7 +133,7 @@ public class SwerveModule implements Sendable {
   public void initSendable(SendableBuilder builder) {
     String key = m_location.toString() + "/";
     builder.addDoubleProperty(key + "Turning/Position", () -> m_turningEncoder.getPosition(), null);
-    builder.addDoubleProperty(key + "Driving/Position", () -> getPositionScaled(), null);
+    builder.addDoubleProperty(key + "Driving/Position", () -> m_drivingEncoder.getPosition(), null);
     builder.addDoubleProperty(key + "Driving/Velocity", () -> m_drivingEncoder.getVelocity(), null);
     builder.addDoubleProperty(key + "Driving/AppliedOutput", m_drivingSparkFlex::getAppliedOutput, null);
     builder.addDoubleProperty(key + "Driving/SetSpeed", () -> m_setSpeed, null);
