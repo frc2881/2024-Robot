@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.Utils;
 import frc.robot.lib.drive.SwerveModule;
-import frc.robot.lib.sensors.Gyro;
+import frc.robot.lib.sensors.GyroSensor;
 
 public class DriveSubsystem extends SubsystemBase {
   public static enum Orientation { FIELD, ROBOT; }
@@ -26,7 +26,7 @@ public class DriveSubsystem extends SubsystemBase {
   public static enum LockState { UNLOCKED, LOCKED; }
   public static enum DriftCorrection { ENABLED, DISABLED; }
 
-  private final Gyro m_gyro;
+  private final GyroSensor m_gyro;
   private final SwerveModule[] m_swerveModules;
   private final PIDController m_thetaController;
   private final SlewRateLimiter m_driveInputXFilter;
@@ -40,7 +40,7 @@ public class DriveSubsystem extends SubsystemBase {
   private DriftCorrection m_driftCorrection = DriftCorrection.ENABLED;
   private boolean m_isRotationLocked = false;
 
-  public DriveSubsystem(Gyro gyro) {
+  public DriveSubsystem(GyroSensor gyro) {
     m_gyro = gyro;
 
     m_swerveModules = new SwerveModule[] {

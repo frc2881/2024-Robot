@@ -21,6 +21,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.CalibrationTime;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
+import frc.robot.lib.sensors.ObjectSensor;
 import edu.wpi.first.wpilibj.SPI;
 
 public final class Constants {
@@ -109,34 +110,45 @@ public final class Constants {
     }
   }
 
-  public static final class Gyro {
-    public static final IMUAxis kIMUAxisYaw = IMUAxis.kZ;
-    public static final IMUAxis kIMUAxisRoll = IMUAxis.kY;
-    public static final IMUAxis kIMUAxisPitch = IMUAxis.kX;
-    public static final SPI.Port kSPIPort = SPI.Port.kOnboardCS0;
-    public static final CalibrationTime kCalibrationTime = CalibrationTime._2s;
-  }
+  public static final class Sensors {
+    public static final class Gyro {
+      public static final IMUAxis kIMUAxisYaw = IMUAxis.kZ;
+      public static final IMUAxis kIMUAxisRoll = IMUAxis.kY;
+      public static final IMUAxis kIMUAxisPitch = IMUAxis.kX;
+      public static final SPI.Port kSPIPort = SPI.Port.kOnboardCS0;
+      public static final CalibrationTime kCalibrationTime = CalibrationTime._2s;
+    }
 
-  public static final class Vision {
-    public static final Map<String, Transform3d> kCameras = Map.ofEntries(
-      entry(
-        "Arducam-OV9281-2881-01",
-        new Transform3d(
-        new Translation3d(0.29210, 0.00000, 0.21749),
-        new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(0)))
-      )
-      // entry(
-      //   "Arducam-OV9281-2881-02",
-      //   new Transform3d(
-      //     new Translation3d(-0.18290, 0.18298, 1.19055),
-      //     new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180)))
-      // )
-    );
-    public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
-    public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
-    public static final Matrix<N3, N1> kSingleTagStandardDeviations = VecBuilder.fill(4, 4, 8);
-    public static final Matrix<N3, N1> kMultiTagStandardDeviations = VecBuilder.fill(0.5, 0.5, 1);
-    public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+    public static final class Pose {
+      public static final Map<String, Transform3d> kPoseSensors = Map.ofEntries(
+        entry(
+          "POSE-01",
+          new Transform3d(
+          new Translation3d(Units.inchesToMeters(9.75), 0.00000, Units.inchesToMeters(18.5)),
+          new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180)))
+        )
+        // entry(
+        //   "POSE-02",
+        //   new Transform3d(
+        //     new Translation3d(-0.18290, 0.18298, 1.19055),
+        //     new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180)))
+        // )
+      );
+      public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
+      public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
+      public static final Matrix<N3, N1> kSingleTagStandardDeviations = VecBuilder.fill(4, 4, 8);
+      public static final Matrix<N3, N1> kMultiTagStandardDeviations = VecBuilder.fill(0.5, 0.5, 1);
+    }
+
+    public static final class Object {
+      public static final String kCameraName = "OBJECT";
+
+      public static final Double kObjectRangeYaw = 10.0;
+    }
+
+    public static final class Distance {
+      
+    }
   }
 
   public static final class Launcher {
@@ -188,6 +200,16 @@ public final class Constants {
 
   public static final class Pickup {
     
+  }
+
+  public static final class Game {
+    public static final class Field {
+      public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+    }
+
+    public static final class Targets {
+
+    }
   }
 
 }

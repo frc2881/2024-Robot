@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.lib.Utils;
 
-public class Gyro extends ADIS16470_IMU {
+public class GyroSensor extends ADIS16470_IMU {
 
-  public Gyro(
+  public GyroSensor(
     IMUAxis imuAxisYaw, 
     IMUAxis imuAxisPitch, 
     IMUAxis imuAxisRoll, 

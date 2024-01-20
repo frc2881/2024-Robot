@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoCommands;
-import frc.robot.lib.sensors.Gyro;
+import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -25,7 +25,7 @@ import frc.robot.subsystems.PoseSubsystem;
 
 public class RobotContainer {
   private final PowerDistribution m_powerDistribution;
-  private final Gyro m_gyro;
+  private final GyroSensor m_gyro;
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
   // private final ArmSubsystem m_armSubsystem;
@@ -41,7 +41,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
-    m_gyro = new Gyro(Constants.Gyro.kIMUAxisYaw, Constants.Gyro.kIMUAxisPitch, Constants.Gyro.kIMUAxisRoll, Constants.Gyro.kSPIPort, Constants.Gyro.kCalibrationTime);
+    m_gyro = new GyroSensor(Constants.Sensors.Gyro.kIMUAxisYaw, Constants.Sensors.Gyro.kIMUAxisPitch, Constants.Sensors.Gyro.kIMUAxisRoll, Constants.Sensors.Gyro.kSPIPort, Constants.Sensors.Gyro.kCalibrationTime);
     m_driveSubsystem = new DriveSubsystem(m_gyro);
     m_poseSubsystem = new PoseSubsystem(m_gyro::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
     // m_armSubsystem = new ArmSubsystem();

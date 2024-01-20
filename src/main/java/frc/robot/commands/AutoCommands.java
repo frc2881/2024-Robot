@@ -7,7 +7,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.lib.sensors.Gyro;
+import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
 
@@ -15,9 +15,9 @@ public class AutoCommands {
     
     private DriveSubsystem m_driveSubsystem;
     private PoseSubsystem m_poseSubsystem;
-    private Gyro m_gyro;
+    private GyroSensor m_gyro;
 
-    public AutoCommands(DriveSubsystem driveSubsystem, PoseSubsystem poseSubsystem, Gyro gyro) {
+    public AutoCommands(DriveSubsystem driveSubsystem, PoseSubsystem poseSubsystem, GyroSensor gyro) {
       m_driveSubsystem = driveSubsystem;
       m_poseSubsystem = poseSubsystem;
       m_gyro = gyro;
