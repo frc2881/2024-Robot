@@ -1,7 +1,8 @@
 package frc.robot;
 
-import java.util.Map;
 import static java.util.Map.entry;
+
+import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
@@ -10,7 +11,10 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,7 +25,6 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.CalibrationTime;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
-import frc.robot.lib.sensors.ObjectSensor;
 import edu.wpi.first.wpilibj.SPI;
 
 public final class Constants {
@@ -205,10 +208,34 @@ public final class Constants {
   public static final class Game {
     public static final class Field {
       public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+
+      public static final Pair<Pose2d, Pose2d> kBoundaries = Pair.of(
+        new Pose2d(0, 0, null), 
+        new Pose2d(kAprilTagFieldLayout.getFieldLength(), kAprilTagFieldLayout.getFieldWidth(), null)
+      );
+
+      public static final class LaunchZones {
+        public static final Pair<Pose2d, Pose2d> kSpeaker = Pair.of(
+          new Pose2d(0, 0, null), 
+          new Pose2d(0, 0, null)
+        );
+
+        public static final Pair<Pose2d, Pose2d> kAmp = Pair.of(
+          new Pose2d(0, 0, null), 
+          new Pose2d(0, 0, null)
+        );
+      }
     }
 
     public static final class Targets {
+      public static final Pose3d kBlueSpeaker = new Pose3d(0, 0, 0, null);
+      public static final Pose3d kRedSpeaker = new Pose3d(0, 0, 0, null);
 
+      public static final Pose3d kBlueAmp = new Pose3d(0, 0, 0, null);
+      public static final Pose3d kRedAmp = new Pose3d(0, 0, 0, null);
+
+      public static final Pose3d kBlueSource = new Pose3d(0, 0, 0, null);
+      public static final Pose3d kRedSource = new Pose3d(0, 0, 0, null);
     }
   }
 
