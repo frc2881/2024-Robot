@@ -4,18 +4,44 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class PickupSubsystem extends SubsystemBase {
-  // 2-3 motors, distance sensor
-  // commands/use depend on final design chosen
+  private final CANSparkMax m_beltMotor;
+  private final CANSparkMax m_rollerMotor;
+  // Distance sensor
 
-  public PickupSubsystem() {}
+  public PickupSubsystem() {
+    m_beltMotor = new CANSparkMax(Constants.Pickup.kBeltMotorID, MotorType.kBrushless);
+    m_rollerMotor = new CANSparkMax(Constants.Pickup.kRollerMotorID, MotorType.kBrushless);
+  }
 
   @Override
   public void periodic() {
     updateTelemetry();
+  }
+
+  public Command runRollers(Double speed) {
+    return Commands.run(
+      () -> {
+        m_rollerMotor.set(speed);
+      }, 
+      this);
+  }
+
+  public Command runBelts(Double speed) {
+    return Commands.run(
+      () -> {
+        m_beltMotor.set(speed);
+      }, 
+      this);
   }
 
   private void updateTelemetry() {

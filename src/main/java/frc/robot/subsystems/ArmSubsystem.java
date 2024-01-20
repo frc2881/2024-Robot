@@ -26,8 +26,6 @@ public class ArmSubsystem extends SubsystemBase {
 
   private double m_velocity = (33.0 / Constants.Arm.kRotationsToInches) * 60;
   private double m_acceleration = (100.0 / Constants.Arm.kVelocityConversion);
-
-  // 2-3 motors, 1 motor for lead screw, 1-2 motors for slam dunk mechanism
   
   public ArmSubsystem() {
     m_leadScrewMotor = new CANSparkMax(Constants.Arm.kLeadScrewMotorID, MotorType.kBrushless);
@@ -42,7 +40,7 @@ public class ArmSubsystem extends SubsystemBase {
     m_leadScrewMotor.setSmartCurrentLimit(60);
     m_leadScrewMotor.setSecondaryCurrentLimit(60, 0);
 
-    m_rollerMotor = new CANSparkMax(Constants.Arm.kRollerMotorID, MotorType.kBrushless);
+    m_rollerMotor = new CANSparkMax(Constants.Arm.kRollerMotorID, MotorType.kBrushed);
 
     m_leadScrewMotorEncoder = m_leadScrewMotor.getEncoder();
     m_leadScrewMotorEncoder.setPositionConversionFactor(Constants.Arm.kRotationsToInches);
@@ -113,11 +111,7 @@ public class ArmSubsystem extends SubsystemBase {
       }
     )
     .andThen(
-      Commands.run(
-        () -> {
-          runLeadScrewCommand(-0.15);
-        }
-      )
+          runLeadScrewCommand(-0.15)
     )
     .finallyDo(
       () -> {

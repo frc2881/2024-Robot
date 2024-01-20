@@ -92,7 +92,6 @@ public class PoseSubsystem extends SubsystemBase {
           ? OriginPosition.kRedAllianceWallRightSide
           : OriginPosition.kBlueAllianceWallRightSide
       );
-      // TODO: validate that cameras pickup origin position change automatically or need to be reset
     }
   }
 
@@ -131,6 +130,7 @@ public class PoseSubsystem extends SubsystemBase {
 
   private void updateTelemetry() {
     SmartDashboard.putString("Robot/Pose/CurrentPose", Utils.objectToJson(getPose()));
+    SmartDashboard.putString("Robot/Pose/TrackedObject", ""); // TODO: Add helepr function
     m_objectSensor.getTrackedObject().ifPresent(trackedObject -> {
       SmartDashboard.putString("Robot/Pose/TrackedObject", Utils.objectToJson(trackedObject));
     });

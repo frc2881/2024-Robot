@@ -139,7 +139,7 @@ public final class Constants {
       );
       public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
       public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
-      public static final Matrix<N3, N1> kSingleTagStandardDeviations = VecBuilder.fill(4, 4, 8);
+      public static final Matrix<N3, N1> kSingleTagStandardDeviations = VecBuilder.fill(2, 2, 4);
       public static final Matrix<N3, N1> kMultiTagStandardDeviations = VecBuilder.fill(0.5, 0.5, 1);
     }
 
@@ -173,12 +173,16 @@ public final class Constants {
 
     public static final double kLeadScrewMinOutput = -1.0;
     public static final double kLeadScrewMaxOutput = 1.0;
+
+    public static final double kLaunchUpdateSpeed = 0.5;
   }
 
   public static final class Intake {
     public static int kRollerMotorID = 14;
     public static int kIntakeMotorID = 15;
 
+    public static double kUpperLimit = 10; // TODO: update
+    public static double kBottomLimit = 0.5; // TODO: update
   }
   
   public static final class Arm {
@@ -202,7 +206,8 @@ public final class Constants {
   }
 
   public static final class Pickup {
-    
+    public static final int kBeltMotorID = 18;
+    public static final int kRollerMotorID = 19;
   }
 
   public static final class Game {

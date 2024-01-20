@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -27,6 +28,8 @@ public class LauncherSubsystem extends SubsystemBase {
 
   private double m_velocity = (33.0 / Constants.Launcher.kRotationsToInches) * 60;
   private double m_acceleration = (100.0 / Constants.Launcher.kVelocityConversion);
+
+  private boolean m_shootInSpeaker = true;
 
   // 3 motors, 2 for rollers, 1 for motor to run 2 lead screw
   // Don't need to switch direction on rollers, need position control for lead screw
@@ -122,6 +125,10 @@ public class LauncherSubsystem extends SubsystemBase {
     }
   }
 
+  public void toggleTarget() {
+    m_shootInSpeaker = !m_shootInSpeaker;
+  }
+
   public Command tiltLauncherOverrideCommand() {
     return Commands.runOnce(
       () -> {
@@ -129,11 +136,7 @@ public class LauncherSubsystem extends SubsystemBase {
       }
     )
     .andThen(
-      Commands.run(
-        () -> {
-          runLeadScrewCommand(-0.15);
-        }
-      )
+      runLeadScrewCommand(-0.15)
     )
     .finallyDo(
       () -> {
@@ -152,8 +155,38 @@ public class LauncherSubsystem extends SubsystemBase {
       }
     )
     .until(() -> (Math.abs(getEncoderPosition() - position) < 0.1))
-    .andThen(() -> runLeadScrewCommand(0.0))
+    .andThen(runLeadScrewCommand(0.0))
     .withName("tiltLauncherToHeight");
+  }
+
+  public Double findLaunchAngle(Pose2d pose){
+    if(m_shootInSpeaker){
+      Double height = Constants.Game.Targets.kBlueSpeaker.getZ();
+
+      // get dist diagonally from speaker
+      // use dist/height to get ang
+      // use ang + dist from pivot points to get height of lead screw
+
+      // add logic for launch zone
+      // figure out how to decide to shoot for speaker/amp
+      return 0.0;
+    } 
+
+    Double height = Constants.Game.Targets.kBlueAmp.getZ();
+
+    // get dist diagonally from speaker
+    // use dist/height to get ang
+    // use ang + dist from pivot points to get height of lead screw
+
+    // add logic for launch zone
+    // figure out how to decide to shoot for speaker/amp
+    return 0.0;
+    
+  }
+
+  public Command updateLaunchAngle(Pose2d pose){
+    // add logic for launch zone
+    return tiltLauncherToHeightCommand(Constants.Launcher.kLaunchUpdateSpeed, findLaunchAngle(pose));
   }
 
   private void updateTelemetry() {
