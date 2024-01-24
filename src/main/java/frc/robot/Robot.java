@@ -6,30 +6,29 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.lib.logging.Logger;
-import frc.robot.lib.telemetry.Telemetry;
+import frc.robot.lib.telemetry.RobotTelemetry;
 
 public class Robot extends TimedRobot {
 
-  public static enum Mode { DISABLED, AUTO, TELEOP, TEST; }
+  public static enum Mode { DISABLED, AUTO, TELEOP, TEST, SIM; }
   public static enum State { DISABLED, ENABLED, ESTOPPED; }
 
   private static Robot m_robotInstance;
   private RobotContainer m_robotContainer;
   private Command m_autoCommand;
-  private Alliance m_alliance;
 
   @Override
   public void robotInit() {
     m_robotInstance = this;
     Logger.start();
-    Telemetry.start(); 
+    RobotTelemetry.start(); 
     m_robotContainer = new RobotContainer();  
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    DriverStation.getAlliance().ifPresent(alliance -> m_alliance = alliance);
+    m_robotContainer.updateTelemetry();
   }
 
   @Override
@@ -85,7 +84,9 @@ public class Robot extends TimedRobot {
   public void testExit() {}
 
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+    Logger.log(Robot.Mode.SIM);
+  }
 
   @Override
   public void simulationPeriodic() {}
@@ -99,6 +100,6 @@ public class Robot extends TimedRobot {
   }
   
   public static Alliance getAlliance() {
-    return m_robotInstance.m_alliance;
+    return DriverStation.getAlliance().orElse(Alliance.Blue);
   }
 }

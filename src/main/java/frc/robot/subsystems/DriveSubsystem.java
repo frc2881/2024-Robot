@@ -214,7 +214,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private void updateTelemetry() {
-    m_gyro.updateTelemetry();
     SmartDashboard.putString("Robot/Drive/LockState", m_lockState.toString());
     SmartDashboard.putString("Robot/Drive/IdleMode", m_idleMode.toString().toUpperCase().substring(1));
   }

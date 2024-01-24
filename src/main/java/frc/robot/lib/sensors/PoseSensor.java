@@ -17,6 +17,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.lib.Utils;
 
 public class PoseSensor {
@@ -73,5 +74,9 @@ public class PoseSensor {
         : estimatedStandardDeviations.times(1 + (averageDistance * averageDistance / 30));
     }
     return estimatedStandardDeviations;
+  }
+
+  public void updateTelemetry() {
+    SmartDashboard.putBoolean("Robot/Sensor/Pose/" + m_photonCamera.getName() + "/HasTargets", m_photonCamera.getLatestResult().hasTargets());
   }
 }

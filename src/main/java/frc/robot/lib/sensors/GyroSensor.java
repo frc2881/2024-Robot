@@ -79,13 +79,13 @@ public class GyroSensor extends ADIS16470_IMU {
   }
 
   public void updateTelemetry() {
-    SmartDashboard.putNumber("Robot/Gyro/Roll", getRoll());
-    SmartDashboard.putNumber("Robot/Gyro/Pitch", getPitch());
-    SmartDashboard.putNumber("Robot/Gyro/Yaw", getYaw());
-    SmartDashboard.putNumber("Robot/Gyro/Heading", getHeading());
-    SmartDashboard.putNumber("Robot/Gyro/TurnRate", getTurnRate());
-    SmartDashboard.putString("Robot/Gyro/Rotation2d", Utils.objectToJson(getRotation2d()));
-    SmartDashboard.putString("Robot/Gyro/Rotation3d", Utils.objectToJson(getRotation3d()));
+    SmartDashboard.putNumber("Robot/Sensor/Gyro/Roll", getRoll());
+    SmartDashboard.putNumber("Robot/Sensor/Gyro/Pitch", getPitch());
+    SmartDashboard.putNumber("Robot/Sensor/Gyro/Yaw", getYaw());
+    SmartDashboard.putNumber("Robot/Sensor/Gyro/Heading", getHeading());
+    SmartDashboard.putNumber("Robot/Sensor/Gyro/TurnRate", getTurnRate());
+    SmartDashboard.putString("Robot/Sensor/Gyro/Rotation2d", Utils.objectToJson(getRotation2d()));
+    SmartDashboard.putString("Robot/Sensor/Gyro/Rotation3d", Utils.objectToJson(getRotation3d()));
   }
 
   @Override

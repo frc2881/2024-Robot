@@ -1,30 +1,20 @@
 package frc.robot.subsystems;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.lib.Utils;
-import frc.robot.lib.sensors.ObjectSensor;
 import frc.robot.lib.sensors.PoseSensor;
 
 public class PoseSubsystem extends SubsystemBase {
@@ -32,8 +22,6 @@ public class PoseSubsystem extends SubsystemBase {
   private final Supplier<Rotation2d> m_rotationSupplier;
   private final Supplier<SwerveModulePosition[]> m_swerveModulePositionSupplier;
   private final List<PoseSensor> m_poseSensors;
-  private final ObjectSensor m_objectSensor;
-  private Alliance m_alliance;
 
   public PoseSubsystem(
     Supplier<Rotation2d> rotationSupplier, 
@@ -59,40 +47,12 @@ public class PoseSubsystem extends SubsystemBase {
           Constants.Game.Field.kAprilTagFieldLayout)
         );
     });
-
-    m_objectSensor = new ObjectSensor(Constants.Sensors.Object.kCameraName);
-
-    getAprilTagFieldLayoutData();
   }
 
   @Override
   public void periodic() {
-    updateAlliance();
     updatePose();
     updateTelemetry();
-  }
-
-  private void getAprilTagFieldLayoutData() {
-    try {
-      Path filePath = Paths.get(Filesystem.getOperatingDirectory().getPath() + "/april-tag-field-layout.json");
-      Constants.Game.Field.kAprilTagFieldLayout.serialize(filePath);
-      SmartDashboard.putString("Robot/Pose/AprilTagFieldLayout", new String(Files.readAllBytes(filePath), StandardCharsets.UTF_8));
-      Files.delete(filePath);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  private void updateAlliance() {
-    Alliance alliance = Robot.getAlliance();
-    if (m_alliance != alliance) {
-      m_alliance = alliance;
-      Constants.Game.Field.kAprilTagFieldLayout.setOrigin(
-        m_alliance == Alliance.Red 
-          ? OriginPosition.kRedAllianceWallRightSide
-          : OriginPosition.kBlueAllianceWallRightSide
-      );
-    }
   }
 
   public Pose2d getPose() {
@@ -129,18 +89,14 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   private void updateTelemetry() {
-    SmartDashboard.putString("Robot/Pose/CurrentPose", Utils.objectToJson(getPose()));
-    SmartDashboard.putString("Robot/Pose/TrackedObject", ""); // TODO: Add helepr function
-    m_objectSensor.getTrackedObject().ifPresent(trackedObject -> {
-      SmartDashboard.putString("Robot/Pose/TrackedObject", Utils.objectToJson(trackedObject));
-    });
-    
+    SmartDashboard.putString("Robot/Pose", Utils.objectToJson(getPose()));
+    m_poseSensors.forEach(poseSensor -> poseSensor.updateTelemetry());    
   }
 
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
-    builder.addStringProperty("CurrentPose", () -> Utils.objectToJson(getPose()), null);
+    builder.addStringProperty("Pose", () -> Utils.objectToJson(getPose()), null);
     // TODO: determine how pose needs to be sent to log for match replay
   }
 }

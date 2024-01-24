@@ -131,11 +131,11 @@ public class SwerveModule implements Sendable {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    String key = m_location.toString() + "/";
-    builder.addDoubleProperty(key + "Turning/Position", () -> m_turningEncoder.getPosition(), null);
-    builder.addDoubleProperty(key + "Driving/Position", () -> m_drivingEncoder.getPosition(), null);
-    builder.addDoubleProperty(key + "Driving/Velocity", () -> m_drivingEncoder.getVelocity(), null);
-    builder.addDoubleProperty(key + "Driving/AppliedOutput", m_drivingSparkFlex::getAppliedOutput, null);
-    builder.addDoubleProperty(key + "Driving/SetSpeed", () -> m_setSpeed, null);
+    String location = m_location.toString() + "/";
+    builder.addDoubleProperty(location + "Turning/Position", () -> m_turningEncoder.getPosition(), null);
+    builder.addDoubleProperty(location + "Driving/Position", () -> m_drivingEncoder.getPosition(), null);
+    builder.addDoubleProperty(location + "Driving/Velocity", () -> m_drivingEncoder.getVelocity(), null);
+    builder.addDoubleProperty(location + "Driving/AppliedOutput", m_drivingSparkFlex::getAppliedOutput, null);
+    builder.addDoubleProperty(location + "Driving/SetSpeed", () -> m_setSpeed, null);
   }
 }

@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoCommands;
 import frc.robot.lib.sensors.GyroSensor;
+import frc.robot.lib.sensors.ObjectSensor;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -25,7 +26,8 @@ import frc.robot.subsystems.PoseSubsystem;
 
 public class RobotContainer {
   private final PowerDistribution m_powerDistribution;
-  private final GyroSensor m_gyro;
+  private final GyroSensor m_gyroSensor;
+  private final ObjectSensor m_objectSensor;
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
   // private final ArmSubsystem m_armSubsystem;
@@ -41,9 +43,12 @@ public class RobotContainer {
 
   public RobotContainer() {
     m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
-    m_gyro = new GyroSensor(Constants.Sensors.Gyro.kIMUAxisYaw, Constants.Sensors.Gyro.kIMUAxisPitch, Constants.Sensors.Gyro.kIMUAxisRoll, Constants.Sensors.Gyro.kSPIPort, Constants.Sensors.Gyro.kCalibrationTime);
-    m_driveSubsystem = new DriveSubsystem(m_gyro);
-    m_poseSubsystem = new PoseSubsystem(m_gyro::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
+
+    m_gyroSensor = new GyroSensor(Constants.Sensors.Gyro.kIMUAxisYaw, Constants.Sensors.Gyro.kIMUAxisPitch, Constants.Sensors.Gyro.kIMUAxisRoll, Constants.Sensors.Gyro.kSPIPort, Constants.Sensors.Gyro.kCalibrationTime);
+    m_objectSensor = new ObjectSensor(Constants.Sensors.Object.kCameraName);
+    
+    m_driveSubsystem = new DriveSubsystem(m_gyroSensor);
+    m_poseSubsystem = new PoseSubsystem(m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
     // m_armSubsystem = new ArmSubsystem();
     // m_intakeSubsystem = new IntakeSubsystem();
     // m_launcherSubsystem = new LauncherSubsystem();
@@ -68,7 +73,7 @@ public class RobotContainer {
       () -> Robot.getAlliance() == Alliance.Red,
       m_driveSubsystem
     );
-    m_autoCommands = new AutoCommands(m_driveSubsystem, m_poseSubsystem, m_gyro);
+    m_autoCommands = new AutoCommands(m_driveSubsystem, m_poseSubsystem, m_gyroSensor);
     m_autoChooser = new SendableChooser<Command>();
     setupAutos();
   }
@@ -84,7 +89,7 @@ public class RobotContainer {
       .onTrue(m_driveSubsystem.toggleLockStateCommand());
 
     new Trigger(m_driverController::getRightStickButton)
-      .onFalse(m_gyro.resetCommand());
+      .onFalse(m_gyroSensor.resetCommand());
 
     // OPERATOR =========================
 
@@ -126,5 +131,10 @@ public class RobotContainer {
 
   public Command getSelectedAutoCommand() {
     return m_autoChooser.getSelected();
+  }
+
+  public void updateTelemetry() {
+    m_gyroSensor.updateTelemetry();
+    m_objectSensor.updateTelemetry();
   }
 }

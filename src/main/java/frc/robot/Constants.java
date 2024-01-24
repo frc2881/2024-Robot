@@ -145,13 +145,10 @@ public final class Constants {
 
     public static final class Object {
       public static final String kCameraName = "OBJECT";
-
       public static final Double kObjectRangeYaw = 10.0;
     }
 
-    public static final class Distance {
-      
-    }
+    public static final class Distance {}
   }
 
   public static final class Launcher {
@@ -224,7 +221,6 @@ public final class Constants {
           new Pose2d(0, 0, null), 
           new Pose2d(0, 0, null)
         );
-
         public static final Pair<Pose2d, Pose2d> kAmp = Pair.of(
           new Pose2d(0, 0, null), 
           new Pose2d(0, 0, null)
