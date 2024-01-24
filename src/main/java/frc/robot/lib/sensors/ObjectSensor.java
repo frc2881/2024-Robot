@@ -24,7 +24,7 @@ public class ObjectSensor {
 
   public double getTargetYaw() {
     PhotonPipelineResult result = getLatestResult();
-    return result.hasTargets() ? result.getBestTarget().getYaw() : Double.NaN;
+    return result.hasTargets() ? result.getBestTarget().getYaw() : 0.0;
   }
 
   public void updateTelemetry() {
