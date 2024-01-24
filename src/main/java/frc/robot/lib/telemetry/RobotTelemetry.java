@@ -27,8 +27,8 @@ public final class RobotTelemetry {
   }
 
   private static void updateTimingInfo() {
-    SmartDashboard.putNumber("Robot/Timing/FPGATimestamp", Timer.getFPGATimestamp());
-    SmartDashboard.putNumber("Robot/Timing/MatchTime", Math.floor(DriverStation.getMatchTime()));
+    SmartDashboard.putNumber("Robot/FPGATimestamp", Timer.getFPGATimestamp());
+    SmartDashboard.putNumber("Robot/Game/MatchTime", Math.floor(DriverStation.getMatchTime()));
   }
 
   private static void updateRobotInfo() {
@@ -43,9 +43,10 @@ public final class RobotTelemetry {
     if (RobotState.isEStopped()) { state = Robot.State.ESTOPPED; }
     SmartDashboard.putString("Robot/State", state.toString());
 
-    SmartDashboard.putNumber("Robot/Battery/Voltage", RobotController.getBatteryVoltage());
+    SmartDashboard.putNumber("Robot/Power/Battery/Voltage", RobotController.getBatteryVoltage());
 
-    SmartDashboard.putString("Robot/Alliance", Robot.getAlliance().toString());
+    SmartDashboard.putString("Robot/Game/Alliance", Robot.getAlliance().toString().toUpperCase());
+    SmartDashboard.putNumber("Robot/Game/StationNumber", DriverStation.getLocation().orElse(0));
   }
 
   private static void updateTelemetrySetting() {
