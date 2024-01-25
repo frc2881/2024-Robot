@@ -48,7 +48,7 @@ public class RobotContainer {
     m_objectSensor = new ObjectSensor(Constants.Sensors.Object.kCameraName);
     
     m_driveSubsystem = new DriveSubsystem(m_gyroSensor);
-    m_poseSubsystem = new PoseSubsystem(m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
+    m_poseSubsystem = new PoseSubsystem(m_gyroSensor, m_driveSubsystem::getSwerveModulePositions);
     // m_armSubsystem = new ArmSubsystem();
     // m_intakeSubsystem = new IntakeSubsystem();
     // m_launcherSubsystem = new LauncherSubsystem();

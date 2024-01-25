@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -15,24 +16,25 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.Utils;
+import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.lib.sensors.PoseSensor;
 
 public class PoseSubsystem extends SubsystemBase {
   private final SwerveDrivePoseEstimator m_poseEstimator;
-  private final Supplier<Rotation2d> m_rotationSupplier;
+  private final GyroSensor m_gyroSensor;
   private final Supplier<SwerveModulePosition[]> m_swerveModulePositionSupplier;
   private final List<PoseSensor> m_poseSensors;
 
   public PoseSubsystem(
-    Supplier<Rotation2d> rotationSupplier, 
+    GyroSensor gyroSensor, 
     Supplier<SwerveModulePosition[]> swerveModulePositionSupplier
   ) {
-    m_rotationSupplier = rotationSupplier;
+    m_gyroSensor = gyroSensor;
     m_swerveModulePositionSupplier = swerveModulePositionSupplier;
 
     m_poseEstimator = new SwerveDrivePoseEstimator(
       Constants.Drive.kSwerveDriveKinematics, 
-      m_rotationSupplier.get(), 
+      m_gyroSensor.getRotation2d(), 
       m_swerveModulePositionSupplier.get(), 
       new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
 
@@ -60,7 +62,7 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public void updatePose() {
-    m_poseEstimator.update(m_rotationSupplier.get(), m_swerveModulePositionSupplier.get());
+    m_poseEstimator.update(m_gyroSensor.getRotation2d(), m_swerveModulePositionSupplier.get());
     m_poseSensors.forEach(poseSensor -> {
       poseSensor.getEstimatedGlobalPose().ifPresent(globalPose -> {
         Pose2d pose = globalPose.estimatedPose.toPose2d();
@@ -85,11 +87,11 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    m_poseEstimator.resetPosition(m_rotationSupplier.get(), m_swerveModulePositionSupplier.get(), pose);
+    m_poseEstimator.resetPosition(m_gyroSensor.getRotation2d(), m_swerveModulePositionSupplier.get(), pose);
   }
 
   private void updateTelemetry() {
-    SmartDashboard.putString("Robot/Pose", Utils.objectToJson(getPose()));
+    SmartDashboard.putString("Robot/Pose", Utils.objectToJson(new Pose3d(getPose()).rotateBy(m_gyroSensor.getRotation3d())));
     m_poseSensors.forEach(poseSensor -> poseSensor.updateTelemetry());    
   }
 
