@@ -102,20 +102,20 @@ public class RobotContainer {
     // DASHBOARD =========================
 
     SendableChooser<DriveSubsystem.SpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSubsystem.SpeedMode>();
-    driveSpeedModeChooser.setDefaultOption(DriveSubsystem.SpeedMode.COMPETITION.toString(), DriveSubsystem.SpeedMode.COMPETITION);
-    driveSpeedModeChooser.addOption(DriveSubsystem.SpeedMode.TRAINING.toString(), DriveSubsystem.SpeedMode.TRAINING);
+    driveSpeedModeChooser.setDefaultOption(DriveSubsystem.SpeedMode.Competition.toString(), DriveSubsystem.SpeedMode.Competition);
+    driveSpeedModeChooser.addOption(DriveSubsystem.SpeedMode.Training.toString(), DriveSubsystem.SpeedMode.Training);
     driveSpeedModeChooser.onChange(speedMode -> m_driveSubsystem.setSpeedMode(speedMode));
     SmartDashboard.putData("Robot/Drive/SpeedMode", driveSpeedModeChooser);
 
     SendableChooser<DriveSubsystem.Orientation> driveOrientationChooser = new SendableChooser<DriveSubsystem.Orientation>();
-    driveOrientationChooser.setDefaultOption(DriveSubsystem.Orientation.FIELD.toString(), DriveSubsystem.Orientation.FIELD);
-    driveOrientationChooser.addOption(DriveSubsystem.Orientation.ROBOT.toString(), DriveSubsystem.Orientation.ROBOT);
+    driveOrientationChooser.setDefaultOption(DriveSubsystem.Orientation.Field.toString(), DriveSubsystem.Orientation.Field);
+    driveOrientationChooser.addOption(DriveSubsystem.Orientation.Robot.toString(), DriveSubsystem.Orientation.Robot);
     driveOrientationChooser.onChange(orientation -> m_driveSubsystem.setOrientation(orientation));
     SmartDashboard.putData("Robot/Drive/Orientation", driveOrientationChooser);
 
     SendableChooser<DriveSubsystem.DriftCorrection> driveDriftCorrectionChooser = new SendableChooser<DriveSubsystem.DriftCorrection>();
-    driveDriftCorrectionChooser.setDefaultOption(DriveSubsystem.DriftCorrection.ENABLED.toString(), DriveSubsystem.DriftCorrection.ENABLED);
-    driveDriftCorrectionChooser.addOption(DriveSubsystem.DriftCorrection.DISABLED.toString(), DriveSubsystem.DriftCorrection.DISABLED);
+    driveDriftCorrectionChooser.setDefaultOption(DriveSubsystem.DriftCorrection.Enabled.toString(), DriveSubsystem.DriftCorrection.Enabled);
+    driveDriftCorrectionChooser.addOption(DriveSubsystem.DriftCorrection.Disabled.toString(), DriveSubsystem.DriftCorrection.Disabled);
     driveDriftCorrectionChooser.onChange(driftCorrection -> m_driveSubsystem.setDriftCorrection(driftCorrection));
     SmartDashboard.putData("Robot/Drive/DriftCorrection", driveDriftCorrectionChooser);
   }

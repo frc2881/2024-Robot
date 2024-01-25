@@ -10,8 +10,8 @@ import frc.robot.lib.telemetry.RobotTelemetry;
 
 public class Robot extends TimedRobot {
 
-  public static enum Mode { DISABLED, AUTO, TELEOP, TEST, SIM; }
-  public static enum State { DISABLED, ENABLED, ESTOPPED; }
+  public static enum Mode { Disabled, Auto, Teleop, Test, Sim; }
+  public static enum State { Disabled, Enabled, EStopped; }
 
   private static Robot m_robotInstance;
   private RobotContainer m_robotContainer;
@@ -33,7 +33,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    Logger.log(Robot.Mode.DISABLED);
+    Logger.log(Robot.Mode.Disabled);
   }
 
   @Override
@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    Logger.log(Robot.Mode.AUTO);
+    Logger.log(Robot.Mode.Auto);
     m_autoCommand = m_robotContainer.getSelectedAutoCommand();
     if (m_autoCommand != null) {
       m_autoCommand.schedule();
@@ -59,7 +59,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    Logger.log(Robot.Mode.TELEOP);
+    Logger.log(Robot.Mode.Teleop);
     if (m_autoCommand != null) {
       m_autoCommand.cancel();
     }
@@ -73,7 +73,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    Logger.log(Robot.Mode.TEST);
+    Logger.log(Robot.Mode.Test);
     CommandScheduler.getInstance().cancelAll();
   }
 
@@ -85,7 +85,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationInit() {
-    Logger.log(Robot.Mode.SIM);
+    Logger.log(Robot.Mode.Sim);
   }
 
   @Override

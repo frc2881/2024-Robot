@@ -21,10 +21,10 @@ import frc.robot.lib.drive.SwerveModule;
 import frc.robot.lib.sensors.GyroSensor;
 
 public class DriveSubsystem extends SubsystemBase {
-  public static enum Orientation { FIELD, ROBOT; }
-  public static enum SpeedMode { COMPETITION, TRAINING; }
-  public static enum LockState { UNLOCKED, LOCKED; }
-  public static enum DriftCorrection { ENABLED, DISABLED; }
+  public static enum Orientation { Field, Robot; }
+  public static enum SpeedMode { Competition, Training; }
+  public static enum LockState { Unlocked, Locked; }
+  public static enum DriftCorrection { Enabled, Disabled; }
 
   private final GyroSensor m_gyro;
   private final SwerveModule[] m_swerveModules;
@@ -33,11 +33,11 @@ public class DriveSubsystem extends SubsystemBase {
   private final SlewRateLimiter m_driveInputYFilter;
   private final SlewRateLimiter m_driveInputRotFilter;
 
-  private Orientation m_orientation = Orientation.FIELD;
-  private SpeedMode m_speedMode = SpeedMode.COMPETITION;
-  private LockState m_lockState = LockState.UNLOCKED;
+  private Orientation m_orientation = Orientation.Field;
+  private SpeedMode m_speedMode = SpeedMode.Competition;
+  private LockState m_lockState = LockState.Unlocked;
   private IdleMode m_idleMode = IdleMode.kBrake;
-  private DriftCorrection m_driftCorrection = DriftCorrection.ENABLED;
+  private DriftCorrection m_driftCorrection = DriftCorrection.Enabled;
   private boolean m_isRotationLocked = false;
 
   public DriveSubsystem(GyroSensor gyro) {
@@ -96,19 +96,19 @@ public class DriveSubsystem extends SubsystemBase {
   public Command driveWithControllerCommand(XboxController controller) {
     return Commands.run(
       () -> {
-        if (m_lockState == LockState.LOCKED) { return; }
+        if (m_lockState == LockState.Locked) { return; }
 
         double speedX = Utils.squareInput(-controller.getLeftY(), Constants.Controllers.kDriveInputDeadband);
         double speedY = Utils.squareInput(-controller.getLeftX(), Constants.Controllers.kDriveInputDeadband);
         double rotation = Utils.squareInput(-controller.getRightX(), Constants.Controllers.kDriveInputDeadband);
         
-        if (m_speedMode == SpeedMode.TRAINING) {
+        if (m_speedMode == SpeedMode.Training) {
           speedX = m_driveInputXFilter.calculate(speedX * Constants.Controllers.kDriveInputLimiter);
           speedY = m_driveInputYFilter.calculate(speedY * Constants.Controllers.kDriveInputLimiter);
           rotation = m_driveInputRotFilter.calculate(rotation * Constants.Controllers.kDriveInputLimiter);
         }
 
-        if (m_driftCorrection == DriftCorrection.ENABLED) {
+        if (m_driftCorrection == DriftCorrection.Enabled) {
           boolean isRotating = (rotation != 0.0);
           boolean isTranslating = ((speedX != 0.0) || (speedY != 0.0));
           if (!m_isRotationLocked && !isRotating && isTranslating) {
@@ -136,7 +136,7 @@ public class DriveSubsystem extends SubsystemBase {
     speedX *= Constants.Drive.kMaxSpeedMetersPerSecond;
     speedY *= Constants.Drive.kMaxSpeedMetersPerSecond;
     rotation *= Constants.Drive.kMaxAngularSpeed;
-    drive((m_orientation == Orientation.FIELD)
+    drive((m_orientation == Orientation.Field)
       ? ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, rotation, Rotation2d.fromDegrees(m_gyro.getYaw()))
       : new ChassisSpeeds(speedX, speedY, rotation)
     );
@@ -186,14 +186,14 @@ public class DriveSubsystem extends SubsystemBase {
   public Command toggleLockStateCommand() {
     return Commands.runOnce(
       () -> {
-        setLockState((m_lockState == LockState.UNLOCKED) ? LockState.LOCKED : LockState.UNLOCKED);
+        setLockState((m_lockState == LockState.Unlocked) ? LockState.Locked : LockState.Unlocked);
       })
       .withName("ToggleDriveLockState");
   }
 
   public void setLockState(LockState lockState) {
     m_lockState = lockState;
-    if (m_lockState == LockState.LOCKED) {
+    if (m_lockState == LockState.Locked) {
       setSwerveModuleStatesToLocked();
     }
   }

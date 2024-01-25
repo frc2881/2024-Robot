@@ -32,15 +32,26 @@ public final class RobotTelemetry {
   }
 
   private static void updateRobotInfo() {
-    Robot.Mode mode = Robot.Mode.DISABLED;
-    if (RobotState.isAutonomous()) { mode = Robot.Mode.AUTO; }
-    if (RobotState.isTeleop()) { mode = Robot.Mode.TELEOP; }
-    if (RobotState.isTest()) { mode = Robot.Mode.TEST; }
+    Robot.Mode mode;
+    if (RobotState.isTeleop()) {
+      mode = Robot.Mode.Teleop;
+    } else if (RobotState.isAutonomous()) {
+      mode = Robot.Mode.Auto;
+    } else if (RobotState.isTest()) {
+      mode = Robot.Mode.Test;
+    } else {
+      mode = Robot.Mode.Disabled;
+    }
     SmartDashboard.putString("Robot/Mode", mode.toString());
 
-    Robot.State state = Robot.State.DISABLED;
-    if (RobotState.isEnabled()) { state = Robot.State.ENABLED; }
-    if (RobotState.isEStopped()) { state = Robot.State.ESTOPPED; }
+    Robot.State state;
+    if (RobotState.isEnabled()) { 
+      state = Robot.State.Enabled; 
+    } else if (RobotState.isEStopped()) { 
+      state = Robot.State.EStopped; 
+    } else {
+      state = Robot.State.Disabled;
+    }
     SmartDashboard.putString("Robot/State", state.toString());
 
     SmartDashboard.putNumber("Robot/Power/Battery/Voltage", RobotController.getBatteryVoltage());

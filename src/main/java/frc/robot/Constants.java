@@ -125,13 +125,13 @@ public final class Constants {
     public static final class Pose {
       public static final Map<String, Transform3d> kPoseSensors = Map.ofEntries(
         entry(
-          "POSE-01",
+          "Rear",
           new Transform3d(
           new Translation3d(Units.inchesToMeters(9.75), 0.00000, Units.inchesToMeters(18.5)),
           new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180)))
         )
         // entry(
-        //   "POSE-02",
+        //   "Side",
         //   new Transform3d(
         //     new Translation3d(-0.18290, 0.18298, 1.19055),
         //     new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180)))
@@ -144,7 +144,7 @@ public final class Constants {
     }
 
     public static final class Object {
-      public static final String kCameraName = "OBJECT";
+      public static final String kCameraName = "Front";
       public static final Double kObjectRangeYaw = 10.0;
     }
 
