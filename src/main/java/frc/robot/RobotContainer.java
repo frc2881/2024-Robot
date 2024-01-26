@@ -21,9 +21,9 @@ import frc.robot.lib.logging.Logger;
 import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
-import frc.robot.subsystems.PickupSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
 
 public class RobotContainer {
