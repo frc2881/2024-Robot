@@ -148,7 +148,9 @@ public final class Constants {
       public static final Double kObjectRangeYaw = 10.0;
     }
 
-    public static final class Distance {}
+    public static final class Distance {
+      public static final String kIntakeSensorName = "Intake";
+    }
   }
 
   public static final class Launcher {
