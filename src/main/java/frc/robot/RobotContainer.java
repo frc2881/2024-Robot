@@ -127,8 +127,8 @@ public class RobotContainer {
   private void setupAutos() {
     m_autoChooser.setDefaultOption("None", Commands.none());
 
-    m_autoChooser.addOption("Test- Path", m_autoCommands.testPath());
-    m_autoChooser.addOption("Test- Auto", m_autoCommands.testAuto());
+    m_autoChooser.addOption("Test- 3 Note Auto", m_autoCommands.test3NoteAuto());
+    m_autoChooser.addOption("Test- Path", m_autoCommands.testPath2());
     
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }
