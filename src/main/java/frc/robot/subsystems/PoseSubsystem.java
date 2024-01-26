@@ -75,19 +75,14 @@ public class PoseSubsystem extends SubsystemBase {
     });
   }
 
-  public Command resetPoseCommand() {
-    return Commands.runOnce(
-      () -> resetPose())
-      .ignoringDisable(true)
-      .withName("ResetPose");
-  }
-
-  public void resetPose() {
-    resetPose(new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
-  }
-
   public void resetPose(Pose2d pose) {
     m_poseEstimator.resetPosition(m_gyroSensor.getRotation2d(), m_swerveModulePositionSupplier.get(), pose);
+  }
+
+  public Command resetGyroCommand() {
+    return Commands.runOnce(
+      () -> m_gyroSensor.reset(getPose().getRotation().getDegrees())
+    );
   }
 
   private void updateTelemetry() {
