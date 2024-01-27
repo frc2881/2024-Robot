@@ -31,6 +31,7 @@ public class RobotContainer {
   private final GyroSensor m_gyroSensor;
   private final ObjectSensor m_objectSensor;
   private final DistanceSensor m_intakeDistanceSensor;
+  private final DistanceSensor m_launcherDistanceSensor;
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
   // private final ArmSubsystem m_armSubsystem;
@@ -50,6 +51,7 @@ public class RobotContainer {
     m_gyroSensor = new GyroSensor(Constants.Sensors.Gyro.kIMUAxisYaw, Constants.Sensors.Gyro.kIMUAxisPitch, Constants.Sensors.Gyro.kIMUAxisRoll, Constants.Sensors.Gyro.kSPIPort, Constants.Sensors.Gyro.kCalibrationTime);
     m_objectSensor = new ObjectSensor(Constants.Sensors.Object.kCameraName);
     m_intakeDistanceSensor = new DistanceSensor(Constants.Sensors.Distance.kIntakeSensorName);
+    m_launcherDistanceSensor = new DistanceSensor(Constants.Sensors.Distance.kLauncherSensorName);
     
     m_driveSubsystem = new DriveSubsystem(m_gyroSensor);
     m_poseSubsystem = new PoseSubsystem(m_gyroSensor, m_driveSubsystem::getSwerveModulePositions);

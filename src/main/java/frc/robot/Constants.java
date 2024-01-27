@@ -150,6 +150,7 @@ public final class Constants {
 
     public static final class Distance {
       public static final String kIntakeSensorName = "Intake";
+      public static final String kLauncherSensorName = "Launcher";
     }
   }
 
