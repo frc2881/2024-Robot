@@ -87,7 +87,7 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   private void updateTelemetry() {
-    SmartDashboard.putString("Robot/Pose", Utils.objectToJson(new Pose3d(getPose())));
+    SmartDashboard.putString("Robot/Pose", Utils.objectToJson(getPose()));
     m_poseSensors.forEach(poseSensor -> poseSensor.updateTelemetry());    
   }
 
