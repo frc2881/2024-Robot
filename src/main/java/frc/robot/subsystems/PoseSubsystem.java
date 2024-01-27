@@ -8,6 +8,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -86,7 +87,7 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   private void updateTelemetry() {
-    SmartDashboard.putString("Robot/Pose", Utils.objectToJson(new Pose3d(getPose()).rotateBy(m_gyroSensor.getRotation3d())));
+    SmartDashboard.putString("Robot/Pose", Utils.objectToJson(new Pose3d(getPose())));
     m_poseSensors.forEach(poseSensor -> poseSensor.updateTelemetry());    
   }
 
