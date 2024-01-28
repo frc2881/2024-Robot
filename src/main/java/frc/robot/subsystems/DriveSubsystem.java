@@ -1,10 +1,14 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -39,6 +43,7 @@ public class DriveSubsystem extends SubsystemBase {
   private IdleMode m_idleMode = IdleMode.kBrake;
   private DriftCorrection m_driftCorrection = DriftCorrection.Enabled;
   private boolean m_isRotationLocked = false;
+  private boolean m_isAutoAlignCompleted = false;
 
   public DriveSubsystem(GyroSensor gyro) {
     m_gyro = gyro;
@@ -130,6 +135,56 @@ public class DriveSubsystem extends SubsystemBase {
       }, 
       this)
       .withName("DriveWithController");
+  }
+
+  public Command alignToTargetPose(Pose2d targetPose, Supplier<Pose2d> currentPoseSupplier) {
+    return Commands.run(
+      () -> {
+        Pose2d currentPose = currentPoseSupplier.get();
+        Rotation2d currentRotation = currentPose.getRotation();
+
+        Transform2d delta = targetPose.minus(currentPose);
+        Double targetAngle = Rotation2d.fromRadians(Math.atan(delta.getY()/delta.getX())).getDegrees();
+        
+        m_thetaController.setSetpoint(targetAngle);
+        
+        double rotationVel = m_thetaController.calculate(currentRotation.getDegrees());
+        rotationVel += Math.copySign(0.15, rotationVel); 
+
+        //double pidMaxSpeed = 1.0;
+
+        // double yVel = MathUtil.clamp(
+        //       m_yController.calculate((delta.getY() * 10)), 
+        //       -pidMaxSpeed, 
+        //       pidMaxSpeed);
+
+        // double xVel = MathUtil.clamp(
+        //       m_xController.calculate((delta.getX() * 10)), 
+        //       -pidMaxSpeed, 
+        //       pidMaxSpeed);
+      
+        if (m_thetaController.atSetpoint()) {
+          rotationVel = 0.0;
+        }
+
+        // if (m_yController.atSetpoint()){
+        //   yVel = 0.0;
+        // }
+
+        // if (m_xController.atSetpoint()){
+        //   xVel = 0.0;
+        // }
+
+        setSwerveModuleStates(convertToSwerveModuleStates(
+            0.0,//-xVel,
+            0.0,//-yVel, 
+            rotationVel));
+
+        m_isAutoAlignCompleted = rotationVel <= 0.1; //&& xVel <= 0.1 && yVel <= 0.1
+      }, 
+        this)
+        .until(() -> m_isAutoAlignCompleted)
+        .withName("RunAlignToTarget");
   }
 
   public void drive(double speedX, double speedY, double rotation) {
