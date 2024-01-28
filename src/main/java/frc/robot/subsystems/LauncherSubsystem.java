@@ -161,7 +161,7 @@ public class LauncherSubsystem extends SubsystemBase {
 
   public Double findLaunchAngle(Pose2d pose){
     if(m_shootInSpeaker){
-      Double height = Constants.Game.Targets.kBlueSpeaker.getZ();
+      Double height = Constants.Game.Field.Targets.kBlueSpeaker.getZ();
 
       // get dist diagonally from speaker
       // use dist/height to get ang
@@ -172,7 +172,7 @@ public class LauncherSubsystem extends SubsystemBase {
       return 0.0;
     } 
 
-    Double height = Constants.Game.Targets.kBlueAmp.getZ();
+    Double height = Constants.Game.Field.Targets.kBlueAmp.getZ();
 
     // get dist diagonally from speaker
     // use dist/height to get ang

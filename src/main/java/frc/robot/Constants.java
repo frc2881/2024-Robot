@@ -229,18 +229,24 @@ public final class Constants {
           new Pose2d(0, 0, null)
         );
       }
-    }
 
-    public static final class Targets {
-      public static final Pose3d kBlueSpeaker = new Pose3d(0, 0, 0, null);
-      public static final Pose3d kRedSpeaker = new Pose3d(0, 0, 0, null);
+      public static final class Targets {
+        public static final double kSpeakerHeightDelta = 0.616675;
+        public static final double kAmpHeightDelta = -0.4572;
+        public static final double kSourceHeight = 0.93;
 
-      public static final Pose3d kBlueAmp = new Pose3d(0, 0, 0, null);
-      public static final Pose3d kRedAmp = new Pose3d(0, 0, 0, null);
+        public static final Pose3d kAprilTag7 = kAprilTagFieldLayout.getTagPose(7).orElse(new Pose3d());
+        public static final Pose3d kBlueSpeaker = new Pose3d(kAprilTag7.getX(), kAprilTag7.getY(), kAprilTag7.getZ() + kSpeakerHeightDelta, new Rotation3d());
 
-      public static final Pose3d kBlueSource = new Pose3d(0, 0, 0, null);
-      public static final Pose3d kRedSource = new Pose3d(0, 0, 0, null);
+        public static final Pose3d kAprilTag4 = kAprilTagFieldLayout.getTagPose(4).orElse(new Pose3d());
+        public static final Pose3d kRedSpeaker = new Pose3d(kAprilTag4.getX(), kAprilTag4.getY(), kAprilTag4.getZ() + kSpeakerHeightDelta, new Rotation3d());
+
+        public static final Pose3d kAprilTag5 = kAprilTagFieldLayout.getTagPose(5).orElse(new Pose3d());
+        public static final Pose3d kBlueAmp = new Pose3d(kAprilTag5.getX(), kAprilTag5.getY(), kAprilTag5.getZ() + kAmpHeightDelta, new Rotation3d());
+
+        public static final Pose3d kAprilTag6 = kAprilTagFieldLayout.getTagPose(6).orElse(new Pose3d());
+        public static final Pose3d kRedAmp = new Pose3d(kAprilTag6.getX(), kAprilTag6.getY(), kAprilTag6.getZ() + kAmpHeightDelta, new Rotation3d());
+      }
     }
   }
-
 }
