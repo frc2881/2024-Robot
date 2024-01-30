@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.lib.Utils;
 
 public final class RobotTelemetry {
   private static boolean m_isAllTelemetryEnabled = false;

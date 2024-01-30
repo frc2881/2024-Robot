@@ -1,15 +1,12 @@
 package frc.robot.lib.sensors;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.lib.Utils;
 
 public class GyroSensor extends ADIS16470_IMU {
 
@@ -36,14 +33,14 @@ public class GyroSensor extends ADIS16470_IMU {
     return Commands.runOnce(
       () -> reset(0))
       .ignoringDisable(true)
-      .withName("ResetGyro");
+      .withName("ResetGyroToZero");
   }
 
   public Command resetCommand(double value) {
     return Commands.runOnce(
       () -> reset(value))
       .ignoringDisable(true)
-      .withName("ResetGyro");
+      .withName("ResetGyroToAngle");
   }
 
   public double getRoll() {
@@ -62,14 +59,6 @@ public class GyroSensor extends ADIS16470_IMU {
     return Rotation2d.fromDegrees(getYaw());
   }
 
-  public Rotation3d getRotation3d() {
-    return new Rotation3d(
-      Units.degreesToRadians(getRoll()), 
-      Units.degreesToRadians(getPitch()),
-      Units.degreesToRadians(getYaw())
-    );
-  }
-
   public double getHeading() {
     return getRotation2d().getDegrees();
   }
@@ -84,8 +73,6 @@ public class GyroSensor extends ADIS16470_IMU {
     SmartDashboard.putNumber("Robot/Sensor/Gyro/Yaw", getYaw());
     SmartDashboard.putNumber("Robot/Sensor/Gyro/Heading", getHeading());
     SmartDashboard.putNumber("Robot/Sensor/Gyro/TurnRate", getTurnRate());
-    SmartDashboard.putString("Robot/Sensor/Gyro/Rotation2d", Utils.objectToJson(getRotation2d()));
-    SmartDashboard.putString("Robot/Sensor/Gyro/Rotation3d", Utils.objectToJson(getRotation3d()));
   }
 
   @Override

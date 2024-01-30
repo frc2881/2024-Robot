@@ -13,15 +13,20 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
 
 public class AutoCommands {
-    
+    private GyroSensor m_gyroSensor;    
     private DriveSubsystem m_driveSubsystem;
     private PoseSubsystem m_poseSubsystem;
-    private GyroSensor m_gyro;
 
-    public AutoCommands(DriveSubsystem driveSubsystem, PoseSubsystem poseSubsystem, GyroSensor gyro) {
+    public AutoCommands(GyroSensor gyroSensor, DriveSubsystem driveSubsystem, PoseSubsystem poseSubsystem) {
+      m_gyroSensor = gyroSensor;
       m_driveSubsystem = driveSubsystem;
       m_poseSubsystem = poseSubsystem;
-      m_gyro = gyro;
+    }
+
+    private Command resetGyroCommand() {
+      return Commands.runOnce(
+        () -> m_gyroSensor.reset(m_poseSubsystem.getPose().getRotation().getDegrees())
+      ); 
     }
 
     public Command test3NoteAuto() {
@@ -32,7 +37,7 @@ public class AutoCommands {
         2.0, 2.0,
         Units.degreesToRadians(540), Units.degreesToRadians(720));
       return Commands.sequence(
-        m_poseSubsystem.resetGyroCommand(), // ADD TO START OF ALL AUTOS
+        resetGyroCommand(), // ADD TO START OF ALL AUTOS
         //m_poseSubsystem.resetPoseCommand(), //path.getPreviewStartingHolonomicPose()
         AutoBuilder.followPath(path1),
         //AutoBuilder.pathfindThenFollowPath(path1, constraints),
@@ -50,7 +55,7 @@ public class AutoCommands {
     public Command testPath2() {
       PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test4");
       return Commands.sequence(
-        m_poseSubsystem.resetGyroCommand(),
+        resetGyroCommand(),
         AutoBuilder.followPath(path1)
       );
     }

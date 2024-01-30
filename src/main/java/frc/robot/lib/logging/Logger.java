@@ -39,4 +39,8 @@ public final class Logger {
       log("!!!!!!!!!! REVLibError Returned: " + source + " !!!!!!!!!!");
     }
   }
+
+  public static void debug(String message) {
+    log("@@@@@@@@@@ DEBUG: " + message + " @@@@@@@@@@");
+  }
 }
