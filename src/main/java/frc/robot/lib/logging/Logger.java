@@ -33,10 +33,10 @@ public final class Logger {
     log(">>>>>>>>>> Robot Mode Changed: " + mode + " <<<<<<<<<<");
   }
 
-  public static void log(String source, REVLibError error) {
+  public static void log(REVLibError error, String source) {
     Timer.delay(0.001);
     if (error != REVLibError.kOk) {
-      log("!!!!!!!!!! REVLibError Returned: " + source + " !!!!!!!!!!");
+      log("!!!!!!!!!! REVLibError Returned: " + source + ":" + error.toString() + " !!!!!!!!!!");
     }
   }
 

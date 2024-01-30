@@ -172,5 +172,6 @@ public class RobotContainer {
     m_gyroSensor.updateTelemetry();
     m_poseSensors.forEach(poseSensor -> poseSensor.updateTelemetry());
     m_objectSensor.updateTelemetry();
+    SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
   }
 }
