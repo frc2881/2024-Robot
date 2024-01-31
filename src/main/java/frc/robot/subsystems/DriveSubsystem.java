@@ -14,11 +14,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.lib.Utils;
 import frc.robot.lib.drive.SwerveModule;
@@ -97,7 +97,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_driftCorrection = driftCorrection;
   }
 
-  public Command driveWithControllerCommand(XboxController controller) {
+  public Command driveWithControllerCommand(CommandXboxController controller) {
     return Commands.run(
       () -> {
         if (m_lockState == LockState.Locked) { return; }

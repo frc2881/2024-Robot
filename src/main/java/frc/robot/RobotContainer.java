@@ -16,13 +16,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.GameCommands;
+import frc.robot.lib.logging.Logger;
 import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.lib.sensors.ObjectSensor;
 import frc.robot.lib.sensors.PoseSensor;
-import frc.robot.lib.logging.Logger;
 import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -44,12 +44,9 @@ public class RobotContainer {
   // private final IntakeSubsystem m_intakeSubsystem;
   // private final LauncherSubsystem m_launcherSubsystem;
   // private final PickupSubsystem m_pickupSubsystem;
-
-  private final GameCommands m_gameCommands;
-
-  private final XboxController m_driverController;
+  private final CommandXboxController m_driverController;
   private final XboxController m_operatorController;
-
+  private final GameCommands m_gameCommands;
   private final AutoCommands m_autoCommands;
   private final SendableChooser<Command> m_autoChooser;
 
@@ -58,7 +55,7 @@ public class RobotContainer {
     m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
 
     // CONTROLLERS ========================================
-    m_driverController = new XboxController(Constants.Controllers.kDriverControllerPort);
+    m_driverController = new CommandXboxController(Constants.Controllers.kDriverControllerPort);
     m_operatorController = new XboxController(Constants.Controllers.kOperatorControllerPort);
 
     // SENSORS ========================================
@@ -107,11 +104,8 @@ public class RobotContainer {
     //m_launcherSubsystem.setDefaultCommand(m_launcherSubsystem.updateLaunchAngle(m_poseSubsystem::getPose));
 
     // DRIVER ========================================
-    new Trigger(m_driverController::getXButton)
-      .onTrue(m_driveSubsystem.toggleLockStateCommand());
-
-    new Trigger(m_driverController::getRightStickButton)
-      .onFalse(m_gyroSensor.resetCommand());
+    m_driverController.x().onTrue(m_driveSubsystem.toggleLockStateCommand());
+    m_driverController.rightStick().onFalse(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
     // new Trigger(() -> Math.abs(m_operatorController.getLeftY()) > 0.1)
