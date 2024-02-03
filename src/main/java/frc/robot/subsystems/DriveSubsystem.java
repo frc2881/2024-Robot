@@ -29,7 +29,7 @@ public class DriveSubsystem extends SubsystemBase {
   public static enum LockState { Unlocked, Locked; }
   public static enum DriftCorrection { Enabled, Disabled; }
 
-  private Supplier<Double> m_headingSupplier;
+  private Supplier<Double> m_gyroHeading;
   private final SwerveModule[] m_swerveModules;
   private final PIDController m_thetaController;
   private final SlewRateLimiter m_driveInputXFilter;
@@ -44,8 +44,8 @@ public class DriveSubsystem extends SubsystemBase {
   private boolean m_isRotationLocked = false;
   private boolean m_isAlignToTargetPoseCompleted = false;
 
-  public DriveSubsystem(Supplier<Double> headingSupplier) {
-    m_headingSupplier = headingSupplier;
+  public DriveSubsystem(Supplier<Double> gyroHeading) {
+    m_gyroHeading = gyroHeading;
 
     m_swerveModules = new SwerveModule[] {
       new SwerveModule(
@@ -97,14 +97,14 @@ public class DriveSubsystem extends SubsystemBase {
     m_driftCorrection = driftCorrection;
   }
 
-  public Command driveWithControllerCommand(CommandXboxController controller) {
+  public Command driveWithControllerCommand(Supplier<Double> controllerLeftY, Supplier<Double> controllerLeftX, Supplier<Double> controllerRightX) {
     return Commands.run(
       () -> {
         if (m_lockState == LockState.Locked) { return; }
 
-        double speedX = Utils.squareInput(-controller.getLeftY(), Constants.Controllers.kDriveInputDeadband);
-        double speedY = Utils.squareInput(-controller.getLeftX(), Constants.Controllers.kDriveInputDeadband);
-        double rotation = Utils.squareInput(-controller.getRightX(), Constants.Controllers.kDriveInputDeadband);
+        double speedX = Utils.squareInput(-controllerLeftY.get(), Constants.Controllers.kDriveInputDeadband);
+        double speedY = Utils.squareInput(-controllerLeftX.get(), Constants.Controllers.kDriveInputDeadband);
+        double rotation = Utils.squareInput(-controllerRightX.get(), Constants.Controllers.kDriveInputDeadband);
         
         if (m_speedMode == SpeedMode.Training) {
           speedX = m_driveInputXFilter.calculate(speedX * Constants.Controllers.kDriveInputLimiter);
@@ -118,12 +118,12 @@ public class DriveSubsystem extends SubsystemBase {
           if (!m_isRotationLocked && !isRotating && isTranslating) {
             m_isRotationLocked = true;
             m_thetaController.reset();
-            m_thetaController.setSetpoint(m_headingSupplier.get());
+            m_thetaController.setSetpoint(m_gyroHeading.get());
           } else if (isRotating || !isTranslating) {
             m_isRotationLocked = false;
           }
           if (m_isRotationLocked) {
-            rotation = m_thetaController.calculate(m_headingSupplier.get());
+            rotation = m_thetaController.calculate(m_gyroHeading.get());
             if (m_thetaController.atSetpoint()) {
               rotation = 0.0;
             }
@@ -141,7 +141,7 @@ public class DriveSubsystem extends SubsystemBase {
     speedY *= Constants.Drive.kMaxSpeedMetersPerSecond;
     rotation *= Constants.Drive.kMaxAngularSpeed;
     drive((m_orientation == Orientation.Field)
-      ? ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, rotation, Rotation2d.fromDegrees(m_headingSupplier.get()))
+      ? ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, rotation, Rotation2d.fromDegrees(m_gyroHeading.get()))
       : new ChassisSpeeds(speedX, speedY, rotation)
     );
   }
@@ -154,13 +154,13 @@ public class DriveSubsystem extends SubsystemBase {
     );
   }
 
-  public Command alignToTargetPose(Pose2d targetPose, Supplier<Pose2d> currentPoseSupplier) {
+  public Command alignToTargetPose(Pose2d targetPose, Supplier<Pose2d> currentPose) {
     return Commands.run(
       () -> {
-        Pose2d currentPose = currentPoseSupplier.get();
-        Rotation2d currentRotation = currentPose.getRotation();
+        Pose2d pose = currentPose.get();
+        Rotation2d currentRotation = pose.getRotation();
 
-        Transform2d delta = targetPose.minus(currentPose);
+        Transform2d delta = targetPose.minus(pose);
         Double targetAngle = Rotation2d.fromRadians(Math.atan(delta.getY()/delta.getX())).getDegrees();
         
         m_thetaController.setSetpoint(targetAngle);

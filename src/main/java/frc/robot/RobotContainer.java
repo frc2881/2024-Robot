@@ -100,7 +100,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     // SUBSYSTEMS ========================================
-    m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController));
+    m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
     //m_launcherSubsystem.setDefaultCommand(m_launcherSubsystem.updateLaunchAngle(m_poseSubsystem::getPose));
 
     // DRIVER ========================================

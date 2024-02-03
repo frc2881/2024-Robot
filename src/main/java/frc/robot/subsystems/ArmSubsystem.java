@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -64,14 +64,14 @@ public class ArmSubsystem extends SubsystemBase {
     return Commands.run(
       () -> m_leadScrewMotor.set(speed), 
       this)
-      .withName("runLeadScrew: Double"); // TODO: Change name??
+      .withName("RunLeadScrew"); // TODO: Change name??
   }
 
-  public Command runLeadScrewCommand(DoubleSupplier speeds) { 
+  public Command runLeadScrewCommand(Supplier<Double> speeds) { 
     return Commands.run(
-      () -> m_leadScrewMotor.set(speeds.getAsDouble()), // TODO: Make negative?
+      () -> m_leadScrewMotor.set(speeds.get()), // TODO: Make negative?
       this)
-      .withName("runLeadScrew: DoubleSupplier"); // TODO: Change name??
+      .withName("RunLeadScrew"); // TODO: Change name??
   }
 
   public void setDesiredPosition(double position, double speed) {

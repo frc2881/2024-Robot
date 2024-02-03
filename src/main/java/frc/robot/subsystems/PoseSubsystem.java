@@ -16,23 +16,23 @@ import frc.robot.lib.sensors.PoseSensor;
 
 public class PoseSubsystem extends SubsystemBase {
   private final List<PoseSensor> m_poseSensors;
-  private final Supplier<Rotation2d> m_rotationSupplier;
-  private final Supplier<SwerveModulePosition[]> m_swerveModulePositionSupplier;
+  private final Supplier<Rotation2d> m_gyroRotation;
+  private final Supplier<SwerveModulePosition[]> m_swerveModulePosition;
   private final SwerveDrivePoseEstimator m_poseEstimator;
 
   public PoseSubsystem(
     List<PoseSensor> poseSensors,
-    Supplier<Rotation2d> rotationSupplier,
-    Supplier<SwerveModulePosition[]> swerveModulePositionSupplier
+    Supplier<Rotation2d> gyroRotation,
+    Supplier<SwerveModulePosition[]> swerveModulePosition
   ) {
     m_poseSensors = poseSensors;
-    m_rotationSupplier = rotationSupplier;
-    m_swerveModulePositionSupplier = swerveModulePositionSupplier;
+    m_gyroRotation = gyroRotation;
+    m_swerveModulePosition = swerveModulePosition;
 
     m_poseEstimator = new SwerveDrivePoseEstimator(
       Constants.Drive.kSwerveDriveKinematics, 
-      m_rotationSupplier.get(),
-      m_swerveModulePositionSupplier.get(), 
+      m_gyroRotation.get(),
+      m_swerveModulePosition.get(), 
       new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
   }
 
@@ -47,7 +47,7 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public void updatePose() {
-    m_poseEstimator.update(m_rotationSupplier.get(), m_swerveModulePositionSupplier.get());
+    m_poseEstimator.update(m_gyroRotation.get(), m_swerveModulePosition.get());
     m_poseSensors.forEach(poseSensor -> {
       poseSensor.getEstimatedGlobalPose().ifPresent(globalPose -> {
         Pose2d pose = globalPose.estimatedPose.toPose2d();
@@ -61,7 +61,7 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    m_poseEstimator.resetPosition(m_rotationSupplier.get(), m_swerveModulePositionSupplier.get(), pose);
+    m_poseEstimator.resetPosition(m_gyroRotation.get(), m_swerveModulePosition.get(), pose);
   }
 
   private void updateTelemetry() {
