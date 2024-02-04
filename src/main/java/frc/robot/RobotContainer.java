@@ -11,7 +11,6 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,11 +40,11 @@ public class RobotContainer {
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
   // private final ArmSubsystem m_armSubsystem;
-  // private final IntakeSubsystem m_intakeSubsystem;
+  private final FeederSubsystem m_feederSubsystem;
   // private final LauncherSubsystem m_launcherSubsystem;
   // private final PickupSubsystem m_pickupSubsystem;
   private final CommandXboxController m_driverController;
-  private final XboxController m_operatorController;
+  private final CommandXboxController m_operatorController;
   private final GameCommands m_gameCommands;
   private final AutoCommands m_autoCommands;
   private final SendableChooser<Command> m_autoChooser;
@@ -56,7 +55,7 @@ public class RobotContainer {
 
     // CONTROLLERS ========================================
     m_driverController = new CommandXboxController(Constants.Controllers.kDriverControllerPort);
-    m_operatorController = new XboxController(Constants.Controllers.kOperatorControllerPort);
+    m_operatorController = new CommandXboxController(Constants.Controllers.kOperatorControllerPort);
 
     // SENSORS ========================================
     m_gyroSensor = new GyroSensor(
@@ -86,7 +85,7 @@ public class RobotContainer {
     m_driveSubsystem = new DriveSubsystem(m_gyroSensor::getHeading);
     m_poseSubsystem = new PoseSubsystem(m_poseSensors, m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
     // m_armSubsystem = new ArmSubsystem();
-    // m_intakeSubsystem = new IntakeSubsystem();
+    m_feederSubsystem = new FeederSubsystem();
     // m_launcherSubsystem = new LauncherSubsystem();
     // m_pickupSubsystem = new PickupSubsystem();
 
@@ -105,14 +104,11 @@ public class RobotContainer {
 
     // DRIVER ========================================
     m_driverController.x().onTrue(m_driveSubsystem.toggleLockStateCommand());
-    m_driverController.rightStick().onFalse(m_gyroSensor.resetCommand());
+    m_driverController.start().onTrue(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
-    // new Trigger(() -> Math.abs(m_operatorController.getLeftY()) > 0.1)
-    //   .whileTrue(m_armSubsystem.runLeadScrewCommand(m_operatorController::getLeftY));
-
-    // new Trigger(() -> Math.abs(m_operatorController.getRightY()) > 0.1)
-    //   .whileTrue(m_launcherSubsystem.runLeadScrewCommand(m_operatorController::getRightY));
+    m_operatorController.a().onTrue(m_feederSubsystem.startFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
+    m_operatorController.start().whileTrue(m_feederSubsystem.resetFeederCommand());
 
     // DASHBOARD ========================================
     SendableChooser<DriveSubsystem.SpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSubsystem.SpeedMode>();
@@ -166,6 +162,6 @@ public class RobotContainer {
     m_gyroSensor.updateTelemetry();
     m_poseSensors.forEach(poseSensor -> poseSensor.updateTelemetry());
     m_objectSensor.updateTelemetry();
-    SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
+    //SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
   }
 }

@@ -116,8 +116,11 @@ public final class Constants {
   public static final class Feeder {
     public static int kRollerCanId = 14;
     public static int kArmCanId = 15;
-    public static double kForwardLimit = 10; // TODO: update
-    public static double kReverseLimit = 0.5; // TODO: update
+    public static double kArmForwardLimit = 19.5;
+    public static double kArmReverseLimit = 0.0;
+    public static double kArmMinOutput = -0.6;
+    public static double kArmMaxOutput = 0.6;
+    public static double kRollerMaxOutput = 0.75;
   }
 
   public static final class Intake {

@@ -2,10 +2,13 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,19 +18,27 @@ public class FeederSubsystem extends SubsystemBase {
   private final CANSparkMax m_rollerMotor;
   private final CANSparkMax m_armMotor;
   private final RelativeEncoder m_armEncoder;
+  private final SparkPIDController m_armPIDController;
 
   public FeederSubsystem() {
     m_rollerMotor = new CANSparkMax(Constants.Feeder.kRollerCanId, MotorType.kBrushless);
+    m_rollerMotor.restoreFactoryDefaults();
+    m_rollerMotor.setSmartCurrentLimit(60);
+    m_rollerMotor.setSecondaryCurrentLimit(60, 0);
 
     m_armMotor = new CANSparkMax(Constants.Feeder.kArmCanId, MotorType.kBrushless);
     m_armMotor.restoreFactoryDefaults();
     m_armMotor.setIdleMode(IdleMode.kBrake); 
     m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-    m_armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)Constants.Feeder.kForwardLimit); 
+    m_armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)Constants.Feeder.kArmForwardLimit); 
     m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    m_armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)Constants.Feeder.kReverseLimit);
+    m_armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)Constants.Feeder.kArmReverseLimit);
     m_armMotor.setSmartCurrentLimit(60);
     m_armMotor.setSecondaryCurrentLimit(60, 0);
+
+    m_armPIDController = m_armMotor.getPIDController();
+    m_armPIDController.setP(0.1);
+    m_armPIDController.setOutputRange(Constants.Feeder.kArmMinOutput, Constants.Feeder.kArmMaxOutput);
 
     m_armEncoder = m_armMotor.getEncoder();
   }
@@ -37,73 +48,52 @@ public class FeederSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command runRollersCommand(Double speed) {
-    return Commands.run(
-      () -> {
-        m_rollerMotor.set(speed);
-      },
-      this);
-  }
-  public Command moveArmCommand(Double speed) {
-    return Commands.run(
-      () -> {
-        m_armMotor.set(speed);
-      },
-      this);
+  public Command startFeederCommand() {
+    return Commands.run(() -> {
+      m_armPIDController.setReference(Constants.Feeder.kArmForwardLimit, CANSparkBase.ControlType.kPosition);
+      m_rollerMotor.set(Constants.Feeder.kRollerMaxOutput);
+    }, this)
+    .withName("StartFeeder");
   }
 
-  public Double getEncoderPosition(){
-    return m_armEncoder.getPosition();
+  public Command stopFeederCommand() {
+    return Commands.run(() -> {
+      m_armPIDController.setReference(Constants.Feeder.kArmReverseLimit, CANSparkBase.ControlType.kPosition);
+      m_rollerMotor.set(0.0);
+    }, this)
+    .withTimeout(2)
+    .andThen(() -> m_armMotor.set(0.0))
+    .withName("StopFeeder");
   }
 
-  public void resetEncoder() {
-    m_armEncoder.setPosition(0);
-  }
-
-  public void enableSoftLimitsCommand(boolean enable){
-    if (enable) {
-      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    } else {
-      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, false);
-      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, false);
-    }
-  }
-
-  public Command moveArmOverrideCommand() {
+  public Command resetFeederCommand() {
     return Commands.runOnce(
-      () -> {
-        enableSoftLimitsCommand(false);
-      }
+      () -> setSoftLimits(false)
     )
     .andThen(
-      moveArmCommand(-0.15)
+      Commands.run(() -> m_armMotor.set(-0.1), this)
     )
     .finallyDo(
       () -> {
-        enableSoftLimitsCommand(true);
+        setSoftLimits(true);
         resetEncoder();
-        moveArmCommand(0.0);
+        m_armMotor.set(-0.0);
       }
     )
-    .withName("moveArmOverrideCommand");
+    .withName("ResetFeeder");
   }
 
-  public Command moveArmOut(Double speed) {
-    return moveArmCommand(speed)
-      .until(() -> getEncoderPosition() >= Constants.Feeder.kForwardLimit)
-      .andThen(moveArmCommand(0.0));
+  private void resetEncoder() {
+    m_armEncoder.setPosition(0);
   }
 
-  public Command moveArmIn(Double speed) {
-    return moveArmCommand(speed)
-      .until(() -> getEncoderPosition() <= Constants.Feeder.kReverseLimit)
-      .andThen(moveArmCommand(0.0));
+  private void setSoftLimits(boolean isEnabled){
+    m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, false);
+    m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, false);
   }
 
   private void updateTelemetry() {
-    // TODO: send subsystem telemetry data to the dashboard as needed
-    // ex: SmartDashboard.putString("Robot/Example/String", "TEST");
+    SmartDashboard.putNumber("Robot/Feeder/Arm/Position", m_armEncoder.getPosition());
   }
 
   @Override
