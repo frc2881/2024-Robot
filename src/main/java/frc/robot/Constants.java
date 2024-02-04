@@ -47,8 +47,8 @@ public final class Constants {
     public static final int kRearRightDrivingCanId = 9;
     public static final int kRearRightTurningCanId = 10;
 
-    public static final double kTrackWidth = Units.inchesToMeters(20.5);
-    public static final double kWheelBase = Units.inchesToMeters(23);
+    public static final double kTrackWidth = Units.inchesToMeters(24.5);
+    public static final double kWheelBase = Units.inchesToMeters(21.5);
     public static final double kDriveBaseRadius = new Translation2d(kWheelBase / 2, kTrackWidth / 2).getNorm();
 
     public static final double kMaxSpeedMetersPerSecond = 5.7424;
@@ -113,6 +113,61 @@ public final class Constants {
     }
   }
 
+  public static final class Feeder {
+    public static int kRollerCanId = 14;
+    public static int kArmCanId = 15;
+    public static double kForwardLimit = 10; // TODO: update
+    public static double kReverseLimit = 0.5; // TODO: update
+  }
+
+  public static final class Intake {
+    public static final int kBeltCanId = 18;
+    public static final int kRollerCanId = 19;
+  }
+
+  public static final class Launcher {
+    public static final int kLeadScrewCanId = 11;
+    public static final int kTopRollerCanId = 12;
+    public static final int kBottomRollerCanId = 13;
+
+    // Max distance that the launcher can tilt
+    public static final double kLeadScrewForwardLimit = 100; // TODO: update
+    // Least distance that the launcher can tilt
+    public static final double kLeadScrewReverseLimit = 0.5; // TODO: update
+
+    public static final double kRotationsToInches = 1.0 / 3.0; // TODO: update (gear ratio for the leadscrew that converts rotations to inches of extension)
+    public static final double kVelocityConversion = kRotationsToInches / 60.0;
+
+    public static final double kLeadScrewP = 0.0003;
+    public static final double kLeadScrewD = 0.00015;
+    public static final double kLeadScrewFF = 1 / (16.8);
+
+    public static final double kLeadScrewMinOutput = -1.0;
+    public static final double kLeadScrewMaxOutput = 1.0;
+
+    public static final double kLaunchUpdateSpeed = 0.5;
+  }
+
+  public static final class Arm {
+    public static final int kLeadScrewCanId = 16;
+    public static final int kRollerCanId = 17;
+
+    // Max distance that the arm can lift
+    public static final double kLeadScrewForwardLimit = 100; // TODO: update
+    // Least distance that the arm can lower
+    public static final double kLeadScrewReverseLimit = 0.5; // TODO: update
+
+    public static final double kRotationsToInches = 1.0 / 3.0; // TODO: update (gear ratio for the arm that converts rotations to inches of extension)
+    public static final double kVelocityConversion = kRotationsToInches / 60.0;
+
+    public static final double kLeadScrewP = 0.0003;
+    public static final double kLeadScrewD = 0.00015;
+    public static final double kLeadScrewFF = 1 / (16.8);
+
+    public static final double kLeadScrewMinOutput = -1.0;
+    public static final double kLeadScrewMaxOutput = 1.0;
+  }
+
   public static final class Sensors {
     public static final class Gyro {
       public static final IMUAxis kIMUAxisYaw = IMUAxis.kZ;
@@ -154,62 +209,6 @@ public final class Constants {
     }
   }
 
-  public static final class Launcher {
-    public static final int kLeadScrewMotorID = 11;
-    public static final int kUpperRollerMotorID = 12;
-    public static final int kLowerRollerMotorID = 13;
-
-    // Max distance that the launcher can tilt
-    public static final double kLeadScrewUpperLimit = 100; // TODO: update
-    // Least distance that the launcher can tilt
-    public static final double kLeadScrewLowerLimit = 0.5; // TODO: update
-
-    public static final double kRotationsToInches = 1.0 / 3.0; // TODO: update (gear ratio for the leadscrew that converts rotations to inches of extension)
-    public static final double kVelocityConversion = kRotationsToInches / 60.0;
-
-    public static final double kLeadScrewP = 0.0003;
-    public static final double kLeadScrewD = 0.00015;
-    public static final double kLeadScrewFF = 1 / (16.8);
-
-    public static final double kLeadScrewMinOutput = -1.0;
-    public static final double kLeadScrewMaxOutput = 1.0;
-
-    public static final double kLaunchUpdateSpeed = 0.5;
-  }
-
-  public static final class Intake {
-    public static int kRollerMotorID = 14;
-    public static int kIntakeMotorID = 15;
-
-    public static double kUpperLimit = 10; // TODO: update
-    public static double kBottomLimit = 0.5; // TODO: update
-  }
-  
-  public static final class Arm {
-    public static final int kLeadScrewMotorID = 16;
-    public static final int kRollerMotorID = 17;
-
-    // Max distance that the arm can lift
-    public static final double kLeadScrewUpperLimit = 100; // TODO: update
-    // Least distance that the arm can lower
-    public static final double kLeadScrewLowerLimit = 0.5; // TODO: update
-
-    public static final double kRotationsToInches = 1.0 / 3.0; // TODO: update (gear ratio for the arm that converts rotations to inches of extension)
-    public static final double kVelocityConversion = kRotationsToInches / 60.0;
-
-    public static final double kLeadScrewP = 0.0003;
-    public static final double kLeadScrewD = 0.00015;
-    public static final double kLeadScrewFF = 1 / (16.8);
-
-    public static final double kLeadScrewMinOutput = -1.0;
-    public static final double kLeadScrewMaxOutput = 1.0;
-  }
-
-  public static final class Pickup {
-    public static final int kBeltMotorID = 18;
-    public static final int kRollerMotorID = 19;
-  }
-
   public static final class Game {
     public static final class Field {
       public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
@@ -219,6 +218,7 @@ public final class Constants {
         new Pose2d(kAprilTagFieldLayout.getFieldLength(), kAprilTagFieldLayout.getFieldWidth(), null)
       );
 
+      // TODO: define proper launch zones based on testing
       public static final class LaunchZones {
         public static final Pair<Pose2d, Pose2d> kSpeaker = Pair.of(
           new Pose2d(0, 0, null), 

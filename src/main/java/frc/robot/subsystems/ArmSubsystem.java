@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import java.util.function.Supplier;
@@ -22,33 +18,31 @@ public class ArmSubsystem extends SubsystemBase {
   private final CANSparkMax m_leadScrewMotor;
   private final CANSparkMax m_rollerMotor;
   private final SparkPIDController m_leadScrewPID;
-  private final RelativeEncoder m_leadScrewMotorEncoder;
+  private final RelativeEncoder m_leadScrewEncoder;
 
   private double m_velocity = (33.0 / Constants.Arm.kRotationsToInches) * 60;
   private double m_acceleration = (100.0 / Constants.Arm.kVelocityConversion);
   
   public ArmSubsystem() {
-    m_leadScrewMotor = new CANSparkMax(Constants.Arm.kLeadScrewMotorID, MotorType.kBrushless);
+    m_leadScrewMotor = new CANSparkMax(Constants.Arm.kLeadScrewCanId, MotorType.kBrushless);
     m_leadScrewMotor.restoreFactoryDefaults();
     m_leadScrewMotor.setIdleMode(IdleMode.kBrake); 
     m_leadScrewMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-    m_leadScrewMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,
-                       (float)Constants.Arm.kLeadScrewUpperLimit); 
+    m_leadScrewMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)Constants.Arm.kLeadScrewForwardLimit); 
     m_leadScrewMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    m_leadScrewMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,
-                       (float)Constants.Arm.kLeadScrewLowerLimit);
+    m_leadScrewMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)Constants.Arm.kLeadScrewReverseLimit);
     m_leadScrewMotor.setSmartCurrentLimit(60);
     m_leadScrewMotor.setSecondaryCurrentLimit(60, 0);
 
-    m_rollerMotor = new CANSparkMax(Constants.Arm.kRollerMotorID, MotorType.kBrushed);
+    m_rollerMotor = new CANSparkMax(Constants.Arm.kRollerCanId, MotorType.kBrushed);
 
-    m_leadScrewMotorEncoder = m_leadScrewMotor.getEncoder();
-    m_leadScrewMotorEncoder.setPositionConversionFactor(Constants.Arm.kRotationsToInches);
-    m_leadScrewMotorEncoder.setVelocityConversionFactor(Constants.Arm.kVelocityConversion);
+    m_leadScrewEncoder = m_leadScrewMotor.getEncoder();
+    m_leadScrewEncoder.setPositionConversionFactor(Constants.Arm.kRotationsToInches);
+    m_leadScrewEncoder.setVelocityConversionFactor(Constants.Arm.kVelocityConversion);
     
     m_leadScrewPID = m_leadScrewMotor.getPIDController();
     m_leadScrewPID.setSmartMotionMaxAccel(m_acceleration, 0);
-    m_leadScrewPID.setFeedbackDevice(m_leadScrewMotorEncoder);
+    m_leadScrewPID.setFeedbackDevice(m_leadScrewEncoder);
     m_leadScrewPID.setP(Constants.Arm.kLeadScrewP);
     m_leadScrewPID.setD(Constants.Arm.kLeadScrewD);
     m_leadScrewPID.setOutputRange(Constants.Arm.kLeadScrewMinOutput,
@@ -87,11 +81,11 @@ public class ArmSubsystem extends SubsystemBase {
 
   // In inches
   public double getEncoderPosition() {
-    return m_leadScrewMotorEncoder.getPosition();
+    return m_leadScrewEncoder.getPosition();
   }
 
   public void resetEncoder() {
-    m_leadScrewMotorEncoder.setPosition(0);
+    m_leadScrewEncoder.setPosition(0);
   }
 
   public void enableSoftLimitsCommand(boolean enable){

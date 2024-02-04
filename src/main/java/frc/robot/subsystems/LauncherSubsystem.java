@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import java.util.function.Supplier;
@@ -20,44 +16,42 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class LauncherSubsystem extends SubsystemBase {
+  private final CANSparkMax m_topRoller;
+  private final CANSparkMax m_bottomRoller;
   private final CANSparkMax m_leadScrewMotor;
-  private final CANSparkMax m_upperRoller;
-  private final CANSparkMax m_lowerRoller;
   private final SparkPIDController m_leadScrewPID;
-  private final RelativeEncoder m_leadScrewMotorEncoder;
+  private final RelativeEncoder m_leadScrewEncoder;
 
   private double m_velocity = (33.0 / Constants.Launcher.kRotationsToInches) * 60;
   private double m_acceleration = (100.0 / Constants.Launcher.kVelocityConversion);
 
-  private boolean m_shootInSpeaker = true;
+  private boolean m_launchInSpeaker = true;
 
   // 3 motors, 2 for rollers, 1 for motor to run 2 lead screw
   // Don't need to switch direction on rollers, need position control for lead screw
   // Add command to reset lead screw (connect to arm reset of lead screw?)
 
   public LauncherSubsystem() {
-    m_leadScrewMotor = new CANSparkMax(Constants.Launcher.kLeadScrewMotorID, MotorType.kBrushless);
+    m_leadScrewMotor = new CANSparkMax(Constants.Launcher.kLeadScrewCanId, MotorType.kBrushless);
     m_leadScrewMotor.restoreFactoryDefaults();
     m_leadScrewMotor.setIdleMode(IdleMode.kBrake); 
     m_leadScrewMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-    m_leadScrewMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,
-                       (float)Constants.Launcher.kLeadScrewUpperLimit); 
+    m_leadScrewMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)Constants.Launcher.kLeadScrewForwardLimit); 
     m_leadScrewMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    m_leadScrewMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,
-                       (float)Constants.Launcher.kLeadScrewLowerLimit);
+    m_leadScrewMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)Constants.Launcher.kLeadScrewReverseLimit);
     m_leadScrewMotor.setSmartCurrentLimit(60);
     m_leadScrewMotor.setSecondaryCurrentLimit(60, 0);
 
-    m_upperRoller = new CANSparkMax(Constants.Launcher.kUpperRollerMotorID, MotorType.kBrushless);
-    m_lowerRoller = new CANSparkMax(Constants.Launcher.kLowerRollerMotorID, MotorType.kBrushless);
+    m_topRoller = new CANSparkMax(Constants.Launcher.kTopRollerCanId, MotorType.kBrushless);
+    m_bottomRoller = new CANSparkMax(Constants.Launcher.kBottomRollerCanId, MotorType.kBrushless);
 
-    m_leadScrewMotorEncoder = m_leadScrewMotor.getEncoder();
-    m_leadScrewMotorEncoder.setPositionConversionFactor(Constants.Launcher.kRotationsToInches);
-    m_leadScrewMotorEncoder.setVelocityConversionFactor(Constants.Launcher.kVelocityConversion);
+    m_leadScrewEncoder = m_leadScrewMotor.getEncoder();
+    m_leadScrewEncoder.setPositionConversionFactor(Constants.Launcher.kRotationsToInches);
+    m_leadScrewEncoder.setVelocityConversionFactor(Constants.Launcher.kVelocityConversion);
     
     m_leadScrewPID = m_leadScrewMotor.getPIDController();
     m_leadScrewPID.setSmartMotionMaxAccel(m_acceleration, 0);
-    m_leadScrewPID.setFeedbackDevice(m_leadScrewMotorEncoder);
+    m_leadScrewPID.setFeedbackDevice(m_leadScrewEncoder);
     m_leadScrewPID.setP(Constants.Launcher.kLeadScrewP);
     m_leadScrewPID.setD(Constants.Launcher.kLeadScrewD);
     m_leadScrewPID.setOutputRange(Constants.Launcher.kLeadScrewMinOutput,
@@ -86,10 +80,10 @@ public class LauncherSubsystem extends SubsystemBase {
   public Command runRollersCommand(double upperSpeed, double lowerSpeed) {
     return Commands.parallel(
       Commands.run(
-        () -> m_upperRoller.set(upperSpeed), 
+        () -> m_topRoller.set(upperSpeed), 
         this),
       Commands.run(
-        () -> m_lowerRoller.set(lowerSpeed), 
+        () -> m_bottomRoller.set(lowerSpeed), 
         this)
     )
     .withName("RunRollers");
@@ -108,11 +102,11 @@ public class LauncherSubsystem extends SubsystemBase {
 
   // In inches
   public double getEncoderPosition() {
-    return m_leadScrewMotorEncoder.getPosition();
+    return m_leadScrewEncoder.getPosition();
   }
 
   public void resetEncoder() {
-    m_leadScrewMotorEncoder.setPosition(0);
+    m_leadScrewEncoder.setPosition(0);
   }
 
   public void enableSoftLimitsCommand(boolean enable){
@@ -126,7 +120,7 @@ public class LauncherSubsystem extends SubsystemBase {
   }
 
   public void toggleTarget() {
-    m_shootInSpeaker = !m_shootInSpeaker;
+    m_launchInSpeaker = !m_launchInSpeaker;
   }
 
   public Command tiltLauncherOverrideCommand() {
@@ -160,7 +154,7 @@ public class LauncherSubsystem extends SubsystemBase {
   }
 
   public Double findLaunchAngle(Pose2d pose){
-    if(m_shootInSpeaker){
+    if(m_launchInSpeaker){
       Double height = Constants.Game.Field.Targets.kBlueSpeaker.getZ();
 
       // get dist diagonally from speaker

@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -17,26 +13,23 @@ import frc.robot.Constants;
 
 public class FeederSubsystem extends SubsystemBase {
   private final CANSparkMax m_rollerMotor;
-  private final CANSparkMax m_intakeMotor;
-  private final RelativeEncoder m_intakeMotorEncoder;
-  // 2 motors, 1 rollers, 1 to move extendable intake out
-  // rollers need to be able to switch directions
+  private final CANSparkMax m_armMotor;
+  private final RelativeEncoder m_armEncoder;
 
   public FeederSubsystem() {
-    m_rollerMotor = new CANSparkMax(Constants.Intake.kRollerMotorID, MotorType.kBrushless);
-    m_intakeMotor = new CANSparkMax(Constants.Intake.kIntakeMotorID, MotorType.kBrushless);
-    m_intakeMotor.restoreFactoryDefaults();
-    m_intakeMotor.setIdleMode(IdleMode.kBrake); 
-    m_intakeMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-    m_intakeMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward,
-                       (float)Constants.Intake.kUpperLimit); 
-    m_intakeMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    m_intakeMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse,
-                       (float)Constants.Intake.kBottomLimit);
-    m_intakeMotor.setSmartCurrentLimit(60);
-    m_intakeMotor.setSecondaryCurrentLimit(60, 0);
+    m_rollerMotor = new CANSparkMax(Constants.Feeder.kRollerCanId, MotorType.kBrushless);
 
-    m_intakeMotorEncoder = m_intakeMotor.getEncoder();
+    m_armMotor = new CANSparkMax(Constants.Feeder.kArmCanId, MotorType.kBrushless);
+    m_armMotor.restoreFactoryDefaults();
+    m_armMotor.setIdleMode(IdleMode.kBrake); 
+    m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+    m_armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, (float)Constants.Feeder.kForwardLimit); 
+    m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+    m_armMotor.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, (float)Constants.Feeder.kReverseLimit);
+    m_armMotor.setSmartCurrentLimit(60);
+    m_armMotor.setSecondaryCurrentLimit(60, 0);
+
+    m_armEncoder = m_armMotor.getEncoder();
   }
 
   @Override
@@ -51,61 +44,61 @@ public class FeederSubsystem extends SubsystemBase {
       },
       this);
   }
-  public Command moveIntakeCommand(Double speed) {
+  public Command moveArmCommand(Double speed) {
     return Commands.run(
       () -> {
-        m_intakeMotor.set(speed);
+        m_armMotor.set(speed);
       },
       this);
   }
 
   public Double getEncoderPosition(){
-    return m_intakeMotorEncoder.getPosition();
+    return m_armEncoder.getPosition();
   }
 
   public void resetEncoder() {
-    m_intakeMotorEncoder.setPosition(0);
+    m_armEncoder.setPosition(0);
   }
 
   public void enableSoftLimitsCommand(boolean enable){
     if (enable) {
-      m_intakeMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-      m_intakeMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
+      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
+      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
     } else {
-      m_intakeMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, false);
-      m_intakeMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, false);
+      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, false);
+      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, false);
     }
   }
 
-  public Command moveIntakeOverrideCommand() {
+  public Command moveArmOverrideCommand() {
     return Commands.runOnce(
       () -> {
         enableSoftLimitsCommand(false);
       }
     )
     .andThen(
-      moveIntakeCommand(-0.15)
+      moveArmCommand(-0.15)
     )
     .finallyDo(
       () -> {
         enableSoftLimitsCommand(true);
         resetEncoder();
-        moveIntakeCommand(0.0);
+        moveArmCommand(0.0);
       }
     )
-    .withName("tiltLauncherOverride");
+    .withName("moveArmOverrideCommand");
   }
 
-  public Command moveIntakeOut(Double speed) {
-    return moveIntakeCommand(speed)
-      .until(() -> getEncoderPosition() >= Constants.Intake.kUpperLimit)
-      .andThen(moveIntakeCommand(0.0));
+  public Command moveArmOut(Double speed) {
+    return moveArmCommand(speed)
+      .until(() -> getEncoderPosition() >= Constants.Feeder.kForwardLimit)
+      .andThen(moveArmCommand(0.0));
   }
 
-  public Command moveIntakeIn(Double speed) {
-    return moveIntakeCommand(speed)
-      .until(() -> getEncoderPosition() <= Constants.Intake.kBottomLimit)
-      .andThen(moveIntakeCommand(0.0));
+  public Command moveArmIn(Double speed) {
+    return moveArmCommand(speed)
+      .until(() -> getEncoderPosition() <= Constants.Feeder.kReverseLimit)
+      .andThen(moveArmCommand(0.0));
   }
 
   private void updateTelemetry() {

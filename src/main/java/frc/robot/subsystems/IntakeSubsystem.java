@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -16,11 +12,10 @@ import frc.robot.Constants;
 public class IntakeSubsystem extends SubsystemBase {
   private final CANSparkMax m_beltMotor;
   private final CANSparkMax m_rollerMotor;
-  // Distance sensor
 
   public IntakeSubsystem() {
-    m_beltMotor = new CANSparkMax(Constants.Pickup.kBeltMotorID, MotorType.kBrushless);
-    m_rollerMotor = new CANSparkMax(Constants.Pickup.kRollerMotorID, MotorType.kBrushless);
+    m_beltMotor = new CANSparkMax(Constants.Intake.kBeltCanId, MotorType.kBrushless);
+    m_rollerMotor = new CANSparkMax(Constants.Intake.kRollerCanId, MotorType.kBrushless);
   }
 
   @Override
