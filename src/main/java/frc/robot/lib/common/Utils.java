@@ -1,4 +1,4 @@
-package frc.robot.lib;
+package frc.robot.lib.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

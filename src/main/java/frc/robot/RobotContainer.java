@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -15,9 +14,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.GameCommands;
+import frc.robot.lib.controllers.GameController;
+import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.logging.Logger;
 import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.lib.sensors.ObjectSensor;
@@ -32,19 +32,20 @@ import frc.robot.subsystems.PoseSubsystem;
 
 public class RobotContainer {
   private final PowerDistribution m_powerDistribution;
+  private final GameController m_driverController;
+  private final GameController m_operatorController;
   private final GyroSensor m_gyroSensor;
   private final List<PoseSensor> m_poseSensors;
-  private final ObjectSensor m_objectSensor;
   private final DistanceSensor m_intakeDistanceSensor;
   private final DistanceSensor m_launcherDistanceSensor;
+  private final ObjectSensor m_objectSensor;
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
-  // private final ArmSubsystem m_armSubsystem;
   private final FeederSubsystem m_feederSubsystem;
-  // private final LauncherSubsystem m_launcherSubsystem;
-  // private final PickupSubsystem m_pickupSubsystem;
-  private final CommandXboxController m_driverController;
-  private final CommandXboxController m_operatorController;
+  private final IntakeSubsystem m_intakeSubsystem;
+  private final LauncherSubsystem m_launcherSubsystem;
+  private final ArmSubsystem m_armSubsystem;
+  private final LightsController m_lightsController;
   private final GameCommands m_gameCommands;
   private final AutoCommands m_autoCommands;
   private final SendableChooser<Command> m_autoChooser;
@@ -53,9 +54,9 @@ public class RobotContainer {
     // HARDWARE ========================================
     m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
 
-    // CONTROLLERS ========================================
-    m_driverController = new CommandXboxController(Constants.Controllers.kDriverControllerPort);
-    m_operatorController = new CommandXboxController(Constants.Controllers.kOperatorControllerPort);
+    // INPUT CONTROLLERS ========================================
+    m_driverController = new GameController(Constants.Controllers.kDriverControllerPort);
+    m_operatorController = new GameController(Constants.Controllers.kOperatorControllerPort);
 
     // SENSORS ========================================
     m_gyroSensor = new GyroSensor(
@@ -77,22 +78,34 @@ public class RobotContainer {
         Constants.Game.Field.kAprilTagFieldLayout
       ));
     });
+    m_intakeDistanceSensor = new DistanceSensor(
+      Constants.Sensors.Distance.Intake.kSensorName,
+      Constants.Sensors.Distance.Intake.kMinTargetDistance,
+      Constants.Sensors.Distance.Intake.kMaxTargetDistance
+    );
+    m_launcherDistanceSensor = new DistanceSensor(
+      Constants.Sensors.Distance.Launcher.kSensorName,
+      Constants.Sensors.Distance.Launcher.kMinTargetDistance,
+      Constants.Sensors.Distance.Launcher.kMaxTargetDistance
+    );
     m_objectSensor = new ObjectSensor(Constants.Sensors.Object.kCameraName);
-    m_intakeDistanceSensor = new DistanceSensor(Constants.Sensors.Distance.kIntakeSensorName);
-    m_launcherDistanceSensor = new DistanceSensor(Constants.Sensors.Distance.kLauncherSensorName);
     
     // SUBSYSTEMS ========================================
     m_driveSubsystem = new DriveSubsystem(m_gyroSensor::getHeading);
     m_poseSubsystem = new PoseSubsystem(m_poseSensors, m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
-    // m_armSubsystem = new ArmSubsystem();
     m_feederSubsystem = new FeederSubsystem();
-    // m_launcherSubsystem = new LauncherSubsystem();
-    // m_pickupSubsystem = new PickupSubsystem();
+    m_intakeSubsystem = new IntakeSubsystem();
+    m_launcherSubsystem = new LauncherSubsystem();
+    m_armSubsystem = new ArmSubsystem();
+
+    // OUTPUT CONTROLLERS ========================================
+    m_lightsController = new LightsController();
 
     // COMMANDS ========================================
-    m_gameCommands = new GameCommands(m_gyroSensor, m_driveSubsystem, m_poseSubsystem);
-    m_autoCommands = new AutoCommands(m_gyroSensor, m_driveSubsystem, m_poseSubsystem);
+    m_gameCommands = new GameCommands(m_gyroSensor, m_intakeDistanceSensor, m_launcherDistanceSensor, m_driveSubsystem, m_poseSubsystem, m_feederSubsystem, m_intakeSubsystem, m_launcherSubsystem, m_armSubsystem, m_lightsController);
+    m_autoCommands = new AutoCommands(m_gameCommands, m_gyroSensor, m_objectSensor, m_driveSubsystem, m_poseSubsystem, m_lightsController);
     m_autoChooser = new SendableChooser<Command>();
+
     configureBindings();
     configureAutos();
   }
@@ -100,15 +113,19 @@ public class RobotContainer {
   private void configureBindings() {
     // SUBSYSTEMS ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
-    //m_launcherSubsystem.setDefaultCommand(m_launcherSubsystem.updateLaunchAngle(m_poseSubsystem::getPose));
 
     // DRIVER ========================================
-    m_driverController.x().onTrue(m_driveSubsystem.toggleLockStateCommand());
+    m_driverController.a().whileTrue(m_gameCommands.alignRobotToSpeakerCommand());
+    m_driverController.x().onTrue(m_driveSubsystem.toggleLockStateCommand()); // TODO: refactor to while held only vs. toggle for X lock state
+    m_driverController.rightTrigger().whileTrue(Commands.none()); // TODO: run intake game command in forward direction (front of robot intake direction for note)
+    m_driverController.leftTrigger().whileTrue(Commands.none()); // TODO: run intake game command in backward direction (rear of robot intake direction for note)
     m_driverController.start().onTrue(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
-    m_operatorController.a().onTrue(m_feederSubsystem.startFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
-    m_operatorController.start().whileTrue(m_feederSubsystem.resetFeederCommand());
+    m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand());
+    m_operatorController.x().onTrue(m_feederSubsystem.startFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
+    m_operatorController.rightTrigger().whileTrue(Commands.none()); // TODO: run launcher game command to score note (once launcher is aligned to target by driver and operator)
+    m_operatorController.start().whileTrue(m_feederSubsystem.resetCommand()); // TODO: create parallel game command for resetting feeder, launcher, and arm mechanisms in parallel with one button
 
     // DASHBOARD ========================================
     SendableChooser<DriveSubsystem.SpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSubsystem.SpeedMode>();
@@ -137,8 +154,8 @@ public class RobotContainer {
       m_driveSubsystem::getSpeeds, 
       m_driveSubsystem::drive, 
       new HolonomicPathFollowerConfig(
-        new PIDConstants(Constants.Drive.kPathFollowerTranslationP, Constants.Drive.kPathFollowerTranslationI, Constants.Drive.kPathFollowerTranslationD),
-        new PIDConstants(Constants.Drive.kPathFollowerRotationP, Constants.Drive.kPathFollowerRotationI, Constants.Drive.kPathFollowerRotationD), 
+        Constants.Drive.kPathFollowerTranslationPIDConstants,
+        Constants.Drive.kPathFollowerRotationPIDConstants,
         Constants.Drive.kMaxSpeedMetersPerSecond, 
         Constants.Drive.kDriveBaseRadius, 
         new ReplanningConfig()
@@ -161,7 +178,10 @@ public class RobotContainer {
   public void updateTelemetry() {
     m_gyroSensor.updateTelemetry();
     m_poseSensors.forEach(poseSensor -> poseSensor.updateTelemetry());
+    m_intakeDistanceSensor.updateTelemetry();
+    m_launcherDistanceSensor.updateTelemetry();
     m_objectSensor.updateTelemetry();
-    //SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
+
+    SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
   }
 }

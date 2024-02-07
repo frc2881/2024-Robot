@@ -8,7 +8,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -16,10 +15,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.lib.Utils;
+import frc.robot.lib.common.Utils;
 import frc.robot.lib.drive.SwerveModule;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -41,7 +39,7 @@ public class DriveSubsystem extends SubsystemBase {
   private IdleMode m_idleMode = IdleMode.kBrake;
   private DriftCorrection m_driftCorrection = DriftCorrection.Enabled;
   private boolean m_isRotationLocked = false;
-  private boolean m_isAlignToTargetPoseCompleted = false;
+  private boolean m_isAlignedToTarget = false;
 
   public DriveSubsystem(Supplier<Double> gyroHeading) {
     m_gyroHeading = gyroHeading;
@@ -49,34 +47,34 @@ public class DriveSubsystem extends SubsystemBase {
     m_swerveModules = new SwerveModule[] {
       new SwerveModule(
         SwerveModule.Location.FrontLeft,
-        Constants.Drive.kFrontLeftDrivingCanId,
-        Constants.Drive.kFrontLeftTurningCanId,
-        Constants.Drive.kFrontLeftTurningOffset),
+        Constants.Drive.kFrontLeftDrivingMotorCANId,
+        Constants.Drive.kFrontLeftTurningMotorCANId,
+        Constants.Drive.SwerveModule.kOffsetFrontLeft),
       new SwerveModule(
         SwerveModule.Location.FrontRight,
-        Constants.Drive.kFrontRightDrivingCanId,
-        Constants.Drive.kFrontRightTurningCanId,
-        Constants.Drive.kFrontRightTurningOffset),
+        Constants.Drive.kFrontRightDrivingMotorCANId,
+        Constants.Drive.kFrontRightTurningMotorCANId,
+        Constants.Drive.SwerveModule.kOffsetFrontRight),
       new SwerveModule(
         SwerveModule.Location.RearLeft,
-        Constants.Drive.kRearLeftDrivingCanId,
-        Constants.Drive.kRearLeftTurningCanId,
-        Constants.Drive.kRearLeftTurningOffset),
+        Constants.Drive.kRearLeftDrivingMotorCANId,
+        Constants.Drive.kRearLeftTurningMotorCANId,
+        Constants.Drive.SwerveModule.kOffsetRearLeft),
       new SwerveModule(
         SwerveModule.Location.RearRight,
-        Constants.Drive.kRearRightDrivingCanId,
-        Constants.Drive.kRearRightTurningCanId, 
-        Constants.Drive.kRearRightTurningOffset)
+        Constants.Drive.kRearRightDrivingMotorCANId,
+        Constants.Drive.kRearRightTurningMotorCANId, 
+        Constants.Drive.SwerveModule.kOffsetRearRight)
     };
     SwerveModule.burnFlashForAllMotorControllers();
 
-    m_thetaController = new PIDController(Constants.Drive.kThetaControllerP, Constants.Drive.kThetaControllerI, Constants.Drive.kThetaControllerD);
+    m_thetaController = new PIDController(Constants.Drive.kThetaControllerPIDConstants.P, Constants.Drive.kThetaControllerPIDConstants.I, Constants.Drive.kThetaControllerPIDConstants.D);
     m_thetaController.enableContinuousInput(-180.0, 180.0);
     m_thetaController.setTolerance(Constants.Drive.kThetaControllerPositionTolerance, Constants.Drive.kThetaControllerVelocityTolerance);
 
-    m_driveInputXFilter = new SlewRateLimiter(Constants.Controllers.kDriveInputRateLimit);
-    m_driveInputYFilter = new SlewRateLimiter(Constants.Controllers.kDriveInputRateLimit);
-    m_driveInputRotFilter = new SlewRateLimiter(Constants.Controllers.kDriveInputRateLimit);
+    m_driveInputXFilter = new SlewRateLimiter(Constants.Drive.kDriveInputRateLimit);
+    m_driveInputYFilter = new SlewRateLimiter(Constants.Drive.kDriveInputRateLimit);
+    m_driveInputRotFilter = new SlewRateLimiter(Constants.Drive.kDriveInputRateLimit);
   }
 
   @Override
@@ -97,22 +95,22 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command driveWithControllerCommand(Supplier<Double> controllerLeftY, Supplier<Double> controllerLeftX, Supplier<Double> controllerRightX) {
-    return Commands.run(
-      () -> {
+    return 
+      run(() -> {
         if (m_lockState == LockState.Locked) { return; }
 
-        double speedX = Utils.squareInput(-controllerLeftY.get(), Constants.Controllers.kDriveInputDeadband);
-        double speedY = Utils.squareInput(-controllerLeftX.get(), Constants.Controllers.kDriveInputDeadband);
-        double rotation = Utils.squareInput(-controllerRightX.get(), Constants.Controllers.kDriveInputDeadband);
+        double speedX = controllerLeftY.get();
+        double speedY = controllerLeftX.get();
+        double speedRotation = controllerRightX.get();
         
         if (m_speedMode == SpeedMode.Training) {
-          speedX = m_driveInputXFilter.calculate(speedX * Constants.Controllers.kDriveInputLimiter);
-          speedY = m_driveInputYFilter.calculate(speedY * Constants.Controllers.kDriveInputLimiter);
-          rotation = m_driveInputRotFilter.calculate(rotation * Constants.Controllers.kDriveInputLimiter);
+          speedX = m_driveInputXFilter.calculate(speedX * Constants.Drive.kDriveInputLimiter);
+          speedY = m_driveInputYFilter.calculate(speedY * Constants.Drive.kDriveInputLimiter);
+          speedRotation = m_driveInputRotFilter.calculate(speedRotation * Constants.Drive.kDriveInputLimiter);
         }
 
         if (m_driftCorrection == DriftCorrection.Enabled) {
-          boolean isRotating = (rotation != 0.0);
+          boolean isRotating = (speedRotation != 0.0);
           boolean isTranslating = ((speedX != 0.0) || (speedY != 0.0));
           if (!m_isRotationLocked && !isRotating && isTranslating) {
             m_isRotationLocked = true;
@@ -122,26 +120,25 @@ public class DriveSubsystem extends SubsystemBase {
             m_isRotationLocked = false;
           }
           if (m_isRotationLocked) {
-            rotation = m_thetaController.calculate(m_gyroHeading.get());
+            speedRotation = m_thetaController.calculate(m_gyroHeading.get());
             if (m_thetaController.atSetpoint()) {
-              rotation = 0.0;
+              speedRotation = 0.0;
             }
           }
         }
 
-        drive(speedX, speedY, rotation);
-      }, 
-      this)
+        drive(speedX, speedY, speedRotation);
+      })
       .withName("DriveWithController");
   }
 
-  public void drive(double speedX, double speedY, double rotation) {
+  public void drive(double speedX, double speedY, double speedRotation) {
     speedX *= Constants.Drive.kMaxSpeedMetersPerSecond;
     speedY *= Constants.Drive.kMaxSpeedMetersPerSecond;
-    rotation *= Constants.Drive.kMaxAngularSpeed;
+    speedRotation *= Constants.Drive.kMaxAngularSpeed;
     drive((m_orientation == Orientation.Field)
-      ? ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, rotation, Rotation2d.fromDegrees(m_gyroHeading.get()))
-      : new ChassisSpeeds(speedX, speedY, rotation)
+      ? ChassisSpeeds.fromFieldRelativeSpeeds(speedX, speedY, speedRotation, Rotation2d.fromDegrees(m_gyroHeading.get()))
+      : new ChassisSpeeds(speedX, speedY, speedRotation)
     );
   }
 
@@ -151,55 +148,6 @@ public class DriveSubsystem extends SubsystemBase {
         ChassisSpeeds.discretize(chassisSpeeds, 0.02)
       )
     );
-  }
-
-  public Command alignToTargetPose(Pose2d targetPose, Supplier<Pose2d> currentPose) {
-    return Commands.run(
-      () -> {
-        Pose2d pose = currentPose.get();
-        Rotation2d currentRotation = pose.getRotation();
-
-        Transform2d delta = targetPose.minus(pose);
-        Double targetAngle = Rotation2d.fromRadians(Math.atan(delta.getY()/delta.getX())).getDegrees();
-        
-        m_thetaController.setSetpoint(targetAngle);
-        
-        double rotationVel = m_thetaController.calculate(currentRotation.getDegrees());
-        rotationVel += Math.copySign(0.15, rotationVel); 
-
-        //double pidMaxSpeed = 1.0;
-
-        // double yVel = MathUtil.clamp(
-        //       m_yController.calculate((delta.getY() * 10)), 
-        //       -pidMaxSpeed, 
-        //       pidMaxSpeed);
-
-        // double xVel = MathUtil.clamp(
-        //       m_xController.calculate((delta.getX() * 10)), 
-        //       -pidMaxSpeed, 
-        //       pidMaxSpeed);
-      
-        if (m_thetaController.atSetpoint()) {
-          rotationVel = 0.0;
-        }
-
-        // if (m_yController.atSetpoint()){
-        //   yVel = 0.0;
-        // }
-
-        // if (m_xController.atSetpoint()){
-        //   xVel = 0.0;
-        // }
-
-        setSwerveModuleStates(convertToSwerveModuleStates(
-            0.0, //-xVel,
-            0.0, //-yVel, 
-            rotationVel));
-
-        m_isAlignToTargetPoseCompleted = rotationVel <= 0.1; // && xVel <= 0.1 && yVel <= 0.1
-      }, this)
-      .until(() -> m_isAlignToTargetPoseCompleted)
-      .withName("AlignToTargetPose");
   }
 
   public ChassisSpeeds getSpeeds() {
@@ -229,18 +177,18 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  public SwerveModuleState[] convertToSwerveModuleStates(double xTranslation, double yTranslation, double rotation) {
-    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(xTranslation, yTranslation, rotation);
+  public SwerveModuleState[] convertToSwerveModuleStates(double speedX, double speedY, double speedRotation) {
+    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(speedX, speedY, speedRotation);
     SwerveModuleState[] moduleStates = Constants.Drive.kSwerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
     return moduleStates;
   }
 
-  public Command toggleLockStateCommand() {
-    return Commands.runOnce(
-      () -> {
-        setLockState((m_lockState == LockState.Unlocked) ? LockState.Locked : LockState.Unlocked);
-      })
-      .withName("ToggleDriveLockState");
+  private void setSwerveModuleStatesToLocked() {
+    for (int i = 0; i < m_swerveModules.length; i++) {
+      m_swerveModules[i].setTargetState(
+        new SwerveModuleState(0, Rotation2d.fromDegrees(( i == 0 || i == 3) ? 45 : -45))
+      );
+    }
   }
 
   public void setLockState(LockState lockState) {
@@ -250,12 +198,37 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
-  private void setSwerveModuleStatesToLocked() {
-    for (int i = 0; i < m_swerveModules.length; i++) {
-      m_swerveModules[i].setTargetState(
-        new SwerveModuleState(0, Rotation2d.fromDegrees(( i == 0 || i == 3) ? 45 : -45))
-      );
-    }
+  public Command toggleLockStateCommand() {
+    return 
+      runOnce(() -> setLockState((m_lockState == LockState.Unlocked) ? LockState.Locked : LockState.Unlocked))
+      .withName("ToggleDriveLockState");
+  }
+
+  public Command alignToTargetCommand(Supplier<Pose2d> currentPose, Pose2d targetPose) {
+    return
+      runOnce(() -> { 
+        m_isAlignedToTarget = false; 
+        double heading = targetPose.minus(currentPose.get()).getRotation().getDegrees();
+        m_thetaController.setSetpoint(heading);
+      })
+      .andThen(
+        this
+          .run(() -> {
+            double heading = currentPose.get().getRotation().getDegrees();
+            double speedRotation = m_thetaController.calculate(heading);
+            speedRotation += Math.copySign(0.15, speedRotation);
+            if (m_thetaController.atSetpoint()) {
+              speedRotation = 0.0;
+              m_isAlignedToTarget = true;
+            }
+            setSwerveModuleStates(convertToSwerveModuleStates(
+              0.0,
+              0.0,
+              speedRotation));
+          })
+          .until(() -> m_isAlignedToTarget)
+      )
+      .withName("AlignDriveRotationToTarget");
   }
 
   public void setIdleMode(IdleMode idleMode) {

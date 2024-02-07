@@ -26,26 +26,25 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.CalibrationTime;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.SPI;
+import frc.robot.lib.common.PIDConstants;
 
 public final class Constants {
 
   public static final class Controllers {
     public static final int kDriverControllerPort = 0; 
     public static final int kOperatorControllerPort = 1; 
-    public static final double kDriveInputDeadband = 0.1; 
-    public static final double kDriveInputLimiter = 0.6;
-    public static final double kDriveInputRateLimit = 0.5;
+    public static final double kInputDeadband = 0.1; 
   }
 
   public static final class Drive {
-    public static final int kFrontLeftDrivingCanId = 3;
-    public static final int kFrontLeftTurningCanId = 4;
-    public static final int kRearLeftDrivingCanId = 5;
-    public static final int kRearLeftTurningCanId = 6;
-    public static final int kFrontRightDrivingCanId = 7;
-    public static final int kFrontRightTurningCanId = 8;
-    public static final int kRearRightDrivingCanId = 9;
-    public static final int kRearRightTurningCanId = 10;
+    public static final int kFrontLeftDrivingMotorCANId = 3;
+    public static final int kFrontLeftTurningMotorCANId = 4;
+    public static final int kRearLeftDrivingMotorCANId = 5;
+    public static final int kRearLeftTurningMotorCANId = 6;
+    public static final int kFrontRightDrivingMotorCANId = 7;
+    public static final int kFrontRightTurningMotorCANId = 8;
+    public static final int kRearRightDrivingMotorCANId = 9;
+    public static final int kRearRightTurningMotorCANId = 10;
 
     public static final double kTrackWidth = Units.inchesToMeters(24.5);
     public static final double kWheelBase = Units.inchesToMeters(21.5);
@@ -54,11 +53,6 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond = 5.7424;
     public static final double kMaxAngularSpeed = 2 * Math.PI;
 
-    public static final double kFrontLeftTurningOffset = -Math.PI / 2;
-    public static final double kFrontRightTurningOffset = 0;
-    public static final double kRearLeftTurningOffset = Math.PI;
-    public static final double kRearRightTurningOffset = Math.PI / 2;
-
     public static final SwerveDriveKinematics kSwerveDriveKinematics = new SwerveDriveKinematics(
       new Translation2d(Constants.Drive.kWheelBase / 2, Constants.Drive.kTrackWidth / 2),
       new Translation2d(Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2),
@@ -66,109 +60,134 @@ public final class Constants {
       new Translation2d(-Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2)
     );
 
-    public static final double kThetaControllerP = 0.01;
-    public static final double kThetaControllerI = 0;
-    public static final double kThetaControllerD = 0;
+    public static final PIDConstants kThetaControllerPIDConstants = new PIDConstants(0.01, 0, 0);
     public static final double kThetaControllerPositionTolerance = 0.5;
     public static final double kThetaControllerVelocityTolerance = 0.5;
 
-    public static final double kPathFollowerTranslationP = 2.5;
-    public static final double kPathFollowerTranslationI = 0;
-    public static final double kPathFollowerTranslationD = 0;
-    public static final double kPathFollowerRotationP = 5;
-    public static final double kPathFollowerRotationI = 0;
-    public static final double kPathFollowerRotationD = 0;
+    public static final double kDriveInputLimiter = 0.6;
+    public static final double kDriveInputRateLimit = 0.5;
+
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0); 
 
     public static final class SwerveModule {
+      public static final double kOffsetFrontLeft = -Math.PI / 2;
+      public static final double kOffsetFrontRight = 0;
+      public static final double kOffsetRearLeft = Math.PI;
+      public static final double kOffsetRearRight = Math.PI / 2;
+
       public static final int kDrivingMotorPinionTeeth = 14;
-      public static final boolean kTurningEncoderInverted = true;
       public static final double kFreeSpeedRpm = 5676;
-      public static final double kDrivingMotorFreeSpeedRps = kFreeSpeedRpm / 60;
       public static final double kWheelDiameterMeters = Units.inchesToMeters(3.0);
       public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
       public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
+      public static final double kDrivingMotorFreeSpeedRps = kFreeSpeedRpm / 60;
       public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;
-      public static final double kDrivingEncoderPositionFactor = (kWheelDiameterMeters * Math.PI) / kDrivingMotorReduction;
-      public static final double kDrivingEncoderVelocityFactor = ((kWheelDiameterMeters * Math.PI) / kDrivingMotorReduction) / 60.0;
-      public static final double kTurningEncoderPositionFactor = (2 * Math.PI);
-      public static final double kTurningEncoderVelocityFactor = (2 * Math.PI) / 60.0;
+      public static final double kDrivingEncoderPositionConversionFactor = (kWheelDiameterMeters * Math.PI) / kDrivingMotorReduction;
+      public static final double kDrivingEncoderVelocityConversionFactor = ((kWheelDiameterMeters * Math.PI) / kDrivingMotorReduction) / 60.0;
+      
+      public static final boolean kTurningEncoderInverted = true;
+      public static final double kTurningEncoderPositionConversionFactor = (2 * Math.PI);
+      public static final double kTurningEncoderVelocityConversionFactor = (2 * Math.PI) / 60.0;
       public static final double kTurningEncoderPositionPIDMinInput = 0;
-      public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor;
-      public static final double kDrivingP = 0.04;
-      public static final double kDrivingI = 0;
-      public static final double kDrivingD = 0;
-      public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;
-      public static final double kDrivingMinOutput = -1;
-      public static final double kDrivingMaxOutput = 1;
-      public static final double kTurningP = 1;
-      public static final double kTurningI = 0;
-      public static final double kTurningD = 0;
-      public static final double kTurningFF = 0;
-      public static final double kTurningMinOutput = -1;
-      public static final double kTurningMaxOutput = 1;
+      public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionConversionFactor;
+      
+      public static final int kDrivingMotorCurrentLimit = 80;
+      public static final double kDrivingMotorMinOutput = -1;
+      public static final double kDrivingMotorMaxOutput = 1;
       public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
-      public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
-      public static final int kDrivingMotorCurrentLimit = 50;
+      public static final PIDConstants kDrivingMotorPIDConstants = new PIDConstants(0.04, 0, 0, 1 / kDriveWheelFreeSpeedRps);
+
       public static final int kTurningMotorCurrentLimit = 20;
+      public static final double kTurningMotorMinOutput = -1;
+      public static final double kTurningMotorMaxOutput = 1;
+      public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
+      public static final PIDConstants kTurningMotorPIDConstants = new PIDConstants(1, 0, 0, 0);
     }
   }
 
   public static final class Feeder {
-    public static int kRollerCanId = 14;
-    public static int kArmCanId = 15;
-    public static double kArmForwardLimit = 19.5;
-    public static double kArmReverseLimit = 0.0;
-    public static double kArmMinOutput = -0.6;
-    public static double kArmMaxOutput = 0.6;
-    public static double kRollerMaxOutput = 0.75;
+    public static final int kArmMotorCANId = 15;
+    public static final int kRollerMotorCANId = 14;
+
+    public static final int kArmMotorCurrentLimit = 60;
+    public static final double kArmMotorMinOutput = -0.6;
+    public static final double kArmMotorMaxOutput = 0.6;
+    public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.01, 0, 0); // TODO: update after testing
+    public static final double kArmMotorForwardSoftLimit = 19.5;
+    public static final double kArmMotorReverseSoftLimit = 0.0;
+
+    public static final int kRollerMotorCurrentLimit = 60;
+    public static final double kRollerMotorMaxOutput = 0.75;
+    public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
   }
 
   public static final class Intake {
-    public static final int kBeltCanId = 18;
-    public static final int kRollerCanId = 19;
+    public static final int kBeltMotorCANId = 18;
+    public static final int kRollerMotorCANId = 19;
+
+    public static final int kBeltMotorCurrentLimit = 60;
+    public static final double kBeltMotorMinOutput = -0.2; // TODO: update after testing
+    public static final double kBeltMotorMaxOutput = 0.2; // TODO: update after testing
+    public static final IdleMode kBeltMotorIdleMode = IdleMode.kBrake;
+
+    public static final int kRollerMotorCurrentLimit = 60;
+    public static final double kRollerMotorMinOutput = -0.2; // TODO: update after testing
+    public static final double kRollerMotorMaxOutput = 0.2; // TODO: update after testing
+    public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
   }
 
   public static final class Launcher {
-    public static final int kLeadScrewCanId = 11;
-    public static final int kTopRollerCanId = 12;
-    public static final int kBottomRollerCanId = 13;
+    public static final int kArmMotorCANId = 11;
+    public static final int kTopRollerMotorCANId = 12;
+    public static final int kBottomRollerMotorCANId = 13;
 
-    // Max distance that the launcher can tilt
-    public static final double kLeadScrewForwardLimit = 100; // TODO: update
-    // Least distance that the launcher can tilt
-    public static final double kLeadScrewReverseLimit = 0.5; // TODO: update
+    public static final int kArmMotorCurrentLimit = 60;
+    public static final double kArmMotorMinOutput = -0.2; // TODO: update after testing
+    public static final double kArmMotorMaxOutput = 0.2; // TODO: update after testing
+    public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
+    public static final double kArmMotorForwardSoftLimit = 100; // TODO: update
+    public static final double kArmMotorReverseSoftLimit = 0.5; // TODO: update
+    public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0; // TODO: update (gear ratio for the leadscrew that converts rotations to inches of extension)
+    public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
+    public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
+    public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
 
-    public static final double kRotationsToInches = 1.0 / 3.0; // TODO: update (gear ratio for the leadscrew that converts rotations to inches of extension)
-    public static final double kVelocityConversion = kRotationsToInches / 60.0;
+    public static final int kTopRollerMotorCurrentLimit = 100;
+    public static final double kTopRollerMotorMinOutput = -0.8; // TODO: update after testing
+    public static final double kTopRollerMotorMaxOutput = 0.8; // TODO: update after testing
+    public static final IdleMode kTopRollerMotorIdleMode = IdleMode.kBrake;
 
-    public static final double kLeadScrewP = 0.0003;
-    public static final double kLeadScrewD = 0.00015;
-    public static final double kLeadScrewFF = 1 / (16.8);
+    public static final int kBottomRollerMotorCurrentLimit = 100;
+    public static final double kBottomRollerMotorMinOutput = -0.8; // TODO: update after testing
+    public static final double kBottomRollerMotorMaxOutput = 0.8; // TODO: update after testing
+    public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
-    public static final double kLeadScrewMinOutput = -1.0;
-    public static final double kLeadScrewMaxOutput = 1.0;
-
-    public static final double kLaunchUpdateSpeed = 0.5;
+    public static final Transform3d kLauncherToRobotTransform3d = new Transform3d(Units.inchesToMeters(0.0), 0.0, Units.inchesToMeters(0.0), new Rotation3d()); // TODO: update with correct translation values
   }
 
   public static final class Arm {
-    public static final int kLeadScrewCanId = 16;
-    public static final int kRollerCanId = 17;
+    public static final int karmMotorCANId = 16;
+    public static final int kRollerMotorCANId = 17;
 
-    // Max distance that the arm can lift
-    public static final double kLeadScrewForwardLimit = 100; // TODO: update
-    // Least distance that the arm can lower
-    public static final double kLeadScrewReverseLimit = 0.5; // TODO: update
+    public static final int kArmMotorCurrentLimit = 60;
+    public static final double kArmMotorMinOutput = -0.2; // TODO: update after testing
+    public static final double kArmMotorMaxOutput = 0.2; // TODO: update after testing
+    public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
+    public static final double kArmMotorForwardSoftLimit = 100; // TODO: update
+    public static final double kArmMotorReverseSoftLimit = 0.5; // TODO: update
+    public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0; // TODO: update (gear ratio for the leadscrew that converts rotations to inches of extension)
+    public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
+    public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
+    public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
 
-    public static final double kRotationsToInches = 1.0 / 3.0; // TODO: update (gear ratio for the arm that converts rotations to inches of extension)
-    public static final double kVelocityConversion = kRotationsToInches / 60.0;
-
-    public static final double kLeadScrewP = 0.0003;
-    public static final double kLeadScrewD = 0.00015;
-    public static final double kLeadScrewFF = 1 / (16.8);
-
-    public static final double kLeadScrewMinOutput = -1.0;
-    public static final double kLeadScrewMaxOutput = 1.0;
+    public static final int kRollerMotorCurrentLimit = 60;
+    public static final double kRollerMotorMinOutput = -0.2; // TODO: update after testing
+    public static final double kRollerMotorMaxOutput = 0.2; // TODO: update after testing
+    public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
   }
 
   public static final class Sensors {
@@ -182,17 +201,19 @@ public final class Constants {
 
     public static final class Pose {
       public static final Map<String, Transform3d> kPoseSensors = Map.ofEntries(
-        entry(
-          "Rear",
-          new Transform3d(
-          new Translation3d(Units.inchesToMeters(9.75), 0.00000, Units.inchesToMeters(18.5)),
-          new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180)))
-        )
+        // entry(
+        //   "Rear",
+        //   new Transform3d(
+        //     new Translation3d(Units.inchesToMeters(9.75), 0.0, Units.inchesToMeters(18.5)),
+        //     new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180))
+        //   )
+        // )
         // entry(
         //   "Side",
         //   new Transform3d(
         //     new Translation3d(-0.18290, 0.18298, 1.19055),
-        //     new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180)))
+        //     new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180))
+        //   )
         // )
       );
       public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
@@ -203,12 +224,20 @@ public final class Constants {
 
     public static final class Object {
       public static final String kCameraName = "Front";
-      public static final Double kObjectRangeYaw = 10.0;
+      public static final double kObjectRangeYaw = 10.0;
     }
 
     public static final class Distance {
-      public static final String kIntakeSensorName = "Intake";
-      public static final String kLauncherSensorName = "Launcher";
+      public static final class Intake {
+        public static final String kSensorName = "Intake";
+        public static final double kMinTargetDistance = 0;
+        public static final double kMaxTargetDistance = 5; // TODO: update after testing
+      }
+      public static final class Launcher {
+        public static final String kSensorName = "Launcher";
+        public static final double kMinTargetDistance = 0;
+        public static final double kMaxTargetDistance = 5; // TODO: update after testing
+      }
     }
   }
 

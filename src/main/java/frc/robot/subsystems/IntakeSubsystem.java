@@ -5,17 +5,28 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
+  public static enum BeltDirection { Forward, Backward; }
+  public static enum RollerDirection { Inward, Outward; }
+
   private final CANSparkMax m_beltMotor;
   private final CANSparkMax m_rollerMotor;
 
   public IntakeSubsystem() {
-    m_beltMotor = new CANSparkMax(Constants.Intake.kBeltCanId, MotorType.kBrushless);
-    m_rollerMotor = new CANSparkMax(Constants.Intake.kRollerCanId, MotorType.kBrushless);
+    m_beltMotor = new CANSparkMax(Constants.Intake.kBeltMotorCANId, MotorType.kBrushless);
+    m_beltMotor.restoreFactoryDefaults();
+    m_beltMotor.setIdleMode(Constants.Intake.kBeltMotorIdleMode); 
+    m_beltMotor.setSmartCurrentLimit(Constants.Intake.kBeltMotorCurrentLimit);
+    m_beltMotor.setSecondaryCurrentLimit(Constants.Intake.kBeltMotorCurrentLimit);
+
+    m_rollerMotor = new CANSparkMax(Constants.Intake.kRollerMotorCANId, MotorType.kBrushless);
+    m_rollerMotor.restoreFactoryDefaults();
+    m_rollerMotor.setIdleMode(Constants.Intake.kRollerMotorIdleMode); 
+    m_rollerMotor.setSmartCurrentLimit(Constants.Intake.kRollerMotorCurrentLimit);
+    m_rollerMotor.setSecondaryCurrentLimit(Constants.Intake.kRollerMotorCurrentLimit);
   }
 
   @Override
@@ -23,20 +34,30 @@ public class IntakeSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command runRollers(Double speed) {
-    return Commands.run(
-      () -> {
-        m_rollerMotor.set(speed);
-      }, 
-      this);
+  public Command runBelts(BeltDirection direction) {
+    return 
+      run(() -> {
+        // TODO: determine correct direction of travel for forward/backward with motor
+        m_beltMotor.set(
+          direction == BeltDirection.Forward ? 
+          Constants.Intake.kBeltMotorMaxOutput : 
+          Constants.Intake.kBeltMotorMinOutput
+        );
+      })
+      .withName("RunIntakeBelts");
   }
 
-  public Command runBelts(Double speed) {
-    return Commands.run(
-      () -> {
-        m_beltMotor.set(speed);
-      }, 
-      this);
+  public Command runRollers(RollerDirection direction) {
+    return 
+      run(() -> {
+        // TODO: determine correct direction of travel for inward/outward with motor
+        m_rollerMotor.set(
+          direction == RollerDirection.Inward ? 
+          Constants.Intake.kRollerMotorMaxOutput : 
+          Constants.Intake.kRollerMotorMinOutput
+        );
+      })
+      .withName("RunIntakeRollers");
   }
 
   private void updateTelemetry() {
