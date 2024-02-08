@@ -51,42 +51,42 @@ public class FeederSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command startFeederCommand() {
+  public Command runFeederCommand() {
     return
-      run(() -> {
-        m_armPIDController.setReference(Constants.Feeder.kArmMotorForwardSoftLimit, ControlType.kPosition);
-        m_rollerMotor.set(Constants.Feeder.kRollerMotorMaxOutput);
-      })
-      .withName("StartFeeder");
+    run(() -> {
+      m_armPIDController.setReference(Constants.Feeder.kArmMotorForwardSoftLimit, ControlType.kPosition);
+      m_rollerMotor.set(Constants.Feeder.kRollerMotorMaxOutput);
+    })
+    .withName("StartFeeder");
   }
 
   public Command stopFeederCommand() {
     return
-      run(() -> {
-        m_armPIDController.setReference(Constants.Feeder.kArmMotorReverseSoftLimit, ControlType.kPosition);
-        m_rollerMotor.set(0.0);
-      })
-      .withTimeout(3.0)
-      .finallyDo(() -> m_armMotor.set(0.0))
-      .withName("StopFeeder");
+    run(() -> {
+      m_armPIDController.setReference(Constants.Feeder.kArmMotorReverseSoftLimit, ControlType.kPosition);
+      m_rollerMotor.set(0.0);
+    })
+    .withTimeout(3.0)
+    .finallyDo(() -> m_armMotor.set(0.0))
+    .withName("StopFeeder");
   }
 
   public Command resetCommand() {
     return
-      startEnd(
-        () -> {
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
-          m_armMotor.set(-0.1);
-        }, 
-        () -> {
-          m_armEncoder.setPosition(0);
-          m_armMotor.set(0.0);
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-        }
-      )
-      .withName("ResetFeeder");
+    startEnd(
+      () -> {
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        m_armMotor.set(-0.1);
+      }, 
+      () -> {
+        m_armEncoder.setPosition(0);
+        m_armMotor.set(0.0);
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+      }
+    )
+    .withName("ResetFeeder");
   }
 
   private void updateTelemetry() {

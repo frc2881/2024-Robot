@@ -39,10 +39,8 @@ public class AutoCommands {
 
   private Command resetGyroCommand() {
     return Commands
-      .runOnce(
-        () -> m_gyroSensor.reset(m_poseSubsystem.getPose().getRotation().getDegrees())
-      )
-      .withName("ResetGyro"); 
+    .runOnce(() -> m_gyroSensor.reset(m_poseSubsystem.getPose().getRotation().getDegrees()))
+    .withName("ResetGyro"); 
   }
 
   public Command test3NoteAuto() {
@@ -51,47 +49,47 @@ public class AutoCommands {
     PathPlannerPath path3 = PathPlannerPath.fromPathFile("Test3");
     PathConstraints constraints = new PathConstraints(2.0, 2.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
     return Commands
-      .sequence(
-        resetGyroCommand(), // ADD TO START OF ALL AUTOS
-        //m_poseSubsystem.resetPoseCommand(), //path.getPreviewStartingHolonomicPose()
-        AutoBuilder.followPath(path1),
-        //AutoBuilder.pathfindThenFollowPath(path1, constraints),
-        Commands.waitSeconds(1),
-        AutoBuilder.followPath(path2),
-        //AutoBuilder.pathfindThenFollowPath(path2, constraints),
-        Commands.waitSeconds(2),
-        AutoBuilder.pathfindThenFollowPath(path3, constraints),
-        Commands.waitSeconds(2)
-        //Commands.runOnce(() -> m_driveSubsystem.setLockState(LockState.LOCKED))
-      )
-      .withName("RunAutoTest3NoteAuto");
+    .sequence(
+      resetGyroCommand(), // ADD TO START OF ALL AUTOS
+      //m_poseSubsystem.resetPoseCommand(), //path.getPreviewStartingHolonomicPose()
+      AutoBuilder.followPath(path1),
+      //AutoBuilder.pathfindThenFollowPath(path1, constraints),
+      Commands.waitSeconds(1),
+      AutoBuilder.followPath(path2),
+      //AutoBuilder.pathfindThenFollowPath(path2, constraints),
+      Commands.waitSeconds(2),
+      AutoBuilder.pathfindThenFollowPath(path3, constraints),
+      Commands.waitSeconds(2)
+      //Commands.runOnce(() -> m_driveSubsystem.setLockState(LockState.LOCKED))
+    )
+    .withName("RunAutoTest3NoteAuto");
   }
 
   public Command testPath2() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test4");
     return Commands
-      .sequence(
-        resetGyroCommand(),
-        AutoBuilder.followPath(path1)
-      )
-      .withName("");
+    .sequence(
+      resetGyroCommand(),
+      AutoBuilder.followPath(path1)
+    )
+    .withName("");
   }
 
   public Command testPath3() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test5");
     return Commands
-      .sequence(
-        AutoBuilder.followPath(path1)
-      )
-      .withName("");
+    .sequence(
+      AutoBuilder.followPath(path1)
+    )
+    .withName("");
   }
 
   public Command testPath4() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test6");
     return Commands
-      .sequence(
-        AutoBuilder.followPath(path1)
-      )
-      .withName("");
+    .sequence(
+      AutoBuilder.followPath(path1)
+    )
+    .withName("");
   }
 }

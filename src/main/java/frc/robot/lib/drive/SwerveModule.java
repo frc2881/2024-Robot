@@ -21,16 +21,14 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.lib.common.Enums.SwerveModuleLocation;
 import frc.robot.Constants;
 import frc.robot.lib.logging.Logger;
 
 public class SwerveModule implements Sendable {
-
-  public static enum Location { FrontLeft, FrontRight, RearLeft, RearRight; }
-
   private static List<CANSparkBase> m_motorControllers = new ArrayList<CANSparkBase>();
 
-  private final Location m_location;
+  private final SwerveModuleLocation m_location;
 
   private final CANSparkFlex m_drivingMotor;
   private final CANSparkMax m_turningMotor;
@@ -42,7 +40,7 @@ public class SwerveModule implements Sendable {
   private double m_turningOffset = 0;
   private double m_setSpeed = 0;
 
-  public SwerveModule(Location location, int drivingMotorCanId, int turningMotorCanId, double turningOffset) {
+  public SwerveModule(SwerveModuleLocation location, int drivingMotorCanId, int turningMotorCanId, double turningOffset) {
     m_location = location;
 
     String logPrefix = "SwerveModule:" + m_location.toString();

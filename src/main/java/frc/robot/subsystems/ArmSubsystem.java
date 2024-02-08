@@ -12,16 +12,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.lib.common.Enums.MotorDirection;
 
 public class ArmSubsystem extends SubsystemBase {
-  public static enum RollerDirection { Inward, Outward; }
-
   private final CANSparkMax m_armMotor;
   private final SparkPIDController m_armPIDController;
   private final RelativeEncoder m_armEncoder;
   private final CANSparkMax m_rollerMotor;
 
-  private boolean m_isAtPosition = false;
+  private boolean m_isArmAtPosition = false;
   
   public ArmSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Arm.kArmMotorCANId, MotorType.kBrushless);
@@ -61,51 +60,49 @@ public class ArmSubsystem extends SubsystemBase {
 
   public Command moveToPositionCommand(double position) {
     return
-      runOnce(() -> {
-        m_isAtPosition = false;
-      })
-      .andThen(
-        this
-          .run(() -> {
-            m_armPIDController.setReference(position, ControlType.kSmartMotion);
-            m_isAtPosition = Math.abs(m_armEncoder.getPosition() - position) < 0.1; // TODO: determine if this is correct tolerance
-          })
-          .until(() -> m_isAtPosition)
-          .finallyDo(() -> m_armMotor.set(0.0))
-      )
-      .withName("MoveArmToPosition");
+    run(() -> {
+      m_armPIDController.setReference(position, ControlType.kSmartMotion);
+      m_isArmAtPosition = Math.abs(m_armEncoder.getPosition() - position) < 0.1; // TODO: determine if this is correct tolerance
+    })
+    .beforeStarting(() -> m_isArmAtPosition = false)
+    .until(() -> m_isArmAtPosition)
+    .finallyDo(() -> m_armMotor.set(0.0))
+    .withName("MoveArmToPosition");
   }
 
-  public Command runRollersCommand(RollerDirection direction) {
+  public Command runRollersCommand(MotorDirection direction) {
     return 
-      run(() -> {
-        // TODO: determine correct direction of travel for inward/outward with motor
-        m_rollerMotor.set(
-          direction == RollerDirection.Inward ? 
-          Constants.Arm.kRollerMotorMaxOutput : 
-          Constants.Arm.kRollerMotorMinOutput
-        );
-        // TODO: determine current limit to stop rollers when performing inward intake
-      })
-      .withName("RunArmRollers");
+    startEnd(() -> {
+      // TODO: determine correct direction of travel for inward/outward with motor
+      m_rollerMotor.set(
+        direction == MotorDirection.Forward ? 
+        Constants.Arm.kRollerMotorMaxOutput : 
+        Constants.Arm.kRollerMotorMinOutput
+      ); 
+    },
+    () -> {
+      m_rollerMotor.set(0.0);
+    })
+    .until(() -> false) // TODO: determine current limit on bag motor to stop rollers when performing inward intake
+    .withName("RunArmRollers");
   }
 
   public Command resetCommand() {
     return 
-      startEnd(
-        () -> {
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
-          m_armMotor.set(-0.1);
-        }, 
-        () -> {
-          m_armEncoder.setPosition(0);
-          m_armMotor.set(0.0);
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-        }
-      )
-      .withName("ResetArm");
+    startEnd(
+      () -> {
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        m_armMotor.set(-0.1);
+      }, 
+      () -> {
+        m_armEncoder.setPosition(0);
+        m_armMotor.set(0.0);
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+      }
+    )
+    .withName("ResetArm");
   }
 
   private void updateTelemetry() {

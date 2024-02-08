@@ -5,14 +5,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.lib.common.Enums.RobotMode;
+import frc.robot.lib.common.Enums.RobotState;
 import frc.robot.lib.logging.Logger;
 import frc.robot.lib.telemetry.RobotTelemetry;
 
 public class Robot extends TimedRobot {
-
-  public static enum Mode { Disabled, Auto, Teleop, Test, Sim; }
-  public static enum State { Disabled, Enabled, EStopped; }
-
   private static Robot m_robotInstance;
   private RobotContainer m_robotContainer;
   private Command m_autoCommand;
@@ -33,7 +31,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    Logger.log(Robot.Mode.Disabled);
+    Logger.log(RobotMode.Disabled);
   }
 
   @Override
@@ -44,7 +42,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    Logger.log(Robot.Mode.Auto);
+    Logger.log(RobotMode.Auto);
     m_autoCommand = m_robotContainer.getSelectedAutoCommand();
     if (m_autoCommand != null) {
       m_autoCommand.schedule();
@@ -59,7 +57,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    Logger.log(Robot.Mode.Teleop);
+    Logger.log(RobotMode.Teleop);
     if (m_autoCommand != null) {
       m_autoCommand.cancel();
     }
@@ -73,7 +71,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
-    Logger.log(Robot.Mode.Test);
+    Logger.log(RobotMode.Test);
     CommandScheduler.getInstance().cancelAll();
   }
 
@@ -85,7 +83,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationInit() {
-    Logger.log(Robot.Mode.Sim);
+    Logger.log(RobotMode.Sim);
   }
 
   @Override
@@ -95,11 +93,33 @@ public class Robot extends TimedRobot {
     m_robotInstance.addPeriodic(callback, periodSeconds, 0.333);
   }
 
-  public static boolean isRunningMatch() {
-    return DriverStation.getMatchTime() != -1;
+  public static RobotMode getMode() {
+    if (edu.wpi.first.wpilibj.RobotState.isTeleop()) {
+      return RobotMode.Teleop;
+    } else if (edu.wpi.first.wpilibj.RobotState.isAutonomous()) {
+      return RobotMode.Auto;
+    } else if (edu.wpi.first.wpilibj.RobotState.isTest()) {
+      return RobotMode.Test;
+    } else {
+      return RobotMode.Disabled;
+    }
   }
-  
+
+  public static RobotState getState() {
+    if (edu.wpi.first.wpilibj.RobotState.isEnabled()) {
+      return RobotState.Enabled;
+    } else if (edu.wpi.first.wpilibj.RobotState.isEStopped()) {
+      return RobotState.EStopped;
+    } else {
+      return RobotState.Disabled;
+    }
+  }
+
   public static Alliance getAlliance() {
     return DriverStation.getAlliance().orElse(Alliance.Blue);
+  }
+
+  public static boolean isRunningMatch() {
+    return DriverStation.getMatchTime() != -1;
   }
 }

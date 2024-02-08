@@ -16,6 +16,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.GameCommands;
+import frc.robot.lib.common.Enums.DriveDriftCorrection;
+import frc.robot.lib.common.Enums.DriveOrientation;
+import frc.robot.lib.common.Enums.DriveSpeedMode;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.GyroSensor;
@@ -115,33 +118,34 @@ public class RobotContainer {
 
     // DRIVER ========================================
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToSpeakerCommand());
-    m_driverController.x().onTrue(m_driveSubsystem.toggleLockStateCommand()); // TODO: refactor to while held only vs. toggle for X lock state
-    m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand()); // TODO: run intake game command in forward direction (front of robot intake direction for note)
-    m_driverController.leftTrigger().whileTrue(Commands.none()); // TODO: run intake game command in backward direction (rear of robot intake direction for note)
+    m_driverController.x().whileTrue(m_driveSubsystem.setLockedCommand());
+    m_driverController.rightTrigger().whileTrue(m_gameCommands.runFrontIntakeCommand());
+    m_driverController.leftTrigger().whileTrue(m_gameCommands.runRearIntakeCommand());
+    m_driverController.rightTrigger().and(m_driverController.leftTrigger()).whileTrue(m_gameCommands.runEjectIntakeCommand());
     m_driverController.start().onTrue(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand());
-    m_operatorController.x().onTrue(m_feederSubsystem.startFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
-    m_operatorController.rightTrigger().whileTrue(Commands.none()); // TODO: run launcher game command to score note (once launcher is aligned to target by driver and operator)
+    m_operatorController.x().onTrue(m_feederSubsystem.runFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
+    m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand()); // TODO: run launcher game command to score note (once launcher is aligned to target by both driver and operator)
     m_operatorController.start().whileTrue(m_feederSubsystem.resetCommand()); // TODO: create parallel game command for resetting feeder, launcher, and arm mechanisms in parallel with one button
 
     // DASHBOARD ========================================
-    SendableChooser<DriveSubsystem.SpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSubsystem.SpeedMode>();
-    driveSpeedModeChooser.setDefaultOption(DriveSubsystem.SpeedMode.Competition.toString(), DriveSubsystem.SpeedMode.Competition);
-    driveSpeedModeChooser.addOption(DriveSubsystem.SpeedMode.Training.toString(), DriveSubsystem.SpeedMode.Training);
+    SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();
+    driveSpeedModeChooser.setDefaultOption(DriveSpeedMode.Competition.toString(), DriveSpeedMode.Competition);
+    driveSpeedModeChooser.addOption(DriveSpeedMode.Training.toString(), DriveSpeedMode.Training);
     driveSpeedModeChooser.onChange(speedMode -> m_driveSubsystem.setSpeedMode(speedMode));
     SmartDashboard.putData("Robot/Drive/SpeedMode", driveSpeedModeChooser);
 
-    SendableChooser<DriveSubsystem.Orientation> driveOrientationChooser = new SendableChooser<DriveSubsystem.Orientation>();
-    driveOrientationChooser.setDefaultOption(DriveSubsystem.Orientation.Field.toString(), DriveSubsystem.Orientation.Field);
-    driveOrientationChooser.addOption(DriveSubsystem.Orientation.Robot.toString(), DriveSubsystem.Orientation.Robot);
+    SendableChooser<DriveOrientation> driveOrientationChooser = new SendableChooser<DriveOrientation>();
+    driveOrientationChooser.setDefaultOption(DriveOrientation.Field.toString(), DriveOrientation.Field);
+    driveOrientationChooser.addOption(DriveOrientation.Robot.toString(), DriveOrientation.Robot);
     driveOrientationChooser.onChange(orientation -> m_driveSubsystem.setOrientation(orientation));
     SmartDashboard.putData("Robot/Drive/Orientation", driveOrientationChooser);
 
-    SendableChooser<DriveSubsystem.DriftCorrection> driveDriftCorrectionChooser = new SendableChooser<DriveSubsystem.DriftCorrection>();
-    driveDriftCorrectionChooser.setDefaultOption(DriveSubsystem.DriftCorrection.Enabled.toString(), DriveSubsystem.DriftCorrection.Enabled);
-    driveDriftCorrectionChooser.addOption(DriveSubsystem.DriftCorrection.Disabled.toString(), DriveSubsystem.DriftCorrection.Disabled);
+    SendableChooser<DriveDriftCorrection> driveDriftCorrectionChooser = new SendableChooser<DriveDriftCorrection>();
+    driveDriftCorrectionChooser.setDefaultOption(DriveDriftCorrection.Enabled.toString(), DriveDriftCorrection.Enabled);
+    driveDriftCorrectionChooser.addOption(DriveDriftCorrection.Disabled.toString(), DriveDriftCorrection.Disabled);
     driveDriftCorrectionChooser.onChange(driftCorrection -> m_driveSubsystem.setDriftCorrection(driftCorrection));
     SmartDashboard.putData("Robot/Drive/DriftCorrection", driveDriftCorrectionChooser);
   }
@@ -181,6 +185,6 @@ public class RobotContainer {
     m_launcherDistanceSensor.updateTelemetry();
     m_objectSensor.updateTelemetry();
 
-    //SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
+    //SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent()); // TODO: debug PDH data message call errors
   }
 }

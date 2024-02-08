@@ -67,8 +67,8 @@ public final class Constants {
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
 
-    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
-    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0); 
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0); // TODO: update after testing
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0); // TODO: update after testing
 
     public static final class SwerveModule {
       public static final double kOffsetFrontLeft = -Math.PI / 2;
@@ -150,28 +150,28 @@ public final class Constants {
     public static final int kBottomRollerMotorCANId = 13;
 
     public static final int kArmMotorCurrentLimit = 60;
-    public static final double kArmMotorMinOutput = -0.2; // TODO: update after testing
-    public static final double kArmMotorMaxOutput = 0.2; // TODO: update after testing
+    public static final double kArmMotorMinOutput = -0.2; // TODO: update after testing - set to low value for initial motor run for safety
+    public static final double kArmMotorMaxOutput = 0.2; // TODO: update after testing - set to low value for initial motor run for safety
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
-    public static final double kArmMotorForwardSoftLimit = 100; // TODO: update
-    public static final double kArmMotorReverseSoftLimit = 0.5; // TODO: update
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8); // TODO: update after testing
+    public static final double kArmMotorForwardSoftLimit = 100; // TODO: update to align with amount of travel allowed for launcher lead screw
+    public static final double kArmMotorReverseSoftLimit = 0.5; // TODO: update to align with starting position of travel for launcher lead screw (set what "zero" actualy is)
     public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0; // TODO: update (gear ratio for the leadscrew that converts rotations to inches of extension)
     public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
     public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
     public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
 
     public static final int kTopRollerMotorCurrentLimit = 100;
-    public static final double kTopRollerMotorMinOutput = -0.8; // TODO: update after testing
-    public static final double kTopRollerMotorMaxOutput = 0.8; // TODO: update after testing
+    public static final double kTopRollerMotorMinOutput = -0.8; // TODO: update after testing - may need to set to -1.0 and pass specific speeds for amp vs. speaker launch profiles
+    public static final double kTopRollerMotorMaxOutput = 0.8; // TODO: update after testing - may need to set to 1.0 and pass specific speeds for amp vs. speaker launch profiles
     public static final IdleMode kTopRollerMotorIdleMode = IdleMode.kBrake;
 
     public static final int kBottomRollerMotorCurrentLimit = 100;
-    public static final double kBottomRollerMotorMinOutput = -0.8; // TODO: update after testing
-    public static final double kBottomRollerMotorMaxOutput = 0.8; // TODO: update after testing
+    public static final double kBottomRollerMotorMinOutput = -0.8; // TODO: update after testing - may need to set to -1.0 and pass specific speeds for amp vs. speaker launch profiles
+    public static final double kBottomRollerMotorMaxOutput = 0.8; // TODO: update after testing - may need to set to 1.0 and pass specific speeds for amp vs. speaker launch profiles
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
-    public static final Transform3d kLauncherToRobotTransform3d = new Transform3d(Units.inchesToMeters(0.0), 0.0, Units.inchesToMeters(0.0), new Rotation3d()); // TODO: update with correct translation values
+    public static final Transform3d kLauncherToRobotTransform3d = new Transform3d(Units.inchesToMeters(0.0), 0.0, Units.inchesToMeters(0.0), new Rotation3d()); // TODO: update with correct translation values if needed for launcher angle calculation
   }
 
   public static final class Arm {
@@ -206,6 +206,7 @@ public final class Constants {
     }
 
     public static final class Pose {
+      // TODO: enable and configuration cameras and transforms after mounting to robot
       public static final Map<String, Transform3d> kPoseSensors = Map.ofEntries(
         // entry(
         //   "Rear",
@@ -230,19 +231,19 @@ public final class Constants {
 
     public static final class Object {
       public static final String kCameraName = "Front";
-      public static final double kObjectRangeYaw = 10.0;
+      public static final double kObjectRangeYaw = 10.0; // TODO: update after testing
     }
 
     public static final class Distance {
       public static final class Intake {
         public static final String kSensorName = "Intake";
         public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 25; // TODO: update after testing
+        public static final double kMaxTargetDistance = 25; // TODO: update after testing note detection within intake
       }
       public static final class Launcher {
         public static final String kSensorName = "Launcher";
         public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 15; // TODO: update after testing
+        public static final double kMaxTargetDistance = 25; // TODO: update after testing note detection within launcher
       }
     }
   }
@@ -256,7 +257,7 @@ public final class Constants {
         new Pose2d(kAprilTagFieldLayout.getFieldLength(), kAprilTagFieldLayout.getFieldWidth(), null)
       );
 
-      // TODO: define proper launch zones based on testing
+      // TODO: define proper launch zones based on testing - may only need a minimum distance and rotation angle defined for speaker and amp targets instead of bounding boxes
       public static final class LaunchZones {
         public static final Pair<Pose2d, Pose2d> kSpeaker = Pair.of(
           new Pose2d(0, 0, null), 

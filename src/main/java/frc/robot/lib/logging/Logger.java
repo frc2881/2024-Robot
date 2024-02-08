@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import frc.robot.Robot;
+import frc.robot.lib.common.Enums.RobotMode;
 
 public final class Logger {
 
@@ -29,7 +30,7 @@ public final class Logger {
     DataLogManager.log("[" + Timer.getFPGATimestamp() + "] " + message);
   }
 
-  public static void log(Robot.Mode mode) {
+  public static void log(RobotMode mode) {
     log(">>>>>>>>>> Robot Mode Changed: " + mode + " <<<<<<<<<<");
   }
 

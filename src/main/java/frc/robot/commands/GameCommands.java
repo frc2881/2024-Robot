@@ -15,8 +15,6 @@ import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
-import frc.robot.subsystems.IntakeSubsystem.BeltDirection;
-import frc.robot.subsystems.IntakeSubsystem.RollerDirection;
 
 public class GameCommands {
   private final GyroSensor m_gyroSensor;    
@@ -54,50 +52,63 @@ public class GameCommands {
     m_lightsController = lightsController;
   }
 
-  // TODO: build command to run intake belts from driver controller triggers and set direction of belts and rollers based on intake/launcher sensor hasTarget booleans
-  // TODO: build command to run launcher and intake rollers from operator controller trigger with launcher sensor hasTarget boolean and timeout to complete
-
-  public Command alignRobotToSpeakerCommand() {
-    return Commands
-      .sequence(
-        m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getSpeaker().toPose2d())
-      )
-      .withName("AlignRobotToSpeaker");
+  // TODO: this needs testing and tuning with motor speed, sensor distance/note detection
+  public Command runFrontIntakeCommand() {
+    return 
+    m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
+    .withName("RunFrontIntakeCommand");
   }
 
+  // TODO: this needs testing and tuning with motor speed, sensor distance/note detection
+  public Command runRearIntakeCommand() {
+    return
+    m_intakeSubsystem.runIntakeFromRearCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
+    .withName("RunRearIntakeCommand");
+  }
+
+  // TODO: this needs testing to confirm proper ejection of note out of bottom of robot
+  public Command runEjectIntakeCommand() {
+    return
+    m_intakeSubsystem.runIntakeEjectCommand()
+    .withName("RunEjectIntakeCommand");
+  }
+
+  // TODO: build launch sequence command - see IntakeSubsystem - runFrontIntakeCommand for example of sequence and conditional logic (assumes that robot has already been aligned by driver/rotation and operator/elevation)
+  // TODO: after testing basic launcher command, implement separate commands for launching into speaker vs. amp with different launcher roller speed configurations (see inside LauncherSubsystem for TODO)
+  public Command runLauncherCommand() {
+    return Commands.none();
+    // - check if launcher distance sensor has target (note is present and ready to launch)
+    // - in parallel: run launcher rollers, add wait for launcher roller spin up ~ 1 second or less, run intake subsystem launch command to push note into rollers
+    // - add reasonable wait (1 second) and then check if launcher distance sensor no longer has target (note has launched)
+    // - add reasonable timeout to end command which will stop launcher rollers and intake belts
+  }
+
+  // TODO: this needs testing once vision cameras are mounted and configured
+  public Command alignRobotToSpeakerCommand() {
+    return
+    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getSpeaker().toPose2d())
+    .withName("AlignRobotToSpeaker");
+  }
+
+  // TODO: this needs testing once vision cameras are mounted and configured
   public Command alignRobotToAmpCommand() {
-    return Commands
-      .sequence(
-        m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getAmp().toPose2d())
-      )
-      .withName("AlignRobotToAmp");
+    return
+    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getAmp().toPose2d())
+    .withName("AlignRobotToAmp");
   } 
 
+  // TODO: this needs testing once vision cameras are mounted and configured
   public Command alignLauncherToSpeakerCommand() {
-    return Commands
-      .sequence(
-        m_launcherSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getSpeaker())
-      )
-      .withName("AlignLauncherToSpeaker");
+    return
+    m_launcherSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getSpeaker())
+    .withName("AlignLauncherToSpeaker");
   }
 
+  // TODO: this needs testing once vision cameras are mounted and configured
   public Command alignLauncherToAmpCommand() {
-    return Commands
-      .sequence(
-        m_launcherSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getAmp())
-      )
-      .withName("AlignLauncherToAmp");
-  }
-
-  public Command runIntakeCommand() {
-    return Commands
-      .parallel(
-        m_intakeSubsystem.runRollers(RollerDirection.Outward), 
-        m_intakeSubsystem.runTopBelts(BeltDirection.Forward),
-        m_intakeSubsystem.runBottomBelts(BeltDirection.Forward)
-      )
-      .until(() -> m_intakeDistanceSensor.hasTarget())
-      .withName("RunIntake");
+    return
+    m_launcherSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getAmp())
+    .withName("AlignLauncherToAmp");
   }
 
   private static Pose3d getSpeaker() {

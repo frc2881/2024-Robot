@@ -69,57 +69,58 @@ public class LauncherSubsystem extends SubsystemBase {
 
   public Command alignToTargetCommand(Supplier<Pose2d> currentPose, Pose3d targetPose) {
     return
-      runOnce(() -> {
-        m_isAlignedToTarget = false;
-      })
-      .andThen(
-        this
-          .run(() -> {
-            double position = calculateArmPosition(currentPose.get(), targetPose);
-            m_armPIDController.setReference(position, ControlType.kSmartMotion);
-            m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < 0.1; // TODO: determine if this is correct tolerance
-          })
-          .until(() -> m_isAlignedToTarget)
-          .finallyDo(() -> m_armMotor.set(0.0))
-      )
-      .withName("AlignLauncherElevationToTarget");
+    run(() -> {
+      double position = calculateArmPosition(currentPose.get(), targetPose); // TODO: determine with testing whether this needs to be a first-time calculation only or ok to do on-the-fly
+      m_armPIDController.setReference(position, ControlType.kSmartMotion);
+      m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < 0.1; // TODO: determine if this is correct tolerance
+    })
+    .beforeStarting(() -> m_isAlignedToTarget = false)
+    .until(() -> m_isAlignedToTarget)
+    .finallyDo(() -> m_armMotor.set(0.0))
+    .withName("AlignLauncherElevationToTarget");
   }
 
-  public double calculateArmPosition(Pose2d currentPose, Pose3d targetPose) {
-    // TODO: adjust current pose with transform defined in constants (kLauncherToRobotTransform3d) ... launcher is higher in the robot than the ground
+  private double calculateArmPosition(Pose2d currentPose, Pose3d targetPose) {
+    // TODO: if needed, adjust current pose with transform defined in constants (kLauncherToRobotTransform3d) ... launcher is higher in the robot than the ground
     double height = targetPose.minus(new Pose3d(currentPose)).getZ();
     double distance = currentPose.getTranslation().getDistance(targetPose.toPose2d().getTranslation()); 
     double angle = Math.toDegrees(Math.atan2(height, distance)); 
-    // TODO: confirm angle adjustment factor needed
-    // TODO: convert angle into arm position
+    // TODO: confirm angle adjustment factor needed based on field testing - may need a "fudge factor" based on mechanical and aerodynamics
+    // TODO: convert the adjusted angle into arm reference position to set for the lead screw
     return 0.0;
   }
 
+  // TOOD: create separate public subsystem commands for launching into speaker vs. amp with variable roller speeds configured within the subsystem
+
   public Command runRollersCommand(double topRollerSpeed, double bottomRollerSpeed) {
     return 
-      run(() -> {
-        m_topRollerMotor.set(topRollerSpeed * Constants.Launcher.kTopRollerMotorMaxOutput);
-        m_bottomRollerMotor.set(bottomRollerSpeed * Constants.Launcher.kBottomRollerMotorMaxOutput);
-      })
-      .withName("RunLauncherRollers");
+    startEnd(() -> {
+      m_topRollerMotor.set(topRollerSpeed * Constants.Launcher.kTopRollerMotorMaxOutput);
+      m_bottomRollerMotor.set(bottomRollerSpeed * Constants.Launcher.kBottomRollerMotorMaxOutput);
+    },
+    () -> { 
+      m_topRollerMotor.set(0.0);
+      m_bottomRollerMotor.set(0.0);
+    })
+    .withName("RunLauncherRollers");
   }
 
   public Command resetCommand() {
     return 
-      startEnd(
-        () -> {
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
-          m_armMotor.set(-0.1);
-        }, 
-        () -> {
-          m_armEncoder.setPosition(0);
-          m_armMotor.set(0.0);
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-          m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-        }
-      )
-      .withName("ResetLauncher");
+    startEnd(
+      () -> {
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        m_armMotor.set(-0.1);
+      }, 
+      () -> {
+        m_armEncoder.setPosition(0);
+        m_armMotor.set(0.0);
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+        m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+      }
+    )
+    .withName("ResetLauncher");
   }
 
   private void updateTelemetry() {

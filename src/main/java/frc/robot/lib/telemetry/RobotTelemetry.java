@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,32 +31,11 @@ public final class RobotTelemetry {
   }
 
   private static void updateRobotInfo() {
-    Robot.Mode mode;
-    if (RobotState.isTeleop()) {
-      mode = Robot.Mode.Teleop;
-    } else if (RobotState.isAutonomous()) {
-      mode = Robot.Mode.Auto;
-    } else if (RobotState.isTest()) {
-      mode = Robot.Mode.Test;
-    } else {
-      mode = Robot.Mode.Disabled;
-    }
-    SmartDashboard.putString("Robot/Mode", mode.toString());
-
-    Robot.State state;
-    if (RobotState.isEnabled()) { 
-      state = Robot.State.Enabled; 
-    } else if (RobotState.isEStopped()) { 
-      state = Robot.State.EStopped; 
-    } else {
-      state = Robot.State.Disabled;
-    }
-    SmartDashboard.putString("Robot/State", state.toString());
-
-    SmartDashboard.putNumber("Robot/Power/Battery/Voltage", RobotController.getBatteryVoltage());
-
+    SmartDashboard.putString("Robot/Mode", Robot.getMode().toString());
+    SmartDashboard.putString("Robot/State", Robot.getState().toString());
     SmartDashboard.putString("Robot/Game/Alliance", Robot.getAlliance().toString().toUpperCase());
     SmartDashboard.putNumber("Robot/Game/StationNumber", DriverStation.getLocation().orElse(0));
+    SmartDashboard.putNumber("Robot/Power/Battery/Voltage", RobotController.getBatteryVoltage());
   }
 
   private static void updateTelemetrySetting() {

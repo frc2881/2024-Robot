@@ -1,18 +1,17 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.lib.common.Enums.MotorDirection;
 
 public class IntakeSubsystem extends SubsystemBase {
-  public static enum BeltDirection { Forward, Backward; }
-  public static enum RollerDirection { Inward, Outward; }
-
   private final CANSparkMax m_topBeltMotor;
   private final CANSparkMax m_bottomBeltMotor;
   private final CANSparkMax m_rollerMotor;
@@ -42,46 +41,163 @@ public class IntakeSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command runTopBelts(BeltDirection direction) {
-    return 
-      Commands.run(() -> {
-        // TODO: determine correct direction of travel for forward/backward with motor
-        m_topBeltMotor.set(
-          direction == BeltDirection.Forward ? 
-          Constants.Intake.kTopBeltMotorMaxOutput : 
-          Constants.Intake.kTopBeltMotorMinOutput
-        );
-      })
-      .finallyDo(() -> m_topBeltMotor.set(0.0))
-      .withName("RunIntakeTopBelts");
+  public Command runIntakeFromFrontCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherHasTarget) {
+    return
+    startEnd(
+      () -> {
+        runTopBelts(MotorDirection.Forward); // run top belts for ground intake at front of robot
+        runBottomBelts(MotorDirection.Forward); // run bottom belts for ground intake at front of robot
+        runRollers(MotorDirection.Reverse); // run rollers for ground intake at front of robot
+      },
+      () -> {}
+    )
+    .unless(intakeHasTarget::get) // skip the command step if there is a note already in the intake
+    .until(intakeHasTarget::get) // run this command step until there is a note in the intake
+    .andThen(
+      startEnd(
+        () -> {
+          runTopBelts(MotorDirection.Reverse); // reverse the top belts to move the note from the intake to the launcher
+          runRollers(MotorDirection.Forward); // reverse the rollers to push out any others notes from the front of the robot
+        },
+        () -> {}
+      )
+      .unless(launcherHasTarget::get) // skip this command step if there is a note already in the launcher
+      .until(launcherHasTarget::get) // run this command step until there is a note in the launcher
+    )
+    .andThen(
+      runOnce(
+        () -> {
+          runTopBelts(MotorDirection.None); // stop the top belts once a note has reached the launcher
+          runBottomBelts(MotorDirection.None); // stop the bottom belts once a note has reached the launcher
+          runRollers(MotorDirection.Reverse); // run the rollers to push out any other notes from the rear of the robot and assuming the direction of travel is now towards driver station for scoring
+        }
+      )
+    )
+    .finallyDo(() -> {
+      runTopBelts(MotorDirection.None); // stop the top belts at any point the command sequence is ended or interrupted
+      runBottomBelts(MotorDirection.None); // stop the bottom belts at any point the command sequence is ended or interrupted
+      runRollers(MotorDirection.None); // stop the rollers at any point the command sequence is ended or interrupted
+    })
+    .withName("RunIntakeFromFrontCommand");
   }
 
-  public Command runBottomBelts(BeltDirection direction) {
-    return 
-      Commands.run(() -> {
-        // TODO: determine correct direction of travel for forward/backward with motor
-        m_bottomBeltMotor.set(
-          direction == BeltDirection.Forward ? 
-          Constants.Intake.kBottomBeltMotorMaxOutput : 
-          Constants.Intake.kBottomBeltMotorMinOutput
-        );
-      })
-      .finallyDo(() -> m_bottomBeltMotor.set(0.0))
-      .withName("RunIntakeBottomBelts");
+  public Command runIntakeFromRearCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherHasTarget) {
+    return    
+    startEnd(
+      () -> {
+        runTopBelts(MotorDirection.Reverse); // run top belts for ground intake at rear of robot
+        runBottomBelts(MotorDirection.Reverse); // run bottom belts for ground intake at rear of robot
+        runRollers(MotorDirection.Forward); // run rollers for ground intake at rear of robot
+      },
+      () -> {}
+    )
+    .unless(intakeHasTarget::get) // skip the command step if there is a note already in the intake
+    .until(intakeHasTarget::get) // run this command step until there is a note in the intake
+    .andThen(
+      startEnd(
+        () -> {
+          runRollers(MotorDirection.Reverse); // reverse the rollers to push out any others notes from the rear of the robot
+        },
+        () -> {}
+      )
+      .unless(launcherHasTarget::get) // skip this command step if there is a note already in the launcher
+      .until(launcherHasTarget::get) // run this command step until there is a note in the launcher
+    )
+    .andThen(
+      runOnce(
+        () -> {
+          runTopBelts(MotorDirection.None); // stop the top belts once a note has reached the launcher
+          runBottomBelts(MotorDirection.None); // stop the bottom belts once a note has reached the launcher
+          runRollers(MotorDirection.Reverse); // run rollers to push out any others notes from the rear of the robot
+        }
+      )
+    )
+    .finallyDo(() -> {
+      runTopBelts(MotorDirection.None); // stop the top belts at any point the command sequence is ended or interrupted
+      runBottomBelts(MotorDirection.None); // stop the bottom belts at any point the command sequence is ended or interrupted
+      runRollers(MotorDirection.None); // stop the rollers at any point the command sequence is ended or interrupted
+    })
+    .withName("RunIntakeFromRearCommand");
   }
 
-  public Command runRollers(RollerDirection direction) {
-    return 
-      Commands.run(() -> {
-        // TODO: determine correct direction of travel for inward/outward with motor
-        m_rollerMotor.set(
-          direction == RollerDirection.Inward ? 
-          Constants.Intake.kRollerMotorMaxOutput : 
-          Constants.Intake.kRollerMotorMinOutput
-        );
-      })
-      .finallyDo(() -> m_rollerMotor.set(0.0))
-      .withName("RunIntakeRollers");
+  public Command runIntakeEjectCommand() {
+    return
+    startEnd(
+      () -> {
+        runTopBelts(MotorDirection.Forward);
+        runBottomBelts(MotorDirection.Forward);
+        runRollers(MotorDirection.Reverse);
+      },
+      () -> {
+        runTopBelts(MotorDirection.None);
+        runBottomBelts(MotorDirection.None);
+        runRollers(MotorDirection.None);
+      }
+    )
+    .withName("RunIntakeEjectCommand");
+  }
+
+  public Command runIntakeForLaunchCommand() {
+    return
+    startEnd(
+      () -> {
+        runTopBelts(MotorDirection.Reverse); // run top belts to push note into launch rollers
+        runBottomBelts(MotorDirection.Reverse); // run bottom belts to push note into launch rollers
+      },
+      () -> {
+        runTopBelts(MotorDirection.None);
+        runBottomBelts(MotorDirection.None);
+      }
+    )
+    .withName("RunIntakeForLaunchCommand");
+  }
+
+  private void runTopBelts(MotorDirection motorDirection) {
+    switch (motorDirection) {
+      case Forward:
+        m_topBeltMotor.set(Constants.Intake.kTopBeltMotorMaxOutput);
+        break;
+      case Reverse:
+        m_topBeltMotor.set(Constants.Intake.kTopBeltMotorMinOutput);
+        break;
+      case None:
+        m_topBeltMotor.set(0.0);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private void runBottomBelts(MotorDirection motorDirection) {
+    switch (motorDirection) {
+      case Forward:
+        m_bottomBeltMotor.set(Constants.Intake.kTopBeltMotorMaxOutput);
+        break;
+      case Reverse:
+        m_bottomBeltMotor.set(Constants.Intake.kTopBeltMotorMinOutput);
+        break;
+      case None:
+        m_bottomBeltMotor.set(0.0);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private void runRollers(MotorDirection motorDirection) {
+    switch (motorDirection) {
+      case Forward:
+        m_rollerMotor.set(Constants.Intake.kTopBeltMotorMaxOutput);
+        break;
+      case Reverse:
+        m_rollerMotor.set(Constants.Intake.kTopBeltMotorMinOutput);
+        break;
+      case None:
+        m_rollerMotor.set(0.0);
+        break;
+      default:
+        break;
+    }
   }
 
   private void updateTelemetry() {
