@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -12,15 +13,22 @@ public class IntakeSubsystem extends SubsystemBase {
   public static enum BeltDirection { Forward, Backward; }
   public static enum RollerDirection { Inward, Outward; }
 
-  private final CANSparkMax m_beltMotor;
+  private final CANSparkMax m_topBeltMotor;
+  private final CANSparkMax m_bottomBeltMotor;
   private final CANSparkMax m_rollerMotor;
 
   public IntakeSubsystem() {
-    m_beltMotor = new CANSparkMax(Constants.Intake.kBeltMotorCANId, MotorType.kBrushless);
-    m_beltMotor.restoreFactoryDefaults();
-    m_beltMotor.setIdleMode(Constants.Intake.kBeltMotorIdleMode); 
-    m_beltMotor.setSmartCurrentLimit(Constants.Intake.kBeltMotorCurrentLimit);
-    m_beltMotor.setSecondaryCurrentLimit(Constants.Intake.kBeltMotorCurrentLimit);
+    m_topBeltMotor = new CANSparkMax(Constants.Intake.kTopBeltMotorCANId, MotorType.kBrushless);
+    m_topBeltMotor.restoreFactoryDefaults();
+    m_topBeltMotor.setIdleMode(Constants.Intake.kTopBeltMotorIdleMode); 
+    m_topBeltMotor.setSmartCurrentLimit(Constants.Intake.kTopBeltMotorCurrentLimit);
+    m_topBeltMotor.setSecondaryCurrentLimit(Constants.Intake.kTopBeltMotorCurrentLimit);
+
+    m_bottomBeltMotor = new CANSparkMax(Constants.Intake.kBottomBeltMotorCANId, MotorType.kBrushless);
+    m_bottomBeltMotor.restoreFactoryDefaults();
+    m_bottomBeltMotor.setIdleMode(Constants.Intake.kBottomBeltMotorIdleMode); 
+    m_bottomBeltMotor.setSmartCurrentLimit(Constants.Intake.kBottomBeltMotorCurrentLimit);
+    m_bottomBeltMotor.setSecondaryCurrentLimit(Constants.Intake.kBottomBeltMotorCurrentLimit);
 
     m_rollerMotor = new CANSparkMax(Constants.Intake.kRollerMotorCANId, MotorType.kBrushless);
     m_rollerMotor.restoreFactoryDefaults();
@@ -34,22 +42,37 @@ public class IntakeSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command runBelts(BeltDirection direction) {
+  public Command runTopBelts(BeltDirection direction) {
     return 
-      run(() -> {
+      Commands.run(() -> {
         // TODO: determine correct direction of travel for forward/backward with motor
-        m_beltMotor.set(
+        m_topBeltMotor.set(
           direction == BeltDirection.Forward ? 
-          Constants.Intake.kBeltMotorMaxOutput : 
-          Constants.Intake.kBeltMotorMinOutput
+          Constants.Intake.kTopBeltMotorMaxOutput : 
+          Constants.Intake.kTopBeltMotorMinOutput
         );
       })
-      .withName("RunIntakeBelts");
+      .finallyDo(() -> m_topBeltMotor.set(0.0))
+      .withName("RunIntakeTopBelts");
+  }
+
+  public Command runBottomBelts(BeltDirection direction) {
+    return 
+      Commands.run(() -> {
+        // TODO: determine correct direction of travel for forward/backward with motor
+        m_bottomBeltMotor.set(
+          direction == BeltDirection.Forward ? 
+          Constants.Intake.kBottomBeltMotorMaxOutput : 
+          Constants.Intake.kBottomBeltMotorMinOutput
+        );
+      })
+      .finallyDo(() -> m_bottomBeltMotor.set(0.0))
+      .withName("RunIntakeBottomBelts");
   }
 
   public Command runRollers(RollerDirection direction) {
     return 
-      run(() -> {
+      Commands.run(() -> {
         // TODO: determine correct direction of travel for inward/outward with motor
         m_rollerMotor.set(
           direction == RollerDirection.Inward ? 
@@ -57,6 +80,7 @@ public class IntakeSubsystem extends SubsystemBase {
           Constants.Intake.kRollerMotorMinOutput
         );
       })
+      .finallyDo(() -> m_rollerMotor.set(0.0))
       .withName("RunIntakeRollers");
   }
 

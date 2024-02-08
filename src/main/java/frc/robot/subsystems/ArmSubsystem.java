@@ -24,34 +24,34 @@ public class ArmSubsystem extends SubsystemBase {
   private boolean m_isAtPosition = false;
   
   public ArmSubsystem() {
-    m_armMotor = new CANSparkMax(Constants.Arm.karmMotorCANId, MotorType.kBrushless);
-    m_armMotor.restoreFactoryDefaults();
-    m_armMotor.setIdleMode(Constants.Arm.kArmMotorIdleMode); 
-    m_armMotor.setSmartCurrentLimit(Constants.Arm.kArmMotorCurrentLimit);
-    m_armMotor.setSecondaryCurrentLimit(Constants.Arm.kArmMotorCurrentLimit);
-    m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-    m_armMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Arm.kArmMotorForwardSoftLimit); 
-    m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    m_armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Arm.kArmMotorReverseSoftLimit);
+    m_armMotor = new CANSparkMax(Constants.Arm.kArmMotorCANId, MotorType.kBrushless);
+    // m_armMotor.restoreFactoryDefaults();
+    // m_armMotor.setIdleMode(Constants.Arm.kArmMotorIdleMode); 
+    // m_armMotor.setSmartCurrentLimit(Constants.Arm.kArmMotorCurrentLimit);
+    // m_armMotor.setSecondaryCurrentLimit(Constants.Arm.kArmMotorCurrentLimit);
+    // m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    // m_armMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Arm.kArmMotorForwardSoftLimit); 
+    // m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    // m_armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Arm.kArmMotorReverseSoftLimit);
 
     m_armEncoder = m_armMotor.getEncoder();
-    m_armEncoder.setPositionConversionFactor(Constants.Arm.kArmMotorPositionConversionFactor);
-    m_armEncoder.setVelocityConversionFactor(Constants.Arm.kArmMotorVelocityConversionFactor);
+    // m_armEncoder.setPositionConversionFactor(Constants.Arm.kArmMotorPositionConversionFactor);
+    // m_armEncoder.setVelocityConversionFactor(Constants.Arm.kArmMotorVelocityConversionFactor);
     
     m_armPIDController = m_armMotor.getPIDController();
-    m_armPIDController.setFeedbackDevice(m_armEncoder);
-    m_armPIDController.setP(Constants.Arm.kArmMotorPIDConstants.P);
-    m_armPIDController.setD(Constants.Arm.kArmMotorPIDConstants.D);
-    m_armPIDController.setOutputRange(Constants.Arm.kArmMotorMinOutput, Constants.Arm.kArmMotorMaxOutput);
-    m_armPIDController.setSmartMotionMaxVelocity(Constants.Arm.kArmMotorSmartMotionMaxVelocity, 0);
-    m_armPIDController.setSmartMotionMaxAccel(Constants.Arm.kArmMotorSmartMotionMaxAccel, 0);
+    // m_armPIDController.setFeedbackDevice(m_armEncoder);
+    // m_armPIDController.setP(Constants.Arm.kArmMotorPIDConstants.P);
+    // m_armPIDController.setD(Constants.Arm.kArmMotorPIDConstants.D);
+    // m_armPIDController.setOutputRange(Constants.Arm.kArmMotorMinOutput, Constants.Arm.kArmMotorMaxOutput);
+    // m_armPIDController.setSmartMotionMaxVelocity(Constants.Arm.kArmMotorSmartMotionMaxVelocity, 0);
+    // m_armPIDController.setSmartMotionMaxAccel(Constants.Arm.kArmMotorSmartMotionMaxAccel, 0);
 
     // TODO: get correct motor configuration for brushed/bag motor
     m_rollerMotor = new CANSparkMax(Constants.Arm.kRollerMotorCANId, MotorType.kBrushless);
-    m_rollerMotor.restoreFactoryDefaults();
-    m_rollerMotor.setIdleMode(Constants.Arm.kRollerMotorIdleMode); 
-    m_rollerMotor.setSmartCurrentLimit(Constants.Arm.kRollerMotorCurrentLimit);
-    m_rollerMotor.setSecondaryCurrentLimit(Constants.Arm.kRollerMotorCurrentLimit);
+    // m_rollerMotor.restoreFactoryDefaults();
+    // m_rollerMotor.setIdleMode(Constants.Arm.kRollerMotorIdleMode); 
+    // m_rollerMotor.setSmartCurrentLimit(Constants.Arm.kRollerMotorCurrentLimit);
+    // m_rollerMotor.setSecondaryCurrentLimit(Constants.Arm.kRollerMotorCurrentLimit);
   }
 
   @Override

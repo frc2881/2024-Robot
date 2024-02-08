@@ -87,9 +87,9 @@ public class LauncherSubsystem extends SubsystemBase {
 
   public double calculateArmPosition(Pose2d currentPose, Pose3d targetPose) {
     // TODO: adjust current pose with transform defined in constants (kLauncherToRobotTransform3d) ... launcher is higher in the robot than the ground
-    // TODO: use both poses in 3D to calculate height differential for "rise"
-    // TOOD: use both poses in 2D to calculate distance differential for "run"
-    // TODO: use atan2(rise/run) to get elevation angle
+    double height = targetPose.minus(new Pose3d(currentPose)).getZ();
+    double distance = currentPose.getTranslation().getDistance(targetPose.toPose2d().getTranslation()); 
+    double angle = Math.toDegrees(Math.atan2(height, distance)); 
     // TODO: confirm angle adjustment factor needed
     // TODO: convert angle into arm position
     return 0.0;

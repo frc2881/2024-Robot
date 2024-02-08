@@ -15,6 +15,8 @@ import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
+import frc.robot.subsystems.IntakeSubsystem.BeltDirection;
+import frc.robot.subsystems.IntakeSubsystem.RollerDirection;
 
 public class GameCommands {
   private final GyroSensor m_gyroSensor;    
@@ -85,6 +87,17 @@ public class GameCommands {
         m_launcherSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getAmp())
       )
       .withName("AlignLauncherToAmp");
+  }
+
+  public Command runIntakeCommand() {
+    return Commands
+      .parallel(
+        m_intakeSubsystem.runRollers(RollerDirection.Outward), 
+        m_intakeSubsystem.runTopBelts(BeltDirection.Forward),
+        m_intakeSubsystem.runBottomBelts(BeltDirection.Forward)
+      )
+      .until(() -> m_intakeDistanceSensor.hasTarget())
+      .withName("RunIntake");
   }
 
   private static Pose3d getSpeaker() {

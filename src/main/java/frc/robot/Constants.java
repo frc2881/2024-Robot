@@ -114,7 +114,7 @@ public final class Constants {
     public static final double kArmMotorMinOutput = -0.6;
     public static final double kArmMotorMaxOutput = 0.6;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.01, 0, 0); // TODO: update after testing
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.1, 0, 0); // TODO: update after testing
     public static final double kArmMotorForwardSoftLimit = 19.5;
     public static final double kArmMotorReverseSoftLimit = 0.0;
 
@@ -124,17 +124,23 @@ public final class Constants {
   }
 
   public static final class Intake {
-    public static final int kBeltMotorCANId = 18;
-    public static final int kRollerMotorCANId = 19;
+    public static final int kTopBeltMotorCANId = 18;
+    public static final int kBottomBeltMotorCANId = 19;
+    public static final int kRollerMotorCANId = 20;
 
-    public static final int kBeltMotorCurrentLimit = 60;
-    public static final double kBeltMotorMinOutput = -0.2; // TODO: update after testing
-    public static final double kBeltMotorMaxOutput = 0.2; // TODO: update after testing
-    public static final IdleMode kBeltMotorIdleMode = IdleMode.kBrake;
+    public static final int kTopBeltMotorCurrentLimit = 60;
+    public static final double kTopBeltMotorMinOutput = -0.5; // TODO: update after testing
+    public static final double kTopBeltMotorMaxOutput = 0.5; // TODO: update after testing
+    public static final IdleMode kTopBeltMotorIdleMode = IdleMode.kBrake;
+
+    public static final int kBottomBeltMotorCurrentLimit = 60;
+    public static final double kBottomBeltMotorMinOutput = -0.5; // TODO: update after testing
+    public static final double kBottomBeltMotorMaxOutput = 0.5; // TODO: update after testing
+    public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kBrake;
 
     public static final int kRollerMotorCurrentLimit = 60;
-    public static final double kRollerMotorMinOutput = -0.2; // TODO: update after testing
-    public static final double kRollerMotorMaxOutput = 0.2; // TODO: update after testing
+    public static final double kRollerMotorMinOutput = -0.5; // TODO: update after testing
+    public static final double kRollerMotorMaxOutput = 0.5; // TODO: update after testing
     public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
   }
 
@@ -169,7 +175,7 @@ public final class Constants {
   }
 
   public static final class Arm {
-    public static final int karmMotorCANId = 16;
+    public static final int kArmMotorCANId = 16;
     public static final int kRollerMotorCANId = 17;
 
     public static final int kArmMotorCurrentLimit = 60;
@@ -231,12 +237,12 @@ public final class Constants {
       public static final class Intake {
         public static final String kSensorName = "Intake";
         public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 5; // TODO: update after testing
+        public static final double kMaxTargetDistance = 25; // TODO: update after testing
       }
       public static final class Launcher {
         public static final String kSensorName = "Launcher";
         public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 5; // TODO: update after testing
+        public static final double kMaxTargetDistance = 15; // TODO: update after testing
       }
     }
   }

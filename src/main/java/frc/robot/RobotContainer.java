@@ -18,7 +18,6 @@ import frc.robot.commands.AutoCommands;
 import frc.robot.commands.GameCommands;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
-import frc.robot.lib.logging.Logger;
 import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.lib.sensors.ObjectSensor;
 import frc.robot.lib.sensors.PoseSensor;
@@ -117,7 +116,7 @@ public class RobotContainer {
     // DRIVER ========================================
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToSpeakerCommand());
     m_driverController.x().onTrue(m_driveSubsystem.toggleLockStateCommand()); // TODO: refactor to while held only vs. toggle for X lock state
-    m_driverController.rightTrigger().whileTrue(Commands.none()); // TODO: run intake game command in forward direction (front of robot intake direction for note)
+    m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand()); // TODO: run intake game command in forward direction (front of robot intake direction for note)
     m_driverController.leftTrigger().whileTrue(Commands.none()); // TODO: run intake game command in backward direction (rear of robot intake direction for note)
     m_driverController.start().onTrue(m_gyroSensor.resetCommand());
 
@@ -182,6 +181,6 @@ public class RobotContainer {
     m_launcherDistanceSensor.updateTelemetry();
     m_objectSensor.updateTelemetry();
 
-    SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
+    //SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
   }
 }
