@@ -154,8 +154,8 @@ public final class Constants {
     public static final double kArmMotorMaxOutput = 0.2; // TODO: update after testing - set to low value for initial motor run for safety
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8); // TODO: update after testing
-    public static final double kArmMotorForwardSoftLimit = 100; // TODO: update to align with amount of travel allowed for launcher lead screw
-    public static final double kArmMotorReverseSoftLimit = 0.5; // TODO: update to align with starting position of travel for launcher lead screw (set what "zero" actualy is)
+    public static final double kArmMotorForwardSoftLimit = 15;
+    public static final double kArmMotorReverseSoftLimit = 1;
     public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0; // TODO: update (gear ratio for the leadscrew that converts rotations to inches of extension)
     public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
     public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
@@ -243,7 +243,7 @@ public final class Constants {
       public static final class Launcher {
         public static final String kSensorName = "Launcher";
         public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 25; // TODO: update after testing note detection within launcher
+        public static final double kMaxTargetDistance = 8; // TODO: update after testing note detection within launcher
       }
     }
   }

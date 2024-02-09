@@ -56,7 +56,8 @@ public class IntakeSubsystem extends SubsystemBase {
     .andThen(
       startEnd(
         () -> {
-          runTopBelts(MotorDirection.Reverse); // reverse the top belts to move the note from the intake to the launcher
+          runTopBelts(MotorDirection.Forward); // reverse the top belts to move the note from the intake to the launcher
+          runBottomBelts(MotorDirection.Reverse);
           runRollers(MotorDirection.Forward); // reverse the rollers to push out any others notes from the front of the robot
         },
         () -> {}
@@ -141,7 +142,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return
     startEnd(
       () -> {
-        runTopBelts(MotorDirection.Reverse); // run top belts to push note into launch rollers
+        runTopBelts(MotorDirection.Forward); // run top belts to push note into launch rollers
         runBottomBelts(MotorDirection.Reverse); // run bottom belts to push note into launch rollers
       },
       () -> {

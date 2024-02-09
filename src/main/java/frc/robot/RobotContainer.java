@@ -3,6 +3,8 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ejml.dense.row.decompose.TriangularSolver_CDRM;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.GameCommands;
 import frc.robot.lib.common.Enums.DriveDriftCorrection;
@@ -129,6 +132,14 @@ public class RobotContainer {
     m_operatorController.x().onTrue(m_feederSubsystem.runFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand()); // TODO: run launcher game command to score note (once launcher is aligned to target by both driver and operator)
     m_operatorController.start().whileTrue(m_feederSubsystem.resetCommand()); // TODO: create parallel game command for resetting feeder, launcher, and arm mechanisms in parallel with one button
+    m_operatorController.back().whileTrue(m_launcherSubsystem.resetCommand());
+    m_operatorController.b().whileTrue(m_gameCommands.alignLauncherCommand());
+    
+    new Trigger(() -> Math.abs(m_operatorController.getLeftY()) > 0.1)
+      .whileTrue(m_gameCommands.tiltLauncherCommand(m_operatorController::getLeftY));
+
+    new Trigger(() -> Math.abs(m_operatorController.getRightY()) > 0.1)
+      .whileTrue(m_gameCommands.moveArmCommand(m_operatorController::getRightY));
 
     // DASHBOARD ========================================
     SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();

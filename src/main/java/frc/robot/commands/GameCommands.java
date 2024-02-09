@@ -1,9 +1,12 @@
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.lib.controllers.LightsController;
@@ -60,6 +63,7 @@ public class GameCommands {
   }
 
   // TODO: this needs testing and tuning with motor speed, sensor distance/note detection
+  // TODO: MOVE LAUNCHER UP BEFORE INTAKING NOTE
   public Command runRearIntakeCommand() {
     return
     m_intakeSubsystem.runIntakeFromRearCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
@@ -76,11 +80,48 @@ public class GameCommands {
   // TODO: build launch sequence command - see IntakeSubsystem - runFrontIntakeCommand for example of sequence and conditional logic (assumes that robot has already been aligned by driver/rotation and operator/elevation)
   // TODO: after testing basic launcher command, implement separate commands for launching into speaker vs. amp with different launcher roller speed configurations (see inside LauncherSubsystem for TODO)
   public Command runLauncherCommand() {
+    if(m_launcherDistanceSensor.hasTarget() == true){
+      return Commands.parallel(
+        m_launcherSubsystem.runRollersCommand(-0.8, 0.8),
+        Commands.sequence(
+          new WaitCommand(1.5),
+          m_intakeSubsystem.runIntakeForLaunchCommand()
+          )
+      )
+      .withName("RunLauncher");
+    }
     return Commands.none();
-    // - check if launcher distance sensor has target (note is present and ready to launch)
-    // - in parallel: run launcher rollers, add wait for launcher roller spin up ~ 1 second or less, run intake subsystem launch command to push note into rollers
+    
     // - add reasonable wait (1 second) and then check if launcher distance sensor no longer has target (note has launched)
     // - add reasonable timeout to end command which will stop launcher rollers and intake belts
+
+    // TODO: Change roller speeds based on shooting in Amp/speaker
+  }
+
+  public Command tiltLauncherCommand (DoubleSupplier speedSupplier) {
+    return m_launcherSubsystem.tiltLauncherCommand(speedSupplier);
+  }
+
+  public Command moveArmCommand (DoubleSupplier speedSupplier) {
+    return m_armSubsystem.moveArmCommand(speedSupplier);
+  }
+
+  
+  // TODO: Test/optimize
+  public Command alignLauncherCommand() {
+    return Commands.either(
+      alignLauncherToTargetCommand(),
+      m_launcherSubsystem.tiltLauncherToNeutral(),
+      () -> m_launcherDistanceSensor.hasTarget()
+    );
+  }
+
+  // TODO: Test/optimize
+  public Command alignLauncherToTargetCommand() {
+    return Commands.either(
+      alignLauncherToSpeakerCommand(), 
+      alignLauncherToAmpCommand(), 
+      () -> m_launcherSubsystem.isTargetSpeaker());
   }
 
   // TODO: this needs testing once vision cameras are mounted and configured
@@ -109,6 +150,11 @@ public class GameCommands {
     return
     m_launcherSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getAmp())
     .withName("AlignLauncherToAmp");
+  }
+
+  // TODO: Rename, make it so this resets arm, launcher and feeder
+  public Command resetParts() {
+    return Commands.none();
   }
 
   private static Pose3d getSpeaker() {
