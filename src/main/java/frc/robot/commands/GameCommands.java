@@ -81,17 +81,16 @@ public class GameCommands {
   // TODO: build launch sequence command - see IntakeSubsystem - runFrontIntakeCommand for example of sequence and conditional logic (assumes that robot has already been aligned by driver/rotation and operator/elevation)
   // TODO: after testing basic launcher command, implement separate commands for launching into speaker vs. amp with different launcher roller speed configurations (see inside LauncherSubsystem for TODO)
   public Command runLauncherCommand() {
-    if(m_launcherDistanceSensor.hasTarget() == true){
-      return Commands.parallel(
-        m_launcherSubsystem.runRollersCommand(-0.8, 0.8),
-        Commands.sequence(
-          new WaitCommand(1.5),
-          m_intakeSubsystem.runIntakeForLaunchCommand()
-          )
-      )
-      .withName("RunLauncher");
-    }
-    return Commands.none();
+    return Commands.parallel(
+      m_launcherSubsystem.runRollersCommand(-0.8, 0.75),
+      Commands.sequence(
+        new WaitCommand(2.5),
+        m_intakeSubsystem.runIntakeForLaunchCommand()
+        )
+    )
+    .unless(() -> !m_launcherDistanceSensor.hasTarget())
+    .withName("RunLauncher");
+    
     
     // - add reasonable wait (1 second) and then check if launcher distance sensor no longer has target (note has launched)
     // - add reasonable timeout to end command which will stop launcher rollers and intake belts

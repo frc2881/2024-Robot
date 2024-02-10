@@ -222,7 +222,7 @@ public class DriveSubsystem extends SubsystemBase {
     })
     .beforeStarting(() -> {
       m_isAlignedToTarget = false; 
-      double heading = targetPose.getRotation().getDegrees();
+      double heading = targetPose.minus(currentPose.get()).getRotation().getDegrees();
       m_thetaController.setSetpoint(heading);
     })
     .unless(() -> m_lockState == DriveLockState.Locked)

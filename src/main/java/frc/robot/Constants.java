@@ -162,8 +162,8 @@ public final class Constants {
     public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
 
     public static final int kTopRollerMotorCurrentLimit = 100;
-    public static final double kTopRollerMotorMinOutput = -0.8; // TODO: update after testing - may need to set to -1.0 and pass specific speeds for amp vs. speaker launch profiles
-    public static final double kTopRollerMotorMaxOutput = 0.8; // TODO: update after testing - may need to set to 1.0 and pass specific speeds for amp vs. speaker launch profiles
+    public static final double kTopRollerMotorMinOutput = -1.0; // TODO: update after testing - may need to set to -1.0 and pass specific speeds for amp vs. speaker launch profiles
+    public static final double kTopRollerMotorMaxOutput = 1.0; // TODO: update after testing - may need to set to 1.0 and pass specific speeds for amp vs. speaker launch profiles
     public static final IdleMode kTopRollerMotorIdleMode = IdleMode.kBrake;
 
     public static final int kBottomRollerMotorCurrentLimit = 100;
@@ -210,20 +210,20 @@ public final class Constants {
     public static final class Pose {
       // TODO: enable and configuration cameras and transforms after mounting to robot
       public static final Map<String, Transform3d> kPoseSensors = Map.ofEntries(
-        // entry(
-        //   "Rear",
-        //   new Transform3d(
-        //     new Translation3d(Units.inchesToMeters(9.75), 0.0, Units.inchesToMeters(18.5)),
-        //     new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180))
-        //   )
-        // )
-        // entry(
-        //   "Side",
-        //   new Transform3d(
-        //     new Translation3d(-0.18290, 0.18298, 1.19055),
-        //     new Rotation3d(0, Units.degreesToRadians(35), Units.degreesToRadians(180))
-        //   )
-        // )
+        entry(
+          "Rear",
+          new Transform3d(
+            new Translation3d(Units.inchesToMeters(11.625), Units.inchesToMeters(5.625), Units.inchesToMeters(15)),
+            new Rotation3d(0, Units.degreesToRadians(23.5), Units.degreesToRadians(180))
+          )
+        ),
+        entry(
+          "Side",
+          new Transform3d(
+            new Translation3d(Units.inchesToMeters(11.625), Units.inchesToMeters(5.625), Units.inchesToMeters(24)),
+            new Rotation3d(0, Units.degreesToRadians(28), Units.degreesToRadians(-90))
+          )
+        )
       );
       public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
       public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;

@@ -75,14 +75,14 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public Command moveArmCommand(Double speed) {
-    return Commands.run(
+    return run(
       () -> {
         m_armMotor.set(speed);
       });
   }
 
   public Command moveArmCommand(Supplier<Double> speed) {
-    return Commands.run(
+    return run(
       () -> {
         m_armMotor.set(speed.get() / 2); // TODO: test/tune speed ratio to determine why cutting in half is needed
       })

@@ -143,7 +143,7 @@ public class IntakeSubsystem extends SubsystemBase {
     startEnd(
       () -> {
         runTopBelts(MotorDirection.Forward); // run top belts to push note into launch rollers
-        runBottomBelts(MotorDirection.Reverse); // run bottom belts to push note into launch rollers
+        runBottomBelts(MotorDirection.None); // run bottom belts to push note into launch rollers
       },
       () -> {
         runTopBelts(MotorDirection.None);

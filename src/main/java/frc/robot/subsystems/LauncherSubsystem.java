@@ -87,6 +87,14 @@ public class LauncherSubsystem extends SubsystemBase {
     .withName("AlignLaunchedToDefaultPosition");
   }
 
+  public Command alignToSpeakerPositionCommand() {
+    return 
+    run(
+      () -> m_armPIDController.setReference(12.75, ControlType.kSmartMotion)
+    )
+    .withName("AlignLaunchedToSpeakerPosition");
+  }
+
   public Command alignToTargetCommand(Supplier<Pose2d> currentPose, Pose3d targetPose) {
     return
     run(() -> {

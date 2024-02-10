@@ -116,6 +116,8 @@ public class RobotContainer {
   private void configureBindings() {
     // SUBSYSTEMS ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
+    m_launcherSubsystem.setDefaultCommand(m_launcherSubsystem.tiltLauncherCommand(m_operatorController::getLeftY));
+    //m_armSubsystem.setDefaultCommand(m_armSubsystem.moveArmCommand(m_operatorController::getRightY));
 
     // DRIVER ========================================
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToSpeakerCommand());
@@ -132,12 +134,7 @@ public class RobotContainer {
     m_operatorController.start().whileTrue(m_gameCommands.resetSubsystems());
     m_operatorController.back().whileTrue(m_launcherSubsystem.resetCommand());
     m_operatorController.b().whileTrue(m_gameCommands.alignLauncherCommand());
-
-    new Trigger(() -> Math.abs(m_operatorController.getLeftY()) > 0.1)
-      .whileTrue(m_gameCommands.tiltLauncherCommand(m_operatorController::getLeftY)); // TODO: make this the default command for the launcher subsystem? (or make a boolean trigger for CommandController with the deadband logic)
-
-    new Trigger(() -> Math.abs(m_operatorController.getRightY()) > 0.1)
-      .whileTrue(m_gameCommands.moveArmCommand(m_operatorController::getRightY)); // TODO: make this the default command for the arm subsystem (or make a boolean trigger for CommandController with the deadband logic)
+    m_operatorController.y().whileTrue(m_launcherSubsystem.alignToSpeakerPositionCommand());
 
     // DASHBOARD ========================================
     SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();
@@ -178,7 +175,8 @@ public class RobotContainer {
 
     m_autoChooser.setDefaultOption("None", Commands.none());
     m_autoChooser.addOption("Test- 3 Note Auto", m_autoCommands.test3NoteAuto());
-    m_autoChooser.addOption("Test- Path", m_autoCommands.testPath2());
+    m_autoChooser.addOption("Test- Path6", m_autoCommands.testPath6());
+    m_autoChooser.addOption("Test- Path4", m_autoCommands.testPath4());
     
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }

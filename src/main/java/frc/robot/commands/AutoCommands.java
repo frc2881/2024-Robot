@@ -65,7 +65,7 @@ public class AutoCommands {
     .withName("RunAutoTest3NoteAuto");
   }
 
-  public Command testPath2() {
+  public Command testPath4() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test4");
     return Commands
     .sequence(
@@ -75,7 +75,7 @@ public class AutoCommands {
     .withName("");
   }
 
-  public Command testPath3() {
+  public Command testPath5() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test5");
     return Commands
     .sequence(
@@ -84,12 +84,12 @@ public class AutoCommands {
     .withName("");
   }
 
-  public Command testPath4() {
+  public Command testPath6() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test6");
     return Commands
     .sequence(
       AutoBuilder.followPath(path1)
     )
-    .withName("");
+    .withName("testPath4");
   }
 }
