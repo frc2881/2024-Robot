@@ -72,7 +72,7 @@ public class LauncherSubsystem extends SubsystemBase {
 
   public Command tiltLauncherToNeutral() {
     return Commands.runOnce(
-      () -> m_armPIDController.setReference(14, ControlType.kSmartMotion), this);
+      () -> m_armPIDController.setReference(Constants.Launcher.kNeutralPosition, ControlType.kSmartMotion), this);
   }
 
   public Command alignToTargetCommand(Supplier<Pose2d> currentPose, Pose3d targetPose) {

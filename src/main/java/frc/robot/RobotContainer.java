@@ -131,7 +131,7 @@ public class RobotContainer {
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand());
     m_operatorController.x().onTrue(m_feederSubsystem.runFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand()); // TODO: run launcher game command to score note (once launcher is aligned to target by both driver and operator)
-    m_operatorController.start().whileTrue(m_feederSubsystem.resetCommand()); // TODO: create parallel game command for resetting feeder, launcher, and arm mechanisms in parallel with one button
+    m_operatorController.start().whileTrue(m_gameCommands.resetManipulatorParts());
     m_operatorController.back().whileTrue(m_launcherSubsystem.resetCommand());
     m_operatorController.b().whileTrue(m_gameCommands.alignLauncherCommand());
     

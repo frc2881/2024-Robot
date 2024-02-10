@@ -59,14 +59,15 @@ public class GameCommands {
   public Command runFrontIntakeCommand() {
     return 
     m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
+    .alongWith(m_launcherSubsystem.tiltLauncherToNeutral())
     .withName("RunFrontIntakeCommand");
   }
 
   // TODO: this needs testing and tuning with motor speed, sensor distance/note detection
-  // TODO: MOVE LAUNCHER UP BEFORE INTAKING NOTE
   public Command runRearIntakeCommand() {
     return
     m_intakeSubsystem.runIntakeFromRearCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
+    .alongWith(m_launcherSubsystem.tiltLauncherToNeutral())
     .withName("RunRearIntakeCommand");
   }
 
@@ -152,9 +153,12 @@ public class GameCommands {
     .withName("AlignLauncherToAmp");
   }
 
-  // TODO: Rename, make it so this resets arm, launcher and feeder
-  public Command resetParts() {
-    return Commands.none();
+  public Command resetManipulatorParts() {
+    return m_feederSubsystem.resetCommand()
+    .alongWith(
+      m_launcherSubsystem.resetCommand(),
+      m_armSubsystem.resetCommand())
+    .withName("ResetParts");
   }
 
   private static Pose3d getSpeaker() {

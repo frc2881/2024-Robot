@@ -148,6 +148,7 @@ public final class Constants {
     public static final int kArmMotorCANId = 11;
     public static final int kTopRollerMotorCANId = 12;
     public static final int kBottomRollerMotorCANId = 13;
+    public static final double kNeutralPosition = 14; 
 
     public static final int kArmMotorCurrentLimit = 60;
     public static final double kArmMotorMinOutput = -0.2; // TODO: update after testing - set to low value for initial motor run for safety
