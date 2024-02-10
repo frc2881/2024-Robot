@@ -148,7 +148,6 @@ public final class Constants {
     public static final int kArmMotorCANId = 11;
     public static final int kTopRollerMotorCANId = 12;
     public static final int kBottomRollerMotorCANId = 13;
-    public static final double kNeutralPosition = 14; 
 
     public static final int kArmMotorCurrentLimit = 60;
     public static final double kArmMotorMinOutput = -0.2; // TODO: update after testing - set to low value for initial motor run for safety
@@ -172,6 +171,8 @@ public final class Constants {
     public static final double kBottomRollerMotorMaxOutput = 0.8; // TODO: update after testing - may need to set to 1.0 and pass specific speeds for amp vs. speaker launch profiles
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
+    public static final double kDefaultPosition = 14.0; 
+    
     public static final Transform3d kLauncherToRobotTransform3d = new Transform3d(Units.inchesToMeters(0.0), 0.0, Units.inchesToMeters(0.0), new Rotation3d()); // TODO: update with correct translation values if needed for launcher angle calculation
   }
 

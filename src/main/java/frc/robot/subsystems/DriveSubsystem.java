@@ -207,7 +207,8 @@ public class DriveSubsystem extends SubsystemBase {
   public Command alignToTargetCommand(Supplier<Pose2d> currentPose, Pose2d targetPose) {
     return
     run(() -> {
-      double heading = currentPose.get().getRotation().getDegrees();
+      //double heading = currentPose.get().getRotation().getDegrees(); // TODO: refactor with field testing ... robot may not be directly in front of target so heading/rotation needs to be the delta between robot position and target
+      double heading = targetPose.minus(currentPose.get()).getRotation().getDegrees();
       double speedRotation = m_thetaController.calculate(heading);
       speedRotation += Math.copySign(0.15, speedRotation);
       if (m_thetaController.atSetpoint()) {
@@ -238,7 +239,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private void updateTelemetry() {
     SmartDashboard.putString("Robot/Drive/LockState", m_lockState.toString());
-    SmartDashboard.putString("Robot/Drive/IdleMode", m_idleMode.toString().toUpperCase().substring(1));
+    SmartDashboard.putString("Robot/Drive/IdleMode", m_idleMode.toString().substring(1));
   }
 
   @Override

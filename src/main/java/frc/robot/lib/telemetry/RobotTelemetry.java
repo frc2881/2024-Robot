@@ -33,7 +33,7 @@ public final class RobotTelemetry {
   private static void updateRobotInfo() {
     SmartDashboard.putString("Robot/Mode", Robot.getMode().toString());
     SmartDashboard.putString("Robot/State", Robot.getState().toString());
-    SmartDashboard.putString("Robot/Game/Alliance", Robot.getAlliance().toString().toUpperCase());
+    SmartDashboard.putString("Robot/Game/Alliance", Robot.getAlliance().toString());
     SmartDashboard.putNumber("Robot/Game/StationNumber", DriverStation.getLocation().orElse(0));
     SmartDashboard.putNumber("Robot/Power/Battery/Voltage", RobotController.getBatteryVoltage());
   }

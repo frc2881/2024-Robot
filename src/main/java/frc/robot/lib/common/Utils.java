@@ -2,6 +2,9 @@ package frc.robot.lib.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 
@@ -32,5 +35,10 @@ public final class Utils {
   public static double squareInput(double input, double deadband) {
     double deadbandInput = MathUtil.applyDeadband(input, deadband);
     return (deadbandInput * deadbandInput) * Math.signum(input);
+  }
+
+  public static void enableSoftLimits(CANSparkBase controller, boolean isEnabled) {
+    controller.enableSoftLimit(SoftLimitDirection.kForward, isEnabled);
+    controller.enableSoftLimit(SoftLimitDirection.kReverse, isEnabled);
   }
 }

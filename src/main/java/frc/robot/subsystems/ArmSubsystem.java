@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.common.Enums.MotorDirection;
+import frc.robot.lib.common.Utils;
 
 public class ArmSubsystem extends SubsystemBase {
   private final CANSparkMax m_armMotor;
@@ -80,10 +81,10 @@ public class ArmSubsystem extends SubsystemBase {
       });
   }
 
-  public Command moveArmCommand(DoubleSupplier speedSupplier) {
+  public Command moveArmCommand(Supplier<Double> speed) {
     return Commands.run(
       () -> {
-        m_armMotor.set(speedSupplier.getAsDouble()/2);
+        m_armMotor.set(speed.get() / 2); // TODO: test/tune speed ratio to determine why cutting in half is needed
       })
       .finallyDo(() -> m_armMotor.set(0.0));
   }
@@ -105,27 +106,17 @@ public class ArmSubsystem extends SubsystemBase {
     .withName("RunArmRollers");
   }
 
-  public void enableSoftLimits(boolean enable) {
-    if (enable) {
-      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-    } else {
-      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, false);
-      m_armMotor.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, false);
-    }
-  }
-
   public Command resetCommand() {
     return 
     startEnd(
       () -> {
-        enableSoftLimits(false);
+        Utils.enableSoftLimits(m_armMotor, false);
         m_armMotor.set(-0.1);
       }, 
       () -> {
         m_armEncoder.setPosition(0);
         m_armMotor.set(0.0);
-        enableSoftLimits(true);
+        Utils.enableSoftLimits(m_armMotor, true);
       }
     )
     .withName("ResetArm");

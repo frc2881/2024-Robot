@@ -3,8 +3,6 @@ package frc.robot;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ejml.dense.row.decompose.TriangularSolver_CDRM;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -131,15 +129,15 @@ public class RobotContainer {
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand());
     m_operatorController.x().onTrue(m_feederSubsystem.runFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand()); // TODO: run launcher game command to score note (once launcher is aligned to target by both driver and operator)
-    m_operatorController.start().whileTrue(m_gameCommands.resetManipulatorParts());
+    m_operatorController.start().whileTrue(m_gameCommands.resetSubsystems());
     m_operatorController.back().whileTrue(m_launcherSubsystem.resetCommand());
     m_operatorController.b().whileTrue(m_gameCommands.alignLauncherCommand());
-    
+
     new Trigger(() -> Math.abs(m_operatorController.getLeftY()) > 0.1)
-      .whileTrue(m_gameCommands.tiltLauncherCommand(m_operatorController::getLeftY));
+      .whileTrue(m_gameCommands.tiltLauncherCommand(m_operatorController::getLeftY)); // TODO: make this the default command for the launcher subsystem? (or make a boolean trigger for CommandController with the deadband logic)
 
     new Trigger(() -> Math.abs(m_operatorController.getRightY()) > 0.1)
-      .whileTrue(m_gameCommands.moveArmCommand(m_operatorController::getRightY));
+      .whileTrue(m_gameCommands.moveArmCommand(m_operatorController::getRightY)); // TODO: make this the default command for the arm subsystem (or make a boolean trigger for CommandController with the deadband logic)
 
     // DASHBOARD ========================================
     SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();

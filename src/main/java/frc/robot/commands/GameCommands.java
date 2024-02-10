@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -59,7 +59,7 @@ public class GameCommands {
   public Command runFrontIntakeCommand() {
     return 
     m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-    .alongWith(m_launcherSubsystem.tiltLauncherToNeutral())
+    .alongWith(m_launcherSubsystem.alignToDefaultPositionCommand())
     .withName("RunFrontIntakeCommand");
   }
 
@@ -67,7 +67,7 @@ public class GameCommands {
   public Command runRearIntakeCommand() {
     return
     m_intakeSubsystem.runIntakeFromRearCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-    .alongWith(m_launcherSubsystem.tiltLauncherToNeutral())
+    .alongWith(m_launcherSubsystem.alignToDefaultPositionCommand())
     .withName("RunRearIntakeCommand");
   }
 
@@ -99,22 +99,24 @@ public class GameCommands {
     // TODO: Change roller speeds based on shooting in Amp/speaker
   }
 
-  public Command tiltLauncherCommand (DoubleSupplier speedSupplier) {
-    return m_launcherSubsystem.tiltLauncherCommand(speedSupplier);
+  public Command tiltLauncherCommand (Supplier<Double> speed) {
+    return m_launcherSubsystem.tiltLauncherCommand(speed);
   }
 
-  public Command moveArmCommand (DoubleSupplier speedSupplier) {
-    return m_armSubsystem.moveArmCommand(speedSupplier);
+  public Command moveArmCommand (Supplier<Double> speed) {
+    return m_armSubsystem.moveArmCommand(speed);
   }
 
   
   // TODO: Test/optimize
   public Command alignLauncherCommand() {
-    return Commands.either(
+    return 
+    Commands.either(
       alignLauncherToTargetCommand(),
-      m_launcherSubsystem.tiltLauncherToNeutral(),
+      m_launcherSubsystem.alignToDefaultPositionCommand(),
       () -> m_launcherDistanceSensor.hasTarget()
-    );
+    )
+    .withName("AlignLauncher");
   }
 
   // TODO: Test/optimize
@@ -122,7 +124,9 @@ public class GameCommands {
     return Commands.either(
       alignLauncherToSpeakerCommand(), 
       alignLauncherToAmpCommand(), 
-      () -> m_launcherSubsystem.isTargetSpeaker());
+      () -> m_launcherSubsystem.isTargetSpeaker()
+    )
+    .withName("AlignLauncherToTarget");
   }
 
   // TODO: this needs testing once vision cameras are mounted and configured
@@ -153,12 +157,14 @@ public class GameCommands {
     .withName("AlignLauncherToAmp");
   }
 
-  public Command resetManipulatorParts() {
-    return m_feederSubsystem.resetCommand()
+  public Command resetSubsystems() {
+    return 
+    m_feederSubsystem.resetCommand()
     .alongWith(
       m_launcherSubsystem.resetCommand(),
-      m_armSubsystem.resetCommand())
-    .withName("ResetParts");
+      m_armSubsystem.resetCommand()
+    )
+    .withName("ResetSubsystems");
   }
 
   private static Pose3d getSpeaker() {
