@@ -18,17 +18,15 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.common.Utils;
 
-public class LauncherSubsystem extends SubsystemBase {
+public class LauncherArmSubsystem extends SubsystemBase {
   private final CANSparkMax m_armMotor;
   private final RelativeEncoder m_armEncoder;
   private final SparkPIDController m_armPIDController;
-  private final CANSparkMax m_topRollerMotor;
-  private final CANSparkMax m_bottomRollerMotor;
 
   private boolean m_isAlignedToTarget = false;
   private boolean m_targetIsSpeaker = true;
 
-  public LauncherSubsystem() {
+  public LauncherArmSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Launcher.kArmMotorCANId, MotorType.kBrushless);
     m_armMotor.restoreFactoryDefaults();
     m_armMotor.setIdleMode(Constants.Launcher.kArmMotorIdleMode); 
@@ -50,18 +48,6 @@ public class LauncherSubsystem extends SubsystemBase {
     m_armPIDController.setOutputRange(Constants.Launcher.kArmMotorMinOutput, Constants.Launcher.kArmMotorMaxOutput);
     m_armPIDController.setSmartMotionMaxVelocity(Constants.Launcher.kArmMotorSmartMotionMaxVelocity, 0);
     m_armPIDController.setSmartMotionMaxAccel(Constants.Launcher.kArmMotorSmartMotionMaxAccel, 0);
-
-    m_topRollerMotor = new CANSparkMax(Constants.Launcher.kTopRollerMotorCANId, MotorType.kBrushless);
-    m_topRollerMotor.restoreFactoryDefaults();
-    m_topRollerMotor.setIdleMode(Constants.Launcher.kTopRollerMotorIdleMode); 
-    m_topRollerMotor.setSmartCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
-    m_topRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
-
-    m_bottomRollerMotor = new CANSparkMax(Constants.Launcher.kBottomRollerMotorCANId, MotorType.kBrushless);
-    m_bottomRollerMotor.restoreFactoryDefaults();
-    m_bottomRollerMotor.setIdleMode(Constants.Launcher.kBottomRollerMotorIdleMode); 
-    m_bottomRollerMotor.setSmartCurrentLimit(Constants.Launcher.kBottomRollerMotorCurrentLimit);
-    m_bottomRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kBottomRollerMotorCurrentLimit);
   }
 
   @Override
@@ -116,21 +102,6 @@ public class LauncherSubsystem extends SubsystemBase {
     // TODO: confirm angle adjustment factor needed based on field testing - may need a "fudge factor" based on mechanical and aerodynamics
     // TODO: convert the adjusted angle into arm reference position to set for the lead screw
     return 0.0;
-  }
-
-  // TOOD: create separate public subsystem commands for launching into speaker vs. amp with variable roller speeds configured within the subsystem
-
-  public Command runRollersCommand(double topRollerSpeed, double bottomRollerSpeed) {
-    return 
-    startEnd(() -> {
-      m_topRollerMotor.set(topRollerSpeed * Constants.Launcher.kTopRollerMotorMaxOutput);
-      m_bottomRollerMotor.set(bottomRollerSpeed * Constants.Launcher.kBottomRollerMotorMaxOutput);
-    },
-    () -> { 
-      m_topRollerMotor.set(0.0);
-      m_bottomRollerMotor.set(0.0);
-    })
-    .withName("RunLauncherRollers");
   }
 
   public Command resetCommand() {

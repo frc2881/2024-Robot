@@ -29,7 +29,8 @@ import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
-import frc.robot.subsystems.LauncherSubsystem;
+import frc.robot.subsystems.LauncherArmSubsystem;
+import frc.robot.subsystems.LauncherRollerSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
 
@@ -46,7 +47,8 @@ public class RobotContainer {
   private final PoseSubsystem m_poseSubsystem;
   private final FeederSubsystem m_feederSubsystem;
   private final IntakeSubsystem m_intakeSubsystem;
-  private final LauncherSubsystem m_launcherSubsystem;
+  private final LauncherArmSubsystem m_launcherArmSubsystem;
+  private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ArmSubsystem m_armSubsystem;
   private final LightsController m_lightsController;
   private final GameCommands m_gameCommands;
@@ -98,14 +100,15 @@ public class RobotContainer {
     m_poseSubsystem = new PoseSubsystem(m_poseSensors, m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
     m_feederSubsystem = new FeederSubsystem();
     m_intakeSubsystem = new IntakeSubsystem();
-    m_launcherSubsystem = new LauncherSubsystem();
+    m_launcherArmSubsystem = new LauncherArmSubsystem();
+    m_launcherRollerSubsystem = new LauncherRollerSubsystem();
     m_armSubsystem = new ArmSubsystem();
 
     // OUTPUT CONTROLLERS ========================================
     m_lightsController = new LightsController();
 
     // COMMANDS ========================================
-    m_gameCommands = new GameCommands(m_gyroSensor, m_intakeDistanceSensor, m_launcherDistanceSensor, m_driveSubsystem, m_poseSubsystem, m_feederSubsystem, m_intakeSubsystem, m_launcherSubsystem, m_armSubsystem, m_lightsController);
+    m_gameCommands = new GameCommands(m_gyroSensor, m_intakeDistanceSensor, m_launcherDistanceSensor, m_driveSubsystem, m_poseSubsystem, m_feederSubsystem, m_intakeSubsystem, m_launcherArmSubsystem, m_launcherRollerSubsystem, m_armSubsystem, m_lightsController);
     m_autoCommands = new AutoCommands(m_gameCommands, m_gyroSensor, m_objectSensor, m_driveSubsystem, m_poseSubsystem, m_lightsController);
     m_autoChooser = new SendableChooser<Command>();
 
@@ -116,7 +119,7 @@ public class RobotContainer {
   private void configureBindings() {
     // SUBSYSTEMS ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
-    m_launcherSubsystem.setDefaultCommand(m_launcherSubsystem.tiltLauncherCommand(m_operatorController::getLeftY));
+    m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.tiltLauncherCommand(m_operatorController::getLeftY));
     //m_armSubsystem.setDefaultCommand(m_armSubsystem.moveArmCommand(m_operatorController::getRightY));
 
     // DRIVER ========================================
@@ -132,9 +135,9 @@ public class RobotContainer {
     m_operatorController.x().onTrue(m_feederSubsystem.runFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand()); // TODO: run launcher game command to score note (once launcher is aligned to target by both driver and operator)
     m_operatorController.start().whileTrue(m_gameCommands.resetSubsystems());
-    m_operatorController.back().whileTrue(m_launcherSubsystem.resetCommand());
+    m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.b().whileTrue(m_gameCommands.alignLauncherCommand());
-    m_operatorController.y().whileTrue(m_launcherSubsystem.alignToSpeakerPositionCommand());
+    m_operatorController.y().whileTrue(m_launcherArmSubsystem.alignToSpeakerPositionCommand());
 
     // DASHBOARD ========================================
     SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();

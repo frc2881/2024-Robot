@@ -150,8 +150,8 @@ public final class Constants {
     public static final int kBottomRollerMotorCANId = 13;
 
     public static final int kArmMotorCurrentLimit = 60;
-    public static final double kArmMotorMinOutput = -0.2; // TODO: update after testing - set to low value for initial motor run for safety
-    public static final double kArmMotorMaxOutput = 0.2; // TODO: update after testing - set to low value for initial motor run for safety
+    public static final double kArmMotorMinOutput = -1.0; // TODO: update after testing - set to low value for initial motor run for safety
+    public static final double kArmMotorMaxOutput = 1.0; // TODO: update after testing - set to low value for initial motor run for safety
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8); // TODO: update after testing
     public static final double kArmMotorForwardSoftLimit = 15;
@@ -245,7 +245,7 @@ public final class Constants {
       public static final class Launcher {
         public static final String kSensorName = "Launcher";
         public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 8; // TODO: update after testing note detection within launcher
+        public static final double kMaxTargetDistance = 25; // TODO: update after testing note detection within launcher
       }
     }
   }

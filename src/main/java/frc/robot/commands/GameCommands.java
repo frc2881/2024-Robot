@@ -16,7 +16,8 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LauncherSubsystem;
+import frc.robot.subsystems.LauncherArmSubsystem;
+import frc.robot.subsystems.LauncherRollerSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
 
 public class GameCommands {
@@ -27,7 +28,8 @@ public class GameCommands {
   private final PoseSubsystem m_poseSubsystem;
   private final FeederSubsystem m_feederSubsystem;
   private final IntakeSubsystem m_intakeSubsystem;
-  private final LauncherSubsystem m_launcherSubsystem;
+  private final LauncherArmSubsystem m_launcherArmSubsystem;
+  private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ArmSubsystem m_armSubsystem;
   private final LightsController m_lightsController;
 
@@ -39,7 +41,8 @@ public class GameCommands {
     PoseSubsystem poseSubsystem,
     FeederSubsystem feederSubsystem,
     IntakeSubsystem intakeSubsystem,
-    LauncherSubsystem launcherSubsystem,
+    LauncherArmSubsystem launcherArmSubsystem,
+    LauncherRollerSubsystem launcherRollerSubsystem,
     ArmSubsystem armSubsystem,
     LightsController lightsController
   ) {
@@ -50,7 +53,8 @@ public class GameCommands {
     m_poseSubsystem = poseSubsystem;
     m_feederSubsystem = feederSubsystem;
     m_intakeSubsystem = intakeSubsystem;
-    m_launcherSubsystem = launcherSubsystem;
+    m_launcherArmSubsystem = launcherArmSubsystem;
+    m_launcherRollerSubsystem = launcherRollerSubsystem;
     m_armSubsystem = armSubsystem;
     m_lightsController = lightsController;
   }
@@ -59,7 +63,7 @@ public class GameCommands {
   public Command runFrontIntakeCommand() {
     return 
     m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-    .alongWith(m_launcherSubsystem.alignToDefaultPositionCommand())
+    .alongWith(m_launcherArmSubsystem.alignToDefaultPositionCommand())
     .withName("RunFrontIntakeCommand");
   }
 
@@ -67,7 +71,7 @@ public class GameCommands {
   public Command runRearIntakeCommand() {
     return
     m_intakeSubsystem.runIntakeFromRearCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-    .alongWith(m_launcherSubsystem.alignToDefaultPositionCommand())
+    .alongWith(m_launcherArmSubsystem.alignToDefaultPositionCommand())
     .withName("RunRearIntakeCommand");
   }
 
@@ -82,9 +86,9 @@ public class GameCommands {
   // TODO: after testing basic launcher command, implement separate commands for launching into speaker vs. amp with different launcher roller speed configurations (see inside LauncherSubsystem for TODO)
   public Command runLauncherCommand() {
     return Commands.parallel(
-      m_launcherSubsystem.runRollersCommand(-0.8, 0.75),
+      m_launcherRollerSubsystem.runRollersCommand(-0.8, 0.75),
       Commands.sequence(
-        new WaitCommand(2.5),
+        new WaitCommand(1.5),
         m_intakeSubsystem.runIntakeForLaunchCommand()
         )
     )
@@ -99,7 +103,7 @@ public class GameCommands {
   }
 
   public Command tiltLauncherCommand (Supplier<Double> speed) {
-    return m_launcherSubsystem.tiltLauncherCommand(speed);
+    return m_launcherArmSubsystem.tiltLauncherCommand(speed);
   }
 
   public Command moveArmCommand (Supplier<Double> speed) {
@@ -112,7 +116,7 @@ public class GameCommands {
     return 
     Commands.either(
       alignLauncherToTargetCommand(),
-      m_launcherSubsystem.alignToDefaultPositionCommand(),
+      m_launcherArmSubsystem.alignToDefaultPositionCommand(),
       () -> m_launcherDistanceSensor.hasTarget()
     )
     .withName("AlignLauncher");
@@ -123,7 +127,7 @@ public class GameCommands {
     return Commands.either(
       alignLauncherToSpeakerCommand(), 
       alignLauncherToAmpCommand(), 
-      () -> m_launcherSubsystem.isTargetSpeaker()
+      () -> m_launcherArmSubsystem.isTargetSpeaker()
     )
     .withName("AlignLauncherToTarget");
   }
@@ -145,14 +149,14 @@ public class GameCommands {
   // TODO: this needs testing once vision cameras are mounted and configured
   public Command alignLauncherToSpeakerCommand() {
     return
-    m_launcherSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getSpeaker())
+    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getSpeaker())
     .withName("AlignLauncherToSpeaker");
   }
 
   // TODO: this needs testing once vision cameras are mounted and configured
   public Command alignLauncherToAmpCommand() {
     return
-    m_launcherSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getAmp())
+    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getAmp())
     .withName("AlignLauncherToAmp");
   }
 
@@ -160,7 +164,7 @@ public class GameCommands {
     return 
     m_feederSubsystem.resetCommand()
     .alongWith(
-      m_launcherSubsystem.resetCommand(),
+      m_launcherArmSubsystem.resetCommand(),
       m_armSubsystem.resetCommand()
     )
     .withName("ResetSubsystems");
