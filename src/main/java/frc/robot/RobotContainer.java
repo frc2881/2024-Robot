@@ -26,7 +26,7 @@ import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.lib.sensors.ObjectSensor;
 import frc.robot.lib.sensors.PoseSensor;
 import frc.robot.lib.sensors.DistanceSensor;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
@@ -49,7 +49,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem;
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
-  private final ArmSubsystem m_armSubsystem;
+  private final ClimberSubsystem m_climberSubsystem;
   private final LightsController m_lightsController;
   private final GameCommands m_gameCommands;
   private final AutoCommands m_autoCommands;
@@ -102,13 +102,13 @@ public class RobotContainer {
     m_intakeSubsystem = new IntakeSubsystem();
     m_launcherArmSubsystem = new LauncherArmSubsystem();
     m_launcherRollerSubsystem = new LauncherRollerSubsystem();
-    m_armSubsystem = new ArmSubsystem();
+    m_climberSubsystem = new ClimberSubsystem();
 
     // OUTPUT CONTROLLERS ========================================
     m_lightsController = new LightsController();
 
     // COMMANDS ========================================
-    m_gameCommands = new GameCommands(m_gyroSensor, m_intakeDistanceSensor, m_launcherDistanceSensor, m_driveSubsystem, m_poseSubsystem, m_feederSubsystem, m_intakeSubsystem, m_launcherArmSubsystem, m_launcherRollerSubsystem, m_armSubsystem, m_lightsController);
+    m_gameCommands = new GameCommands(m_gyroSensor, m_intakeDistanceSensor, m_launcherDistanceSensor, m_driveSubsystem, m_poseSubsystem, m_feederSubsystem, m_intakeSubsystem, m_launcherArmSubsystem, m_launcherRollerSubsystem, m_climberSubsystem, m_lightsController);
     m_autoCommands = new AutoCommands(m_gameCommands, m_gyroSensor, m_objectSensor, m_driveSubsystem, m_poseSubsystem, m_lightsController);
     m_autoChooser = new SendableChooser<Command>();
 
@@ -119,8 +119,9 @@ public class RobotContainer {
   private void configureBindings() {
     // SUBSYSTEMS ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
-    m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.tiltLauncherCommand(m_operatorController::getLeftY));
-    //m_armSubsystem.setDefaultCommand(m_armSubsystem.moveArmCommand(m_operatorController::getRightY));
+    m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.tiltLauncherCommand(() -> m_operatorController.getLeftY()));
+    //m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignLauncherCommand(() -> m_launcherDistanceSensor.hasTarget()));
+    //m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmCommand(m_operatorController::getRightY));
 
     // DRIVER ========================================
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToSpeakerCommand());
@@ -129,6 +130,7 @@ public class RobotContainer {
     m_driverController.leftTrigger().whileTrue(m_gameCommands.runRearIntakeCommand());
     m_driverController.rightTrigger().and(m_driverController.leftTrigger()).whileTrue(m_gameCommands.runEjectIntakeCommand());
     m_driverController.start().onTrue(m_gyroSensor.resetCommand());
+    m_driverController.b().whileTrue(m_gameCommands.getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance));
 
     // OPERATOR ========================================
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand());
@@ -137,7 +139,11 @@ public class RobotContainer {
     m_operatorController.start().whileTrue(m_gameCommands.resetSubsystems());
     m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.b().whileTrue(m_gameCommands.alignLauncherCommand());
-    m_operatorController.y().whileTrue(m_launcherArmSubsystem.alignToSpeakerPositionCommand());
+    m_operatorController.y().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSpeakerPosition));
+
+    // TODO: Once launcher angle alingment is tested/done, make alignLauncherCommand the default and make the tiltLauncherCommand a trigger
+    // new Trigger(() -> Math.abs(m_operatorController.getLeftY()) > 0.1)
+    //   .whileTrue(m_launcherArmSubsystem.tiltLauncherCommand(() -> m_operatorController.getLeftY()));
 
     // DASHBOARD ========================================
     SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();

@@ -12,7 +12,7 @@ import frc.robot.Robot;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.lib.sensors.GyroSensor;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -30,7 +30,7 @@ public class GameCommands {
   private final IntakeSubsystem m_intakeSubsystem;
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
-  private final ArmSubsystem m_armSubsystem;
+  private final ClimberSubsystem m_climberSubsystem;
   private final LightsController m_lightsController;
 
   public GameCommands(
@@ -43,7 +43,7 @@ public class GameCommands {
     IntakeSubsystem intakeSubsystem,
     LauncherArmSubsystem launcherArmSubsystem,
     LauncherRollerSubsystem launcherRollerSubsystem,
-    ArmSubsystem armSubsystem,
+    ClimberSubsystem climberSubsystem,
     LightsController lightsController
   ) {
     m_gyroSensor = gyroSensor;
@@ -55,23 +55,26 @@ public class GameCommands {
     m_intakeSubsystem = intakeSubsystem;
     m_launcherArmSubsystem = launcherArmSubsystem;
     m_launcherRollerSubsystem = launcherRollerSubsystem;
-    m_armSubsystem = armSubsystem;
+    m_climberSubsystem = climberSubsystem;
     m_lightsController = lightsController;
   }
 
-  // TODO: this needs testing and tuning with motor speed, sensor distance/note detection
+  // TODO: Wait to move the note into launcher until launcher is in default position
   public Command runFrontIntakeCommand() {
     return 
     m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-    .alongWith(m_launcherArmSubsystem.alignToDefaultPositionCommand())
+    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kDefaultPosition))  
+    .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
     .withName("RunFrontIntakeCommand");
+
   }
 
   // TODO: this needs testing and tuning with motor speed, sensor distance/note detection
   public Command runRearIntakeCommand() {
     return
     m_intakeSubsystem.runIntakeFromRearCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-    .alongWith(m_launcherArmSubsystem.alignToDefaultPositionCommand())
+    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kDefaultPosition))
+    // .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
     .withName("RunRearIntakeCommand");
   }
 
@@ -82,11 +85,20 @@ public class GameCommands {
     .withName("RunEjectIntakeCommand");
   }
 
+  public Command getNoteIntoLaunchPositionCommand(Supplier<Double> distanceSupplier){
+    return Commands.repeatingSequence(
+      m_intakeSubsystem.runIntakeForNotePositionCommand().withTimeout(0.1) // Might need to slow down intake0.2)
+    )
+    .until(() -> distanceSupplier.get() > 3.5)
+    .withName("getNoteIntoLaunchPosition " + distanceSupplier.get().toString());
+  }
+
   // TODO: build launch sequence command - see IntakeSubsystem - runFrontIntakeCommand for example of sequence and conditional logic (assumes that robot has already been aligned by driver/rotation and operator/elevation)
   // TODO: after testing basic launcher command, implement separate commands for launching into speaker vs. amp with different launcher roller speed configurations (see inside LauncherSubsystem for TODO)
   public Command runLauncherCommand() {
     return Commands.parallel(
-      m_launcherRollerSubsystem.runRollersCommand(-0.8, 0.75),
+      m_launcherRollerSubsystem.runRollersCommand(-0.8, 0.8),
+      //m_launcherArmSubsystem.alignToPositionCommand(m_launcherArmSubsystem.getPosition()),
       Commands.sequence(
         new WaitCommand(1.5),
         m_intakeSubsystem.runIntakeForLaunchCommand()
@@ -98,8 +110,6 @@ public class GameCommands {
     
     // - add reasonable wait (1 second) and then check if launcher distance sensor no longer has target (note has launched)
     // - add reasonable timeout to end command which will stop launcher rollers and intake belts
-
-    // TODO: Change roller speeds based on shooting in Amp/speaker
   }
 
   public Command tiltLauncherCommand (Supplier<Double> speed) {
@@ -107,29 +117,11 @@ public class GameCommands {
   }
 
   public Command moveArmCommand (Supplier<Double> speed) {
-    return m_armSubsystem.moveArmCommand(speed);
+    return m_climberSubsystem.moveArmCommand(speed);
   }
 
-  
-  // TODO: Test/optimize
   public Command alignLauncherCommand() {
-    return 
-    Commands.either(
-      alignLauncherToTargetCommand(),
-      m_launcherArmSubsystem.alignToDefaultPositionCommand(),
-      () -> m_launcherDistanceSensor.hasTarget()
-    )
-    .withName("AlignLauncher");
-  }
-
-  // TODO: Test/optimize
-  public Command alignLauncherToTargetCommand() {
-    return Commands.either(
-      alignLauncherToSpeakerCommand(), 
-      alignLauncherToAmpCommand(), 
-      () -> m_launcherArmSubsystem.isTargetSpeaker()
-    )
-    .withName("AlignLauncherToTarget");
+    return m_launcherArmSubsystem.alignLauncherCommand(() -> m_launcherDistanceSensor.hasTarget());
   }
 
   // TODO: this needs testing once vision cameras are mounted and configured
@@ -140,24 +132,10 @@ public class GameCommands {
   }
 
   // TODO: this needs testing once vision cameras are mounted and configured
-  public Command alignRobotToAmpCommand() {
-    return
-    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getAmp().toPose2d())
-    .withName("AlignRobotToAmp");
-  } 
-
-  // TODO: this needs testing once vision cameras are mounted and configured
   public Command alignLauncherToSpeakerCommand() {
     return
     m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getSpeaker())
     .withName("AlignLauncherToSpeaker");
-  }
-
-  // TODO: this needs testing once vision cameras are mounted and configured
-  public Command alignLauncherToAmpCommand() {
-    return
-    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getAmp())
-    .withName("AlignLauncherToAmp");
   }
 
   public Command resetSubsystems() {
@@ -165,7 +143,7 @@ public class GameCommands {
     m_feederSubsystem.resetCommand()
     .alongWith(
       m_launcherArmSubsystem.resetCommand(),
-      m_armSubsystem.resetCommand()
+      m_climberSubsystem.resetCommand()
     )
     .withName("ResetSubsystems");
   }
@@ -174,7 +152,4 @@ public class GameCommands {
     return Robot.getAlliance() == Alliance.Blue ? Constants.Game.Field.Targets.kBlueSpeaker : Constants.Game.Field.Targets.kRedSpeaker;
   }
 
-  private static Pose3d getAmp() {
-    return Robot.getAlliance() == Alliance.Blue ? Constants.Game.Field.Targets.kBlueAmp : Constants.Game.Field.Targets.kRedAmp;
-  }
 }

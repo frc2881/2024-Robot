@@ -115,7 +115,7 @@ public final class Constants {
     public static final double kArmMotorMaxOutput = 0.6;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.1, 0, 0); // TODO: update after testing
-    public static final double kArmMotorForwardSoftLimit = 19.5;
+    public static final double kArmMotorForwardSoftLimit = 30;//19.5; // TODO: Recalibrate soft limit
     public static final double kArmMotorReverseSoftLimit = 0.0;
 
     public static final int kRollerMotorCurrentLimit = 60;
@@ -136,7 +136,7 @@ public final class Constants {
     public static final int kBottomBeltMotorCurrentLimit = 60;
     public static final double kBottomBeltMotorMinOutput = -0.5; // TODO: update after testing
     public static final double kBottomBeltMotorMaxOutput = 0.5; // TODO: update after testing
-    public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kBrake;
+    public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kCoast;
 
     public static final int kRollerMotorCurrentLimit = 60;
     public static final double kRollerMotorMinOutput = -0.5; // TODO: update after testing
@@ -172,6 +172,7 @@ public final class Constants {
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
     public static final double kDefaultPosition = 14.0; 
+    public static final double kSpeakerPosition = 13.25;
     
     public static final Transform3d kLauncherToRobotTransform3d = new Transform3d(Units.inchesToMeters(0.0), 0.0, Units.inchesToMeters(0.0), new Rotation3d()); // TODO: update with correct translation values if needed for launcher angle calculation
   }

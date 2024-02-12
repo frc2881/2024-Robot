@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.common.Utils;
@@ -24,7 +25,6 @@ public class LauncherArmSubsystem extends SubsystemBase {
   private final SparkPIDController m_armPIDController;
 
   private boolean m_isAlignedToTarget = false;
-  private boolean m_targetIsSpeaker = true;
 
   public LauncherArmSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Launcher.kArmMotorCANId, MotorType.kBrushless);
@@ -59,26 +59,18 @@ public class LauncherArmSubsystem extends SubsystemBase {
     return 
     run(
       () -> {
-        m_armMotor.set(speed.get() / 2); // TODO: test/tune speed ratio to determine why cutting in half is needed
+        m_armMotor.set(speed.get() / 2);
       })
       .finallyDo(() -> m_armMotor.set(0.0))
       .withName("TiltLauncher");
   }
 
-  public Command alignToDefaultPositionCommand() {
-    return 
-    runOnce(
-      () -> m_armPIDController.setReference(Constants.Launcher.kDefaultPosition, ControlType.kSmartMotion)
-    )
-    .withName("AlignLaunchedToDefaultPosition");
-  }
-
-  public Command alignToSpeakerPositionCommand() {
+  public Command alignToPositionCommand(Double position) {
     return 
     run(
-      () -> m_armPIDController.setReference(12.75, ControlType.kSmartMotion)
+      () -> m_armPIDController.setReference(position, ControlType.kSmartMotion)
     )
-    .withName("AlignLaunchedToSpeakerPosition");
+    .withName("AlignLaunchedToPosition");
   }
 
   public Command alignToTargetCommand(Supplier<Pose2d> currentPose, Pose3d targetPose) {
@@ -104,6 +96,21 @@ public class LauncherArmSubsystem extends SubsystemBase {
     return 0.0;
   }
 
+  // TODO: Only adjust when we are in the area that we can shoot from
+  // TODO: Once Y has been pushed, align to speaker position instead of calculated position
+  public Command alignLauncherCommand(Supplier<Boolean> hasTarget) {
+    return Commands.either(
+      alignToPositionCommand(Constants.Launcher.kSpeakerPosition), //alignLauncherToSpeakerCommand(), 
+      alignToPositionCommand(Constants.Launcher.kDefaultPosition),
+      () -> hasTarget.get()
+    )
+    .withName("AlignLauncher");
+  }
+
+  public Double getPosition() {
+    return m_armEncoder.getPosition();
+  }
+
   public Command resetCommand() {
     return 
     startEnd(
@@ -118,14 +125,6 @@ public class LauncherArmSubsystem extends SubsystemBase {
       }
     )
     .withName("ResetLauncher");
-  }
-
-  public void switchTarget() {
-    m_targetIsSpeaker = !m_targetIsSpeaker;
-  }
-
-  public boolean isTargetSpeaker() {
-    return m_targetIsSpeaker;
   }
 
   private void updateTelemetry() {

@@ -56,8 +56,8 @@ public class IntakeSubsystem extends SubsystemBase {
     .andThen(
       startEnd(
         () -> {
-          runTopBelts(MotorDirection.Forward); // reverse the top belts to move the note from the intake to the launcher
-          runBottomBelts(MotorDirection.Reverse);
+          runTopBelts(MotorDirection.Forward, 0.75); // reverse the top belts to move the note from the intake to the launcher
+          runBottomBelts(MotorDirection.Reverse, 0.75);
           runRollers(MotorDirection.Forward); // reverse the rollers to push out any others notes from the front of the robot
         },
         () -> {}
@@ -153,6 +153,37 @@ public class IntakeSubsystem extends SubsystemBase {
     .withName("RunIntakeForLaunchCommand");
   }
 
+  public Command runIntakeForNotePositionCommand() {
+    return
+    startEnd(
+      () -> {
+        runTopBelts(MotorDirection.Reverse, 0.25); // run top belts to push note into launch rollers
+        runBottomBelts(MotorDirection.Reverse, 0.25); // run bottom belts to push note into launch rollers
+      },
+      () -> {
+        runTopBelts(MotorDirection.None);
+        runBottomBelts(MotorDirection.None);
+      }
+    )
+    .withName("RunIntakeForLaunchCommand");
+  }
+
+  private void runTopBelts(MotorDirection motorDirection, Double speed) {
+    switch (motorDirection) {
+      case Forward:
+        m_topBeltMotor.set(speed * Constants.Intake.kTopBeltMotorMaxOutput);
+        break;
+      case Reverse:
+        m_topBeltMotor.set(speed * Constants.Intake.kTopBeltMotorMinOutput);
+        break;
+      case None:
+        m_topBeltMotor.set(0.0);
+        break;
+      default:
+        break;
+    }
+  }
+
   private void runTopBelts(MotorDirection motorDirection) {
     switch (motorDirection) {
       case Forward:
@@ -163,6 +194,22 @@ public class IntakeSubsystem extends SubsystemBase {
         break;
       case None:
         m_topBeltMotor.set(0.0);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private void runBottomBelts(MotorDirection motorDirection, Double speed) {
+    switch (motorDirection) {
+      case Forward:
+        m_bottomBeltMotor.set(speed * Constants.Intake.kTopBeltMotorMaxOutput);
+        break;
+      case Reverse:
+        m_bottomBeltMotor.set(speed * Constants.Intake.kTopBeltMotorMinOutput);
+        break;
+      case None:
+        m_bottomBeltMotor.set(0.0);
         break;
       default:
         break;
