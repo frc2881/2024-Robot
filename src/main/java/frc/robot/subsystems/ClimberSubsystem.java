@@ -18,7 +18,7 @@ import frc.robot.Constants;
 import frc.robot.lib.common.Enums.MotorDirection;
 import frc.robot.lib.common.Utils;
 
-public class ArmSubsystem extends SubsystemBase {
+public class ClimberSubsystem extends SubsystemBase {
   private final CANSparkMax m_armMotor;
   private final SparkPIDController m_armPIDController;
   private final RelativeEncoder m_armEncoder;
@@ -26,7 +26,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   private boolean m_isArmAtPosition = false;
   
-  public ArmSubsystem() {
+  public ClimberSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Arm.kArmMotorCANId, MotorType.kBrushless);
     m_armMotor.restoreFactoryDefaults();
     m_armMotor.setIdleMode(Constants.Arm.kArmMotorIdleMode); 
