@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.lib.common.Utils;
 import frc.robot.lib.common.Enums.DriveDriftCorrection;
 import frc.robot.lib.common.Enums.DriveLockState;
 import frc.robot.lib.common.Enums.DriveOrientation;
@@ -206,12 +208,10 @@ public class DriveSubsystem extends SubsystemBase {
     .withName("SetDriveLockedState");
   }
 
-  public Command alignToTargetCommand(Supplier<Pose2d> currentPose, Pose2d targetPose) {
+  public Command alignToTargetCommand(Supplier<Pose2d> currentPose, Pose3d targetPose) {
     return
     run(() -> {
-      //double heading = currentPose.get().getRotation().getDegrees(); // TODO: refactor with field testing ... robot may not be directly in front of target so heading/rotation needs to be the delta between robot position and target
-      double heading = targetPose.minus(currentPose.get()).getRotation().getDegrees();
-      double speedRotation = m_thetaController.calculate(heading);
+      double speedRotation = m_thetaController.calculate(currentPose.get().getRotation().getDegrees());
       speedRotation += Math.copySign(0.15, speedRotation);
       if (m_thetaController.atSetpoint()) {
         speedRotation = 0.0;
@@ -224,8 +224,7 @@ public class DriveSubsystem extends SubsystemBase {
     })
     .beforeStarting(() -> {
       m_isAlignedToTarget = false; 
-      double heading = targetPose.minus(currentPose.get()).getRotation().getDegrees();
-      m_thetaController.setSetpoint(heading);
+      m_thetaController.setSetpoint(Math.toDegrees(Utils.getTargetRotation(currentPose.get(), targetPose).getZ()));
     })
     .unless(() -> m_lockState == DriveLockState.Locked)
     .until(() -> m_isAlignedToTarget)

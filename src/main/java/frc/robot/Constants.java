@@ -174,8 +174,6 @@ public final class Constants {
     // TODO: calculate and set as constant the launcher position to angle conversion factor to use for dynamic adjustment based on distance from target
     public static final double kDefaultPosition = 14.0; 
     public static final double kSpeakerPosition = 13.25;
-    
-    public static final Transform3d kLauncherToRobotTransform3d = new Transform3d(Units.inchesToMeters(0.0), 0.0, Units.inchesToMeters(0.0), new Rotation3d()); // TODO: update with correct translation values if needed for launcher angle calculation
   }
 
   public static final class Arm {
@@ -274,21 +272,20 @@ public final class Constants {
       }
 
       public static final class Targets {
-        public static final double kSpeakerHeightDelta = 0.616675;
-        public static final double kAmpHeightDelta = -0.4572;
-        public static final double kSourceHeight = 0.93;
-
+        public static final double kSpeakerXDelta = 0.3; // TODO: validate this through testing
+        public static final double kSpeakerZDelta = 0.616675;
         public static final Pose3d kAprilTag7 = kAprilTagFieldLayout.getTagPose(7).orElse(new Pose3d());
-        public static final Pose3d kBlueSpeaker = new Pose3d(kAprilTag7.getX(), kAprilTag7.getY(), kAprilTag7.getZ() + kSpeakerHeightDelta, kAprilTag7.getRotation());
-
-        public static final Pose3d kAprilTag5 = kAprilTagFieldLayout.getTagPose(5).orElse(new Pose3d());
-        public static final Pose3d kBlueAmp = new Pose3d(kAprilTag5.getX(), kAprilTag5.getY(), kAprilTag5.getZ() + kAmpHeightDelta, kAprilTag5.getRotation());
-
+        public static final Pose3d kBlueSpeaker = new Pose3d(kAprilTag7.getX() + kSpeakerXDelta, kAprilTag7.getY(), kAprilTag7.getZ() + kSpeakerZDelta, kAprilTag7.getRotation());
         public static final Pose3d kAprilTag4 = kAprilTagFieldLayout.getTagPose(4).orElse(new Pose3d());
-        public static final Pose3d kRedSpeaker = new Pose3d(kAprilTag4.getX(), kAprilTag4.getY(), kAprilTag4.getZ() + kSpeakerHeightDelta, kAprilTag4.getRotation());
+        public static final Pose3d kRedSpeaker = new Pose3d(kAprilTag4.getX() - kSpeakerXDelta, kAprilTag4.getY(), kAprilTag4.getZ() + kSpeakerZDelta, kAprilTag4.getRotation());
 
+        public static final double kAmpZDelta = -0.4572;
+        public static final Pose3d kAprilTag5 = kAprilTagFieldLayout.getTagPose(5).orElse(new Pose3d());
+        public static final Pose3d kBlueAmp = new Pose3d(kAprilTag5.getX(), kAprilTag5.getY(), kAprilTag5.getZ() + kAmpZDelta, kAprilTag5.getRotation());
         public static final Pose3d kAprilTag6 = kAprilTagFieldLayout.getTagPose(6).orElse(new Pose3d());
-        public static final Pose3d kRedAmp = new Pose3d(kAprilTag6.getX(), kAprilTag6.getY(), kAprilTag6.getZ() + kAmpHeightDelta, kAprilTag6.getRotation());
+        public static final Pose3d kRedAmp = new Pose3d(kAprilTag6.getX(), kAprilTag6.getY(), kAprilTag6.getZ() + kAmpZDelta, kAprilTag6.getRotation());
+
+        public static final double kSourceZ = 0.93;
       }
     }
   }

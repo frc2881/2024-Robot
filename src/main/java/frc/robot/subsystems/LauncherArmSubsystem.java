@@ -73,7 +73,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
   public Command alignToTargetCommand(Supplier<Pose2d> currentPose, Pose3d targetPose) {
     return
     run(() -> {
-      double position = calculateArmPosition(currentPose.get(), targetPose); // TODO: determine with testing whether this needs to be a first-time calculation only or ok to do on-the-fly
+      double position = calculateArmPosition(currentPose.get(), targetPose); // TODO: determine through testing if this should be first-time-only calculation
       m_armPIDController.setReference(position, ControlType.kSmartMotion);
       m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < 0.1; // TODO: determine if this is correct tolerance
     })
@@ -84,13 +84,9 @@ public class LauncherArmSubsystem extends SubsystemBase {
   }
 
   private double calculateArmPosition(Pose2d currentPose, Pose3d targetPose) {
-    // TODO: if needed, adjust current pose with transform defined in constants (kLauncherToRobotTransform3d) ... launcher is higher in the robot than the ground
-    double height = targetPose.minus(new Pose3d(currentPose)).getZ();
-    double distance = currentPose.getTranslation().getDistance(targetPose.toPose2d().getTranslation()); 
-    double angle = Math.toDegrees(Math.atan2(height, distance)); 
-    // TODO: confirm angle adjustment factor needed based on field testing - may need a "fudge factor" based on mechanical and aerodynamics
-    // TODO: convert the adjusted angle into arm reference position to set for the lead screw
-    return 0.0;
+    double pitch = Math.toDegrees(Utils.getTargetRotation(currentPose, targetPose).getZ());
+    // TODO: convert the adjusted pitch angle into arm reference position to set for the lead screw (ratio of position to angle)
+    return Constants.Launcher.kDefaultPosition;
   }
 
   // TODO: Only adjust when we are in the area that we can shoot from

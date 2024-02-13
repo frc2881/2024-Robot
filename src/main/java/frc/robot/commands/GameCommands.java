@@ -96,7 +96,7 @@ public class GameCommands {
   // TODO: this needs testing once vision cameras are mounted and configured
   public Command alignRobotToTargetCommand() {
     return
-    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getCurrentTargetPose().toPose2d())
+    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getCurrentTargetPose())
     .withName("AlignRobotToTarget");
   }
 
