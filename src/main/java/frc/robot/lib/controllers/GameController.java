@@ -30,5 +30,6 @@ public class GameController extends CommandXboxController {
     return Utils.squareInput(-super.getRightY(), Constants.Controllers.kInputDeadband);
   }
 
+  // TODO: implement triggers for left/right axis values below/above deadband
   // TODO: implement any desired rumble pattern commands as extensions
 }

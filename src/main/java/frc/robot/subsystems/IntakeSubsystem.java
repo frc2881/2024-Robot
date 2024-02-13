@@ -43,36 +43,28 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command runIntakeFromFrontCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherHasTarget) {
     return
-    startEnd(
-      () -> {
-        runTopBelts(MotorDirection.Forward); // run top belts for ground intake at front of robot
-        runBottomBelts(MotorDirection.Forward); // run bottom belts for ground intake at front of robot
-        runRollers(MotorDirection.Reverse); // run rollers for ground intake at front of robot
-      },
-      () -> {}
-    )
+    startEnd(() -> {
+      runTopBelts(MotorDirection.Forward); // run top belts for ground intake at front of robot
+      runBottomBelts(MotorDirection.Forward); // run bottom belts for ground intake at front of robot
+      runRollers(MotorDirection.Reverse); // run rollers for ground intake at front of robot
+    }, () -> {})
     .unless(intakeHasTarget::get) // skip the command step if there is a note already in the intake
     .until(intakeHasTarget::get) // run this command step until there is a note in the intake
     .andThen(
-      startEnd(
-        () -> {
-          runTopBelts(MotorDirection.Forward, 0.75); // reverse the top belts to move the note from the intake to the launcher
-          runBottomBelts(MotorDirection.Reverse, 0.75);
-          runRollers(MotorDirection.Forward); // reverse the rollers to push out any others notes from the front of the robot
-        },
-        () -> {}
-      )
+      startEnd(() -> {
+        runTopBelts(MotorDirection.Forward, 0.75); // reverse the top belts to move the note from the intake to the launcher
+        runBottomBelts(MotorDirection.Reverse, 0.75);
+        runRollers(MotorDirection.Forward); // reverse the rollers to push out any others notes from the front of the robot
+      }, () -> {})
       .unless(launcherHasTarget::get) // skip this command step if there is a note already in the launcher
       .until(launcherHasTarget::get) // run this command step until there is a note in the launcher
     )
     .andThen(
-      runOnce(
-        () -> {
-          runTopBelts(MotorDirection.None); // stop the top belts once a note has reached the launcher
-          runBottomBelts(MotorDirection.None); // stop the bottom belts once a note has reached the launcher
-          runRollers(MotorDirection.Reverse); // run the rollers to push out any other notes from the rear of the robot and assuming the direction of travel is now towards driver station for scoring
-        }
-      )
+      runOnce(() -> {
+        runTopBelts(MotorDirection.None); // stop the top belts once a note has reached the launcher
+        runBottomBelts(MotorDirection.None); // stop the bottom belts once a note has reached the launcher
+        runRollers(MotorDirection.Reverse); // run the rollers to push out any other notes from the rear of the robot and assuming the direction of travel is now towards driver station for scoring
+      })
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None); // stop the top belts at any point the command sequence is ended or interrupted
@@ -84,34 +76,26 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command runIntakeFromRearCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherHasTarget) {
     return    
-    startEnd(
-      () -> {
-        runTopBelts(MotorDirection.Reverse); // run top belts for ground intake at rear of robot
-        runBottomBelts(MotorDirection.Reverse); // run bottom belts for ground intake at rear of robot
-        runRollers(MotorDirection.Forward); // run rollers for ground intake at rear of robot
-      },
-      () -> {}
-    )
+    startEnd(() -> {
+      runTopBelts(MotorDirection.Reverse); // run top belts for ground intake at rear of robot
+      runBottomBelts(MotorDirection.Reverse); // run bottom belts for ground intake at rear of robot
+      runRollers(MotorDirection.Forward); // run rollers for ground intake at rear of robot
+    }, () -> {})
     .unless(intakeHasTarget::get) // skip the command step if there is a note already in the intake
     .until(intakeHasTarget::get) // run this command step until there is a note in the intake
     .andThen(
-      startEnd(
-        () -> {
-          runRollers(MotorDirection.Reverse); // reverse the rollers to push out any others notes from the rear of the robot
-        },
-        () -> {}
-      )
+      startEnd(() -> {
+        runRollers(MotorDirection.Reverse); // reverse the rollers to push out any others notes from the rear of the robot
+      }, () -> {})
       .unless(launcherHasTarget::get) // skip this command step if there is a note already in the launcher
       .until(launcherHasTarget::get) // run this command step until there is a note in the launcher
     )
     .andThen(
-      runOnce(
-        () -> {
-          runTopBelts(MotorDirection.None); // stop the top belts once a note has reached the launcher
-          runBottomBelts(MotorDirection.None); // stop the bottom belts once a note has reached the launcher
-          runRollers(MotorDirection.Reverse); // run rollers to push out any others notes from the rear of the robot
-        }
-      )
+      runOnce(() -> {
+        runTopBelts(MotorDirection.None); // stop the top belts once a note has reached the launcher
+        runBottomBelts(MotorDirection.None); // stop the bottom belts once a note has reached the launcher
+        runRollers(MotorDirection.Reverse); // run rollers to push out any others notes from the rear of the robot
+      })
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None); // stop the top belts at any point the command sequence is ended or interrupted
@@ -123,49 +107,44 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command runIntakeEjectCommand() {
     return
-    startEnd(
-      () -> {
-        runTopBelts(MotorDirection.Forward);
-        runBottomBelts(MotorDirection.Forward);
-        runRollers(MotorDirection.Reverse);
-      },
-      () -> {
-        runTopBelts(MotorDirection.None);
-        runBottomBelts(MotorDirection.None);
-        runRollers(MotorDirection.None);
-      }
-    )
+    startEnd(() -> {
+      runTopBelts(MotorDirection.Forward);
+      runBottomBelts(MotorDirection.Forward);
+      runRollers(MotorDirection.Reverse);
+    }, () -> {
+      runTopBelts(MotorDirection.None);
+      runBottomBelts(MotorDirection.None);
+      runRollers(MotorDirection.None);
+    })
     .withName("RunIntakeEjectCommand");
   }
 
   public Command runIntakeForLaunchCommand() {
     return
-    startEnd(
-      () -> {
-        runTopBelts(MotorDirection.Forward); // run top belts to push note into launch rollers
-        runBottomBelts(MotorDirection.None); // run bottom belts to push note into launch rollers
-      },
-      () -> {
-        runTopBelts(MotorDirection.None);
-        runBottomBelts(MotorDirection.None);
-      }
-    )
+    startEnd(() -> {
+      runTopBelts(MotorDirection.Forward); // run top belts to push note into launch rollers
+      runBottomBelts(MotorDirection.None); // run bottom belts to push note into launch rollers
+    }, () -> {
+      runTopBelts(MotorDirection.None);
+      runBottomBelts(MotorDirection.None);
+    })
     .withName("RunIntakeForLaunchCommand");
   }
 
   public Command runIntakeForNotePositionCommand() {
     return
-    startEnd(
-      () -> {
-        runTopBelts(MotorDirection.Reverse, 0.25); // run top belts to push note into launch rollers
-        runBottomBelts(MotorDirection.Reverse, 0.25); // run bottom belts to push note into launch rollers
-      },
-      () -> {
-        runTopBelts(MotorDirection.None);
-        runBottomBelts(MotorDirection.None);
-      }
-    )
+    startEnd(() -> {
+      runTopBelts(MotorDirection.Reverse, 0.25); // run top belts to push note into launch rollers
+      runBottomBelts(MotorDirection.Reverse, 0.25); // run bottom belts to push note into launch rollers
+    }, () -> {
+      runTopBelts(MotorDirection.None);
+      runBottomBelts(MotorDirection.None);
+    })
     .withName("RunIntakeForLaunchCommand");
+  }
+
+  private void runTopBelts(MotorDirection motorDirection) {
+    runTopBelts(motorDirection, 1.0);
   }
 
   private void runTopBelts(MotorDirection motorDirection, Double speed) {
@@ -184,45 +163,17 @@ public class IntakeSubsystem extends SubsystemBase {
     }
   }
 
-  private void runTopBelts(MotorDirection motorDirection) {
-    switch (motorDirection) {
-      case Forward:
-        m_topBeltMotor.set(Constants.Intake.kTopBeltMotorMaxOutput);
-        break;
-      case Reverse:
-        m_topBeltMotor.set(Constants.Intake.kTopBeltMotorMinOutput);
-        break;
-      case None:
-        m_topBeltMotor.set(0.0);
-        break;
-      default:
-        break;
-    }
+  private void runBottomBelts(MotorDirection motorDirection) {
+    runBottomBelts(motorDirection, 1.0);
   }
 
   private void runBottomBelts(MotorDirection motorDirection, Double speed) {
     switch (motorDirection) {
       case Forward:
-        m_bottomBeltMotor.set(speed * Constants.Intake.kTopBeltMotorMaxOutput);
+        m_bottomBeltMotor.set(speed * Constants.Intake.kBottomBeltMotorMaxOutput);
         break;
       case Reverse:
-        m_bottomBeltMotor.set(speed * Constants.Intake.kTopBeltMotorMinOutput);
-        break;
-      case None:
-        m_bottomBeltMotor.set(0.0);
-        break;
-      default:
-        break;
-    }
-  }
-
-  private void runBottomBelts(MotorDirection motorDirection) {
-    switch (motorDirection) {
-      case Forward:
-        m_bottomBeltMotor.set(Constants.Intake.kTopBeltMotorMaxOutput);
-        break;
-      case Reverse:
-        m_bottomBeltMotor.set(Constants.Intake.kTopBeltMotorMinOutput);
+        m_bottomBeltMotor.set(speed * Constants.Intake.kBottomBeltMotorMinOutput);
         break;
       case None:
         m_bottomBeltMotor.set(0.0);
@@ -233,6 +184,10 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   private void runRollers(MotorDirection motorDirection) {
+    runRollers(motorDirection, 1.0);
+  }
+
+  private void runRollers(MotorDirection motorDirection, Double speed) {
     switch (motorDirection) {
       case Forward:
         m_rollerMotor.set(Constants.Intake.kTopBeltMotorMaxOutput);
@@ -248,15 +203,10 @@ public class IntakeSubsystem extends SubsystemBase {
     }
   }
 
-  private void updateTelemetry() {
-    // TODO: send subsystem telemetry data to the dashboard as needed
-    // ex: SmartDashboard.putString("Robot/Example/String", "TEST");
-  }
+  private void updateTelemetry() {}
 
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
-    // TODO: send subsystem data to be logged on the robot as needed
-    // ex: builder.addDoubleProperty("Double", this::getSomeDoubleValue, null);
   }
 }

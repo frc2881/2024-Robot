@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -66,7 +67,6 @@ public class GameCommands {
     .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kDefaultPosition))  
     .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
     .withName("RunFrontIntakeCommand");
-
   }
 
   // TODO: this needs testing and tuning with motor speed, sensor distance/note detection
@@ -93,8 +93,26 @@ public class GameCommands {
     .withName("getNoteIntoLaunchPosition " + distanceSupplier.get().toString());
   }
 
-  // TODO: build launch sequence command - see IntakeSubsystem - runFrontIntakeCommand for example of sequence and conditional logic (assumes that robot has already been aligned by driver/rotation and operator/elevation)
-  // TODO: after testing basic launcher command, implement separate commands for launching into speaker vs. amp with different launcher roller speed configurations (see inside LauncherSubsystem for TODO)
+  // TODO: this needs testing once vision cameras are mounted and configured
+  public Command alignRobotToTargetCommand() {
+    return
+    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getCurrentTargetPose().toPose2d())
+    .withName("AlignRobotToTarget");
+  }
+
+  // TODO: this needs testing once vision cameras are mounted and configured
+  public Command alignLauncherToTargetCommand() {
+    return
+    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getCurrentTargetPose())
+    .withName("AlignLauncherToTarget");
+  }
+
+  // TODO: consolidate duplicate methods for dynamically aligning the launcher elevation to target (see: alignLaunchToTargetCommand)
+  public Command alignLauncherCommand() {
+    return m_launcherArmSubsystem.alignLauncherCommand(() -> m_launcherDistanceSensor.hasTarget());
+  }
+
+  // TODO: refactor this command to use different speed configurations based on speaker or amp target using the isCurrentTargetAmp check
   public Command runLauncherCommand() {
     return Commands.parallel(
       m_launcherRollerSubsystem.runRollersCommand(-0.8, 0.8),
@@ -106,36 +124,6 @@ public class GameCommands {
     )
     .unless(() -> !m_launcherDistanceSensor.hasTarget())
     .withName("RunLauncher");
-    
-    
-    // - add reasonable wait (1 second) and then check if launcher distance sensor no longer has target (note has launched)
-    // - add reasonable timeout to end command which will stop launcher rollers and intake belts
-  }
-
-  public Command tiltLauncherCommand (Supplier<Double> speed) {
-    return m_launcherArmSubsystem.tiltLauncherCommand(speed);
-  }
-
-  public Command moveArmCommand (Supplier<Double> speed) {
-    return m_climberSubsystem.moveArmCommand(speed);
-  }
-
-  public Command alignLauncherCommand() {
-    return m_launcherArmSubsystem.alignLauncherCommand(() -> m_launcherDistanceSensor.hasTarget());
-  }
-
-  // TODO: this needs testing once vision cameras are mounted and configured
-  public Command alignRobotToSpeakerCommand() {
-    return
-    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getSpeaker().toPose2d())
-    .withName("AlignRobotToSpeaker");
-  }
-
-  // TODO: this needs testing once vision cameras are mounted and configured
-  public Command alignLauncherToSpeakerCommand() {
-    return
-    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getSpeaker())
-    .withName("AlignLauncherToSpeaker");
   }
 
   public Command resetSubsystems() {
@@ -148,8 +136,23 @@ public class GameCommands {
     .withName("ResetSubsystems");
   }
 
-  private static Pose3d getSpeaker() {
+  // TODO: update values based on testing: +/- 10 degrees rotation to amp and within 1 meter
+  private boolean isCurrentTargetAmp(Pose2d currentPose) {
+    Pose2d targetPose = getAmpPose().toPose2d();
+    return 
+    currentPose.getRotation().minus(targetPose.getRotation()).getDegrees() <= 10.0 && 
+    currentPose.getTranslation().getDistance(targetPose.getTranslation()) < 1.0;
+  }
+
+  private Pose3d getCurrentTargetPose() {
+    return isCurrentTargetAmp(m_poseSubsystem.getPose()) ? getAmpPose() : getSpeakerPose();
+  }
+
+  private Pose3d getSpeakerPose() {
     return Robot.getAlliance() == Alliance.Blue ? Constants.Game.Field.Targets.kBlueSpeaker : Constants.Game.Field.Targets.kRedSpeaker;
   }
 
+  private Pose3d getAmpPose() {
+    return Robot.getAlliance() == Alliance.Blue ? Constants.Game.Field.Targets.kBlueAmp : Constants.Game.Field.Targets.kRedAmp;
+  }
 }

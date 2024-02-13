@@ -74,17 +74,14 @@ public class FeederSubsystem extends SubsystemBase {
 
   public Command resetCommand() {
     return
-    startEnd(
-      () -> {
-        Utils.enableSoftLimits(m_armMotor, false);
-        m_armMotor.set(-0.1);
-      }, 
-      () -> {
-        m_armEncoder.setPosition(0);
-        m_armMotor.set(0.0);
-        Utils.enableSoftLimits(m_armMotor, true);
-      }
-    )
+    startEnd(() -> {
+      Utils.enableSoftLimits(m_armMotor, false);
+      m_armMotor.set(-0.1);
+    }, () -> {
+      m_armEncoder.setPosition(0);
+      m_armMotor.set(0.0);
+      Utils.enableSoftLimits(m_armMotor, true);
+    })
     .withName("ResetFeeder");
   }
 

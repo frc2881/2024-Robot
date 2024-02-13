@@ -68,6 +68,8 @@ public class DriveSubsystem extends SubsystemBase {
     };
     SwerveModule.burnFlashForAllMotorControllers();
 
+    // TODO: implement separate theta controller for auto alignment to target vs. drift correction during controller drive
+
     m_thetaController = new PIDController(Constants.Drive.kThetaControllerPIDConstants.P, Constants.Drive.kThetaControllerPIDConstants.I, Constants.Drive.kThetaControllerPIDConstants.D);
     m_thetaController.enableContinuousInput(-180.0, 180.0);
     m_thetaController.setTolerance(Constants.Drive.kThetaControllerPositionTolerance, Constants.Drive.kThetaControllerVelocityTolerance);

@@ -114,7 +114,7 @@ public final class Constants {
     public static final double kArmMotorMinOutput = -0.6;
     public static final double kArmMotorMaxOutput = 0.6;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.1, 0, 0); // TODO: update after testing
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.1, 0, 0);
     public static final double kArmMotorForwardSoftLimit = 30;//19.5; // TODO: Recalibrate soft limit
     public static final double kArmMotorReverseSoftLimit = 0.0;
 
@@ -150,27 +150,28 @@ public final class Constants {
     public static final int kBottomRollerMotorCANId = 13;
 
     public static final int kArmMotorCurrentLimit = 60;
-    public static final double kArmMotorMinOutput = -1.0; // TODO: update after testing - set to low value for initial motor run for safety
-    public static final double kArmMotorMaxOutput = 1.0; // TODO: update after testing - set to low value for initial motor run for safety
+    public static final double kArmMotorMinOutput = -1.0;
+    public static final double kArmMotorMaxOutput = 1.0;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8); // TODO: update after testing
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
     public static final double kArmMotorForwardSoftLimit = 15;
     public static final double kArmMotorReverseSoftLimit = 1;
-    public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0; // TODO: update (gear ratio for the leadscrew that converts rotations to inches of extension)
+    public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0;
     public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
     public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
     public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
 
     public static final int kTopRollerMotorCurrentLimit = 100;
-    public static final double kTopRollerMotorMinOutput = -1.0; // TODO: update after testing - may need to set to -1.0 and pass specific speeds for amp vs. speaker launch profiles
-    public static final double kTopRollerMotorMaxOutput = 1.0; // TODO: update after testing - may need to set to 1.0 and pass specific speeds for amp vs. speaker launch profiles
+    public static final double kTopRollerMotorMinOutput = -1.0; 
+    public static final double kTopRollerMotorMaxOutput = 1.0;
     public static final IdleMode kTopRollerMotorIdleMode = IdleMode.kBrake;
 
     public static final int kBottomRollerMotorCurrentLimit = 100;
-    public static final double kBottomRollerMotorMinOutput = -0.8; // TODO: update after testing - may need to set to -1.0 and pass specific speeds for amp vs. speaker launch profiles
-    public static final double kBottomRollerMotorMaxOutput = 0.8; // TODO: update after testing - may need to set to 1.0 and pass specific speeds for amp vs. speaker launch profiles
+    public static final double kBottomRollerMotorMinOutput = -1.0;
+    public static final double kBottomRollerMotorMaxOutput = 1.0;
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
+    // TODO: calculate and set as constant the launcher position to angle conversion factor to use for dynamic adjustment based on distance from target
     public static final double kDefaultPosition = 14.0; 
     public static final double kSpeakerPosition = 13.25;
     
@@ -209,7 +210,7 @@ public final class Constants {
     }
 
     public static final class Pose {
-      // TODO: enable and configuration cameras and transforms after mounting to robot
+      // TODO: enable and configure cameras and transforms after mounting to robot
       public static final Map<String, Transform3d> kPoseSensors = Map.ofEntries(
         entry(
           "Rear",
@@ -278,16 +279,16 @@ public final class Constants {
         public static final double kSourceHeight = 0.93;
 
         public static final Pose3d kAprilTag7 = kAprilTagFieldLayout.getTagPose(7).orElse(new Pose3d());
-        public static final Pose3d kBlueSpeaker = new Pose3d(kAprilTag7.getX(), kAprilTag7.getY(), kAprilTag7.getZ() + kSpeakerHeightDelta, new Rotation3d());
-
-        public static final Pose3d kAprilTag4 = kAprilTagFieldLayout.getTagPose(4).orElse(new Pose3d());
-        public static final Pose3d kRedSpeaker = new Pose3d(kAprilTag4.getX(), kAprilTag4.getY(), kAprilTag4.getZ() + kSpeakerHeightDelta, new Rotation3d());
+        public static final Pose3d kBlueSpeaker = new Pose3d(kAprilTag7.getX(), kAprilTag7.getY(), kAprilTag7.getZ() + kSpeakerHeightDelta, kAprilTag7.getRotation());
 
         public static final Pose3d kAprilTag5 = kAprilTagFieldLayout.getTagPose(5).orElse(new Pose3d());
-        public static final Pose3d kBlueAmp = new Pose3d(kAprilTag5.getX(), kAprilTag5.getY(), kAprilTag5.getZ() + kAmpHeightDelta, new Rotation3d());
+        public static final Pose3d kBlueAmp = new Pose3d(kAprilTag5.getX(), kAprilTag5.getY(), kAprilTag5.getZ() + kAmpHeightDelta, kAprilTag5.getRotation());
+
+        public static final Pose3d kAprilTag4 = kAprilTagFieldLayout.getTagPose(4).orElse(new Pose3d());
+        public static final Pose3d kRedSpeaker = new Pose3d(kAprilTag4.getX(), kAprilTag4.getY(), kAprilTag4.getZ() + kSpeakerHeightDelta, kAprilTag4.getRotation());
 
         public static final Pose3d kAprilTag6 = kAprilTagFieldLayout.getTagPose(6).orElse(new Pose3d());
-        public static final Pose3d kRedAmp = new Pose3d(kAprilTag6.getX(), kAprilTag6.getY(), kAprilTag6.getZ() + kAmpHeightDelta, new Rotation3d());
+        public static final Pose3d kRedAmp = new Pose3d(kAprilTag6.getX(), kAprilTag6.getY(), kAprilTag6.getZ() + kAmpHeightDelta, kAprilTag6.getRotation());
       }
     }
   }

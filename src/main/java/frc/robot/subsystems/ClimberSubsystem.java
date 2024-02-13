@@ -75,18 +75,18 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command moveArmCommand(Double speed) {
-    return run(
-      () -> {
-        m_armMotor.set(speed);
-      });
+    return 
+    run(() -> {
+      m_armMotor.set(speed);
+    });
   }
 
   public Command moveArmCommand(Supplier<Double> speed) {
-    return run(
-      () -> {
-        m_armMotor.set(speed.get() / 2); // TODO: test/tune speed ratio to determine why cutting in half is needed
-      })
-      .finallyDo(() -> m_armMotor.set(0.0));
+    return 
+    run(() -> {
+      m_armMotor.set(speed.get() / 2); // TODO: test/tune speed ratio to determine why cutting in half is needed
+    })
+    .finallyDo(() -> m_armMotor.set(0.0));
   }
 
   public Command runRollersCommand(MotorDirection direction) {
@@ -98,8 +98,7 @@ public class ClimberSubsystem extends SubsystemBase {
         Constants.Arm.kRollerMotorMaxOutput : 
         Constants.Arm.kRollerMotorMinOutput
       ); 
-    },
-    () -> {
+    }, () -> {
       m_rollerMotor.set(0.0);
     })
     .until(() -> false) // TODO: determine current limit on bag motor to stop rollers when performing inward intake
@@ -108,17 +107,14 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public Command resetCommand() {
     return 
-    startEnd(
-      () -> {
-        Utils.enableSoftLimits(m_armMotor, false);
-        m_armMotor.set(-0.1);
-      }, 
-      () -> {
-        m_armEncoder.setPosition(0);
-        m_armMotor.set(0.0);
-        Utils.enableSoftLimits(m_armMotor, true);
-      }
-    )
+    startEnd(() -> {
+      Utils.enableSoftLimits(m_armMotor, false);
+      m_armMotor.set(-0.1);
+    }, () -> {
+      m_armEncoder.setPosition(0);
+      m_armMotor.set(0.0);
+      Utils.enableSoftLimits(m_armMotor, true);
+    })
     .withName("ResetArm");
   }
 
@@ -129,7 +125,5 @@ public class ClimberSubsystem extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
-    // TODO: send subsystem data to be logged on the robot as needed
-    // ex: builder.addDoubleProperty("Double", this::getSomeDoubleValue, null);
   }
 }

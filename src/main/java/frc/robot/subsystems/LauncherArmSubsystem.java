@@ -57,19 +57,16 @@ public class LauncherArmSubsystem extends SubsystemBase {
 
   public Command tiltLauncherCommand(Supplier<Double> speed) {
     return 
-    run(
-      () -> {
-        m_armMotor.set(speed.get() / 2);
-      })
-      .finallyDo(() -> m_armMotor.set(0.0))
-      .withName("TiltLauncher");
+    run(() -> {
+      m_armMotor.set(speed.get() / 2);
+    })
+    .finallyDo(() -> m_armMotor.set(0.0))
+    .withName("TiltLauncher");
   }
 
   public Command alignToPositionCommand(Double position) {
     return 
-    run(
-      () -> m_armPIDController.setReference(position, ControlType.kSmartMotion)
-    )
+    run(() -> m_armPIDController.setReference(position, ControlType.kSmartMotion))
     .withName("AlignLaunchedToPosition");
   }
 
@@ -134,7 +131,5 @@ public class LauncherArmSubsystem extends SubsystemBase {
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
-    // TODO: send subsystem data to be logged on the robot as needed
-    // ex: builder.addDoubleProperty("Double", this::getSomeDoubleValue, null);
   }
 }

@@ -119,12 +119,12 @@ public class RobotContainer {
   private void configureBindings() {
     // SUBSYSTEMS ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
-    m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.tiltLauncherCommand(() -> m_operatorController.getLeftY()));
+    m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.tiltLauncherCommand(m_operatorController::getLeftY));
     //m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignLauncherCommand(() -> m_launcherDistanceSensor.hasTarget()));
     //m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmCommand(m_operatorController::getRightY));
 
     // DRIVER ========================================
-    m_driverController.a().whileTrue(m_gameCommands.alignRobotToSpeakerCommand());
+    m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     m_driverController.x().whileTrue(m_driveSubsystem.setLockedCommand());
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runFrontIntakeCommand());
     m_driverController.leftTrigger().whileTrue(m_gameCommands.runRearIntakeCommand());
@@ -133,13 +133,18 @@ public class RobotContainer {
     m_driverController.b().whileTrue(m_gameCommands.getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance));
 
     // OPERATOR ========================================
-    m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand());
+    m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand());
     m_operatorController.x().onTrue(m_feederSubsystem.runFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand()); // TODO: run launcher game command to score note (once launcher is aligned to target by both driver and operator)
     m_operatorController.start().whileTrue(m_gameCommands.resetSubsystems());
     m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.b().whileTrue(m_gameCommands.alignLauncherCommand());
     m_operatorController.y().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSpeakerPosition));
+    // TODO: possible options for holding launcher arm position at set locations on the field?
+    m_operatorController.povRight().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSpeakerPosition)); // TODO: right POV = closest set position at base of subwoofer?
+    m_operatorController.povUp().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSpeakerPosition)); // TODO: up POV = middle distance set position at closest stage pillar to speaker?
+    m_operatorController.povLeft().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSpeakerPosition)); // TODO: left POV = "long range" set position near back of stage?
+    m_operatorController.povDown().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSpeakerPosition)); // TODO: down POV = manual set position to score at amp?
 
     // TODO: Once launcher angle alingment is tested/done, make alignLauncherCommand the default and make the tiltLauncherCommand a trigger
     // new Trigger(() -> Math.abs(m_operatorController.getLeftY()) > 0.1)
