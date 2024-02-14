@@ -1,5 +1,6 @@
 package frc.robot.lib.common;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.revrobotics.CANSparkBase;
@@ -16,6 +17,7 @@ public final class Utils {
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
+  @JsonRawValue
   public static String objectToJson(Object o) {
     try {
       return objectMapper.writeValueAsString(o);
