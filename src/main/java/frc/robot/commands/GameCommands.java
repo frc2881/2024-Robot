@@ -60,20 +60,18 @@ public class GameCommands {
     m_lightsController = lightsController;
   }
 
-  // TODO: Wait to move the note into launcher until launcher is in default position
   public Command runFrontIntakeCommand() {
     return 
     m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kDefaultPosition))  
+    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kIntakePosition))  
     .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
     .withName("RunFrontIntakeCommand");
   }
 
-  // TODO: this needs testing and tuning with motor speed, sensor distance/note detection
   public Command runRearIntakeCommand() {
     return
     m_intakeSubsystem.runIntakeFromRearCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kDefaultPosition))
+    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kIntakePosition))
     // .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
     .withName("RunRearIntakeCommand");
   }
