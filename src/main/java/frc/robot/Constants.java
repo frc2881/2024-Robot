@@ -64,7 +64,7 @@ public final class Constants {
     public static final double kDriftThetaControllerPositionTolerance = 0.5;
     public static final double kDriftThetaControllerVelocityTolerance = 0.5;
 
-    public static final PIDConstants kAlignThetaControllerPIDConstants = new PIDConstants(0.01, 0, 0);
+    public static final PIDConstants kAlignThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01);
     public static final double kAlignThetaControllerPositionTolerance = 0.5;
     public static final double kAlignThetaControllerVelocityTolerance = 0.5;
 
@@ -119,7 +119,7 @@ public final class Constants {
     public static final double kArmMotorMaxOutput = 0.6;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.1, 0, 0);
-    public static final double kArmMotorForwardSoftLimit = 30;//19.5; // TODO: Recalibrate soft limit
+    public static final double kArmMotorForwardSoftLimit = 19.0; // TODO: Recalibrate soft limit
     public static final double kArmMotorReverseSoftLimit = 0.0;
 
     public static final int kRollerMotorCurrentLimit = 60;
@@ -177,9 +177,9 @@ public final class Constants {
 
     // TODO: calculate and set as constant the launcher position to angle conversion factor to use for dynamic adjustment based on distance from target
     public static final double kDefaultPosition = 14.0; 
-    public static final double kSubwooferPosition = 13.25;
-    public static final double kMidRangePosition = 11.25;
-    public static final double kLongRangePosition = 9.25;
+    public static final double kSubwooferPosition = 12.0; // 55.3 degrees
+    public static final double kMidRangePosition = 11.25; // 52.2 degrees
+    public static final double kLongRangePosition = 9.25; // 44.6 degrees
     public static final double kAmpPosition = 14.0;
   }
 
