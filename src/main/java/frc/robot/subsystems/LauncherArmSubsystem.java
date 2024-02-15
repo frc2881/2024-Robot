@@ -84,7 +84,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
   }
 
   private double calculateArmPosition(Pose2d currentPose, Pose3d targetPose) {
-    double pitch = Math.toDegrees(Utils.getTargetRotation(currentPose, targetPose).getZ());
+    double pitch = Math.toDegrees(Utils.getTargetRotation(currentPose, targetPose).getY());
     // TODO: convert the adjusted pitch angle into arm reference position to set for the lead screw (ratio of position to angle)
     return Constants.Launcher.kDefaultPosition;
   }

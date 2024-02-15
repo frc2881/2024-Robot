@@ -30,7 +30,8 @@ import frc.robot.lib.drive.SwerveModule;
 public class DriveSubsystem extends SubsystemBase {
   private Supplier<Double> m_gyroHeading;
   private final SwerveModule[] m_swerveModules;
-  private final PIDController m_thetaController;
+  private final PIDController m_driftThetaController;
+  private final PIDController m_alignThetaController;
   private final SlewRateLimiter m_driveInputXFilter;
   private final SlewRateLimiter m_driveInputYFilter;
   private final SlewRateLimiter m_driveInputRotFilter;
@@ -70,11 +71,13 @@ public class DriveSubsystem extends SubsystemBase {
     };
     SwerveModule.burnFlashForAllMotorControllers();
 
-    // TODO: implement separate theta controller for auto alignment to target vs. drift correction during controller drive
+    m_driftThetaController = new PIDController(Constants.Drive.kDriftThetaControllerPIDConstants.P, Constants.Drive.kDriftThetaControllerPIDConstants.I, Constants.Drive.kDriftThetaControllerPIDConstants.D);
+    m_driftThetaController.enableContinuousInput(-180.0, 180.0);
+    m_driftThetaController.setTolerance(Constants.Drive.kDriftThetaControllerPositionTolerance, Constants.Drive.kDriftThetaControllerVelocityTolerance);
 
-    m_thetaController = new PIDController(Constants.Drive.kThetaControllerPIDConstants.P, Constants.Drive.kThetaControllerPIDConstants.I, Constants.Drive.kThetaControllerPIDConstants.D);
-    m_thetaController.enableContinuousInput(-180.0, 180.0);
-    m_thetaController.setTolerance(Constants.Drive.kThetaControllerPositionTolerance, Constants.Drive.kThetaControllerVelocityTolerance);
+    m_alignThetaController = new PIDController(Constants.Drive.kAlignThetaControllerPIDConstants.P, Constants.Drive.kAlignThetaControllerPIDConstants.I, Constants.Drive.kAlignThetaControllerPIDConstants.D);
+    m_alignThetaController.enableContinuousInput(-180.0, 180.0);
+    m_alignThetaController.setTolerance(Constants.Drive.kAlignThetaControllerPositionTolerance, Constants.Drive.kAlignThetaControllerVelocityTolerance);
 
     m_driveInputXFilter = new SlewRateLimiter(Constants.Drive.kDriveInputRateLimit);
     m_driveInputYFilter = new SlewRateLimiter(Constants.Drive.kDriveInputRateLimit);
@@ -114,14 +117,14 @@ public class DriveSubsystem extends SubsystemBase {
         boolean isTranslating = ((speedX != 0.0) || (speedY != 0.0));
         if (!m_isRotationLocked && !isRotating && isTranslating) {
           m_isRotationLocked = true;
-          m_thetaController.reset();
-          m_thetaController.setSetpoint(m_gyroHeading.get());
+          m_driftThetaController.reset();
+          m_driftThetaController.setSetpoint(m_gyroHeading.get());
         } else if (isRotating || !isTranslating) {
           m_isRotationLocked = false;
         }
         if (m_isRotationLocked) {
-          speedRotation = m_thetaController.calculate(m_gyroHeading.get());
-          if (m_thetaController.atSetpoint()) {
+          speedRotation = m_driftThetaController.calculate(m_gyroHeading.get());
+          if (m_driftThetaController.atSetpoint()) {
             speedRotation = 0.0;
           }
         }
@@ -211,9 +214,9 @@ public class DriveSubsystem extends SubsystemBase {
   public Command alignToTargetCommand(Supplier<Pose2d> currentPose, Pose3d targetPose) {
     return
     run(() -> {
-      double speedRotation = m_thetaController.calculate(currentPose.get().getRotation().getDegrees());
+      double speedRotation = m_alignThetaController.calculate(currentPose.get().getRotation().getDegrees());
       speedRotation += Math.copySign(0.15, speedRotation);
-      if (m_thetaController.atSetpoint()) {
+      if (m_alignThetaController.atSetpoint()) {
         speedRotation = 0.0;
         m_isAlignedToTarget = true;
       }
@@ -224,7 +227,8 @@ public class DriveSubsystem extends SubsystemBase {
     })
     .beforeStarting(() -> {
       m_isAlignedToTarget = false; 
-      m_thetaController.setSetpoint(Math.toDegrees(Utils.getTargetRotation(currentPose.get(), targetPose).getZ()));
+      m_alignThetaController.setSetpoint(Math.toDegrees(Utils.getTargetRotation(currentPose.get(), targetPose).getZ()));
+      m_alignThetaController.reset();
     })
     .unless(() -> m_lockState == DriveLockState.Locked)
     .until(() -> m_isAlignedToTarget)

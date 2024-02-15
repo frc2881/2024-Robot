@@ -60,9 +60,13 @@ public final class Constants {
       new Translation2d(-Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2)
     );
 
-    public static final PIDConstants kThetaControllerPIDConstants = new PIDConstants(0.01, 0, 0);
-    public static final double kThetaControllerPositionTolerance = 0.5;
-    public static final double kThetaControllerVelocityTolerance = 0.5;
+    public static final PIDConstants kDriftThetaControllerPIDConstants = new PIDConstants(0.01, 0, 0);
+    public static final double kDriftThetaControllerPositionTolerance = 0.5;
+    public static final double kDriftThetaControllerVelocityTolerance = 0.5;
+
+    public static final PIDConstants kAlignThetaControllerPIDConstants = new PIDConstants(0.01, 0, 0);
+    public static final double kAlignThetaControllerPositionTolerance = 0.5;
+    public static final double kAlignThetaControllerVelocityTolerance = 0.5;
 
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
