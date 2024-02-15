@@ -129,23 +129,18 @@ public class RobotContainer {
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runFrontIntakeCommand());
     m_driverController.leftTrigger().whileTrue(m_gameCommands.runRearIntakeCommand());
     m_driverController.rightTrigger().and(m_driverController.leftTrigger()).whileTrue(m_gameCommands.runEjectIntakeCommand());
-    m_driverController.start().onTrue(m_gyroSensor.resetCommand());
-    m_driverController.b().whileTrue(m_gameCommands.getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance));
+    m_driverController.rightBumper().whileTrue(m_gameCommands.getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance));
+    m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand());
     m_operatorController.x().onTrue(m_feederSubsystem.runFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
-    m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand()); // TODO: run launcher game command to score note (once launcher is aligned to target by both driver and operator)
-    m_operatorController.start().whileTrue(m_gameCommands.resetSubsystems());
-    m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetCommand());
-    m_operatorController.b().whileTrue(m_gameCommands.alignLauncherCommand());
-    m_operatorController.y().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSpeakerPosition));
-    // TODO: possible options for holding launcher arm position at set locations on the field?
-    m_operatorController.povRight().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSpeakerPosition)); // TODO: right POV = closest set position at base of subwoofer?
-    m_operatorController.povUp().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSpeakerPosition)); // TODO: up POV = middle distance set position at closest stage pillar to speaker?
-    m_operatorController.povLeft().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSpeakerPosition)); // TODO: left POV = "long range" set position near back of stage?
-    m_operatorController.povDown().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSpeakerPosition)); // TODO: down POV = manual set position to score at amp?
-
+    m_operatorController.povRight().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSubwooferPosition));
+    m_operatorController.povUp().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kMidRangePosition)); 
+    m_operatorController.povLeft().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kLongRangePosition));
+    m_operatorController.povDown().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kAmpPosition));
+    m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
+    m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
     // TODO: Once launcher angle alingment is tested/done, make alignLauncherCommand the default and make the tiltLauncherCommand a trigger
     // new Trigger(() -> Math.abs(m_operatorController.getLeftY()) > 0.1)
     //   .whileTrue(m_launcherArmSubsystem.tiltLauncherCommand(() -> m_operatorController.getLeftY()));

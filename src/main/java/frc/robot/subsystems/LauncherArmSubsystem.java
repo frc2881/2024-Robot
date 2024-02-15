@@ -89,17 +89,6 @@ public class LauncherArmSubsystem extends SubsystemBase {
     return Constants.Launcher.kDefaultPosition;
   }
 
-  // TODO: Only adjust when we are in the area that we can shoot from
-  // TODO: Once Y has been pushed, align to speaker position instead of calculated position
-  public Command alignLauncherCommand(Supplier<Boolean> hasTarget) {
-    return Commands.either(
-      alignToPositionCommand(Constants.Launcher.kSpeakerPosition), //alignLauncherToSpeakerCommand(), 
-      alignToPositionCommand(Constants.Launcher.kDefaultPosition),
-      () -> hasTarget.get()
-    )
-    .withName("AlignLauncher");
-  }
-
   public Double getPosition() {
     return m_armEncoder.getPosition();
   }

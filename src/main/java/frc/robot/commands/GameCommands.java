@@ -107,11 +107,6 @@ public class GameCommands {
     .withName("AlignLauncherToTarget");
   }
 
-  // TODO: consolidate duplicate methods for dynamically aligning the launcher elevation to target (see: alignLaunchToTargetCommand)
-  public Command alignLauncherCommand() {
-    return m_launcherArmSubsystem.alignLauncherCommand(() -> m_launcherDistanceSensor.hasTarget());
-  }
-
   // TODO: refactor this command to use different speed configurations based on speaker or amp target using the isCurrentTargetAmp check
   public Command runLauncherCommand() {
     return Commands.parallel(

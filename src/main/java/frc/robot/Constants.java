@@ -177,7 +177,10 @@ public final class Constants {
 
     // TODO: calculate and set as constant the launcher position to angle conversion factor to use for dynamic adjustment based on distance from target
     public static final double kDefaultPosition = 14.0; 
-    public static final double kSpeakerPosition = 13.25;
+    public static final double kSubwooferPosition = 13.25;
+    public static final double kMidRangePosition = 11.25;
+    public static final double kLongRangePosition = 9.25;
+    public static final double kAmpPosition = 14.0;
   }
 
   public static final class Arm {
