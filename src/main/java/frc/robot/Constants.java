@@ -48,7 +48,7 @@ public final class Constants {
 
     public static final double kTrackWidth = Units.inchesToMeters(24.5);
     public static final double kWheelBase = Units.inchesToMeters(21.5);
-    public static final double kDriveBaseRadius = new Translation2d(kWheelBase / 2, kTrackWidth / 2).getNorm();
+    public static final double kDriveBaseRadius = new Translation2d().getDistance(new Translation2d(kWheelBase / 2, kTrackWidth / 2));
 
     public static final double kMaxSpeedMetersPerSecond = 5.7424;
     public static final double kMaxAngularSpeed = 2 * Math.PI;
@@ -60,13 +60,13 @@ public final class Constants {
       new Translation2d(-Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2)
     );
 
-    public static final PIDConstants kDriftThetaControllerPIDConstants = new PIDConstants(0.01, 0, 0);
-    public static final double kDriftThetaControllerPositionTolerance = 0.5;
-    public static final double kDriftThetaControllerVelocityTolerance = 0.5;
+    public static final PIDConstants kDriftCorrectionThetaControllerPIDConstants = new PIDConstants(0.01, 0, 0);
+    public static final double kDriftCorrectionThetaControllerPositionTolerance = 0.5;
+    public static final double kDriftCorrectionThetaControllerVelocityTolerance = 0.5;
 
-    public static final PIDConstants kAlignThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01);
-    public static final double kAlignThetaControllerPositionTolerance = 0.5;
-    public static final double kAlignThetaControllerVelocityTolerance = 0.5;
+    public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01); // TODO: calibrate with testing (faster?)
+    public static final double kTargetAlignmentThetaControllerPositionTolerance = 0.5;
+    public static final double kTargetAlignmentThetaControllerVelocityTolerance = 0.5;
 
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
@@ -115,12 +115,12 @@ public final class Constants {
     public static final int kRollerMotorCANId = 14;
 
     public static final int kArmMotorCurrentLimit = 60;
-    public static final double kArmMotorMinOutput = -0.6;
-    public static final double kArmMotorMaxOutput = 0.6;
+    public static final double kArmMotorMinOutput = -0.5;
+    public static final double kArmMotorMaxOutput = 0.5;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.1, 0, 0);
-    public static final double kArmMotorForwardSoftLimit = 19.0; // TODO: Recalibrate soft limit
-    public static final double kArmMotorReverseSoftLimit = 0.0;
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.1, 0, 0); // TODO: calibrate to be more gentle with arm (convert to smart motion in subsytem?)
+    public static final double kArmMotorForwardSoftLimit = 19.0; // TODO: recalibrate soft limits
+    public static final double kArmMotorReverseSoftLimit = 0.0; // TODO: recalibrate soft limits
 
     public static final int kRollerMotorCurrentLimit = 60;
     public static final double kRollerMotorMaxOutput = 0.75;
@@ -176,11 +176,15 @@ public final class Constants {
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
     // TODO: calculate and set as constant the launcher position to angle conversion factor to use for dynamic adjustment based on distance from target
-    public static final double kIntakePosition = 14.0; // TODO: get degrees
-    public static final double kSubwooferPosition = 12.0; // TODO: configure on field (12.0 measured at 55.3 degrees)
-    public static final double kMidRangePosition = 11.25; // TODO: configure on field (11.25 measured at 52.2 degrees)
-    public static final double kLongRangePosition = 9.25; // TODO: configure on field (9.25 measured at 44.6 degrees)
-    public static final double kAmpPosition = 14.0; // TODO: configure on field
+    // TODO: recalibrate position measurements/angles while maintaining/holding position (keep holding the controller button for the set position)
+    // TODO: proprtion calculation should be rate of angle change per unit of position change based on physical measurements
+    public static final double kArmPositionFromTargetPitchConversionFactor = (12.0 - 11.25) / (55.3 - 52.2);
+
+    public static final double kArmPositionIntake = 14.0; // TODO: get degrees
+    public static final double kArmPositionSubwoofer = 12.0; // TODO: configure on field (12.0 measured at 55.3 degrees)
+    public static final double kArmPositionMidRange = 11.25; // TODO: configure on field (11.25 measured at 52.2 degrees)
+    public static final double kArmPositionLongRange = 9.25; // TODO: configure on field
+    public static final double kArmPositionAmp = 14.0; // TODO: configure on field
   }
 
   public static final class Arm {

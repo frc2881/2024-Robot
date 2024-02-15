@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -12,7 +11,6 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.common.Enums.MotorDirection;
@@ -62,7 +60,16 @@ public class ClimberSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command moveToPositionCommand(double position) {
+  public Command moveArmManualCommand(Supplier<Double> speed) {
+    return 
+    run(() -> {
+      m_armMotor.set(speed.get() / 2); // TODO: test/tune speed ratio to determine why cutting in half is needed
+    })
+    .finallyDo(() -> m_armMotor.set(0.0))
+    .withName("MoveClimberArmManual");
+  }
+
+  public Command moveArmToPositionCommand(double position) {
     return
     run(() -> {
       m_armPIDController.setReference(position, ControlType.kSmartMotion);
@@ -71,22 +78,7 @@ public class ClimberSubsystem extends SubsystemBase {
     .beforeStarting(() -> m_isArmAtPosition = false)
     .until(() -> m_isArmAtPosition)
     .finallyDo(() -> m_armMotor.set(0.0))
-    .withName("MoveArmToPosition");
-  }
-
-  public Command moveArmCommand(Double speed) {
-    return 
-    run(() -> {
-      m_armMotor.set(speed);
-    });
-  }
-
-  public Command moveArmCommand(Supplier<Double> speed) {
-    return 
-    run(() -> {
-      m_armMotor.set(speed.get() / 2); // TODO: test/tune speed ratio to determine why cutting in half is needed
-    })
-    .finallyDo(() -> m_armMotor.set(0.0));
+    .withName("MoveClimberArmToPosition");
   }
 
   public Command runRollersCommand(MotorDirection direction) {
@@ -102,7 +94,7 @@ public class ClimberSubsystem extends SubsystemBase {
       m_rollerMotor.set(0.0);
     })
     .until(() -> false) // TODO: determine current limit on bag motor to stop rollers when performing inward intake
-    .withName("RunArmRollers");
+    .withName("RunClimberArmRollers");
   }
 
   public Command resetCommand() {
@@ -115,11 +107,11 @@ public class ClimberSubsystem extends SubsystemBase {
       m_armMotor.set(0.0);
       Utils.enableSoftLimits(m_armMotor, true);
     })
-    .withName("ResetArm");
+    .withName("ResetClimberArm");
   }
 
   private void updateTelemetry() {
-    SmartDashboard.putNumber("Robot/Arm/Position", m_armEncoder.getPosition());
+    SmartDashboard.putNumber("Robot/Climber/Arm/Position", m_armEncoder.getPosition());
   }
 
   @Override

@@ -63,7 +63,7 @@ public class GameCommands {
   public Command runFrontIntakeCommand() {
     return 
     m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kIntakePosition))  
+    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))  
     .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
     .withName("RunFrontIntakeCommand");
   }
@@ -71,12 +71,12 @@ public class GameCommands {
   public Command runRearIntakeCommand() {
     return
     m_intakeSubsystem.runIntakeFromRearCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kIntakePosition))
+    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
     // .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
     .withName("RunRearIntakeCommand");
   }
 
-  // TODO: this needs testing to confirm proper ejection of note out of bottom of robot
+  // TODO: this needs testing to confirm proper ejection of note out of bottom of robot (create back/forth "wiggle" as part of sequence?)
   public Command runEjectIntakeCommand() {
     return
     m_intakeSubsystem.runIntakeEjectCommand()
@@ -85,20 +85,20 @@ public class GameCommands {
 
   public Command getNoteIntoLaunchPositionCommand(Supplier<Double> distanceSupplier){
     return Commands.repeatingSequence(
-      m_intakeSubsystem.runIntakeForNotePositionCommand().withTimeout(0.1) // Might need to slow down intake0.2)
+      m_intakeSubsystem.runIntakeForLaunchPositionCommand().withTimeout(0.1) // Might need to slow down intake0.2)
     )
-    .until(() -> distanceSupplier.get() > 3.5)
+    .until(() -> distanceSupplier.get() > 3.5) // TODO: refactor to get value is between min/max distance values?
     .withName("getNoteIntoLaunchPosition " + distanceSupplier.get().toString());
   }
 
-  // TODO: this needs testing once vision cameras are mounted and configured
+  // TODO: this needs more testing once vision cameras are mounted and configured
   public Command alignRobotToTargetCommand() {
     return
     m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getCurrentTargetPose())
     .withName("AlignRobotToTarget");
   }
 
-  // TODO: this needs testing once vision cameras are mounted and configured
+  // TODO: this needs more testing once vision cameras are mounted and configured
   public Command alignLauncherToTargetCommand() {
     return
     m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getCurrentTargetPose())
@@ -119,6 +119,7 @@ public class GameCommands {
     .withName("RunLauncher");
   }
 
+  // TODO: work with build to confirm that hard stops for all arm mechanisms are in place so that zeroing out all in parallel is safe
   public Command resetSubsystems() {
     return 
     m_feederSubsystem.resetCommand()
@@ -130,11 +131,11 @@ public class GameCommands {
   }
 
   // TODO: update values based on testing: +/- 10 degrees rotation to amp and within 1 meter
-  private boolean isCurrentTargetAmp(Pose2d currentPose) {
+  private boolean isCurrentTargetAmp(Pose2d robotPose) {
     Pose2d targetPose = getAmpPose().toPose2d();
     return 
-    currentPose.getRotation().minus(targetPose.getRotation()).getDegrees() <= 10.0 && 
-    currentPose.getTranslation().getDistance(targetPose.getTranslation()) < 1.0;
+    robotPose.getRotation().minus(targetPose.getRotation()).getDegrees() <= 10.0 && 
+    robotPose.getTranslation().getDistance(targetPose.getTranslation()) < 1.0;
   }
 
   private Pose3d getCurrentTargetPose() {

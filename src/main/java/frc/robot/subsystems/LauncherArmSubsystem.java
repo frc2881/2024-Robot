@@ -14,7 +14,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.common.Utils;
@@ -55,38 +54,41 @@ public class LauncherArmSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command tiltLauncherCommand(Supplier<Double> speed) {
+  public Command alignManualCommand(Supplier<Double> speed) {
     return 
     run(() -> {
       m_armMotor.set(speed.get() / 2);
     })
     .finallyDo(() -> m_armMotor.set(0.0))
-    .withName("TiltLauncher");
+    .withName("AlignLauncherArmManual");
   }
 
   public Command alignToPositionCommand(Double position) {
     return 
     run(() -> m_armPIDController.setReference(position, ControlType.kSmartMotion))
-    .withName("AlignLaunchedToPosition");
+    .withName("AlignLauncherArmToPosition");
   }
 
-  public Command alignToTargetCommand(Supplier<Pose2d> currentPose, Pose3d targetPose) {
+  public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Pose3d targetPose) {
     return
     run(() -> {
-      double position = calculateArmPosition(currentPose.get(), targetPose); // TODO: determine through testing if this should be first-time-only calculation
+      double position = calculateArmPosition(robotPose.get(), targetPose); // TODO: determine through testing if this should be first-time-only calculation
       m_armPIDController.setReference(position, ControlType.kSmartMotion);
       m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < 0.1; // TODO: determine if this is correct tolerance
     })
     .beforeStarting(() -> m_isAlignedToTarget = false)
     .until(() -> m_isAlignedToTarget)
     .finallyDo(() -> m_armMotor.set(0.0))
-    .withName("AlignLauncherElevationToTarget");
+    .withName("AlignLauncherArmToTarget");
   }
 
-  private double calculateArmPosition(Pose2d currentPose, Pose3d targetPose) {
-    double pitch = Math.toDegrees(Utils.getTargetRotation(currentPose, targetPose).getY());
-    // TODO: convert the adjusted pitch angle into arm reference position to set for the lead screw (ratio of position to angle)
-    return Constants.Launcher.kIntakePosition;
+  private double calculateArmPosition(Pose2d robotPose, Pose3d targetPose) {
+    double pitch = Math.toDegrees(Utils.getTargetRotation(robotPose, targetPose).getY());
+    double position = pitch * Constants.Launcher.kArmPositionFromTargetPitchConversionFactor;
+    return 
+    Utils.isValueBetween(position, Constants.Launcher.kArmMotorReverseSoftLimit, Constants.Launcher.kArmMotorForwardSoftLimit) 
+      ? position 
+      : Constants.Launcher.kArmPositionIntake;
   }
 
   public Double getPosition() {
@@ -106,7 +108,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
         Utils.enableSoftLimits(m_armMotor, true);
       }
     )
-    .withName("ResetLauncher");
+    .withName("ResetLauncherArm");
   }
 
   private void updateTelemetry() {

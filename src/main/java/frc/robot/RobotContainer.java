@@ -117,13 +117,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    // SUBSYSTEMS ========================================
-    m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
-    m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.tiltLauncherCommand(m_operatorController::getLeftY));
-    //m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignLauncherCommand(() -> m_launcherDistanceSensor.hasTarget()));
-    //m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmCommand(m_operatorController::getRightY));
-
     // DRIVER ========================================
+    m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     m_driverController.x().whileTrue(m_driveSubsystem.setLockedCommand());
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runFrontIntakeCommand());
@@ -133,17 +128,18 @@ public class RobotContainer {
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
+    m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
+    // TODO: Once launcher angle alignment is tested/done, make alignLauncherToTargetCommand the default and make the tiltLauncherCommand a trigger
+    // m_operatorController.leftY().whileTrue(m_launcherArmSubsystem.tiltLauncherCommand(() -> m_operatorController.getLeftY()));
+    //m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmCommand(m_operatorController::getRightY));
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand());
     m_operatorController.x().onTrue(m_feederSubsystem.runFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
-    m_operatorController.povRight().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kSubwooferPosition));
-    m_operatorController.povUp().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kMidRangePosition)); 
-    m_operatorController.povLeft().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kLongRangePosition));
-    m_operatorController.povDown().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kAmpPosition));
+    m_operatorController.povRight().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionSubwoofer));
+    m_operatorController.povUp().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionMidRange)); 
+    m_operatorController.povLeft().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionLongRange));
+    m_operatorController.povDown().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionAmp));
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
     m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
-    // TODO: Once launcher angle alingment is tested/done, make alignLauncherCommand the default and make the tiltLauncherCommand a trigger
-    // new Trigger(() -> Math.abs(m_operatorController.getLeftY()) > 0.1)
-    //   .whileTrue(m_launcherArmSubsystem.tiltLauncherCommand(() -> m_operatorController.getLeftY()));
 
     // DASHBOARD ========================================
     SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();
