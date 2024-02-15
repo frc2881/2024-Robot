@@ -176,7 +176,7 @@ public final class Constants {
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
     // TODO: calculate and set as constant the launcher position to angle conversion factor to use for dynamic adjustment based on distance from target
-    public static final double kDefaultPosition = 14.0; 
+    public static final double kIntakePosition = 14.0; 
     public static final double kSubwooferPosition = 13.25;
     public static final double kMidRangePosition = 11.25;
     public static final double kLongRangePosition = 9.25;
