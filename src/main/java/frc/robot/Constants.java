@@ -263,7 +263,7 @@ public final class Constants {
 
   public static final class Game {
     public static final class Field {
-      public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+      public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
       public static final Pair<Pose2d, Pose2d> kBoundaries = Pair.of(
         new Pose2d(0, 0, null), 
