@@ -61,10 +61,11 @@ public class GameCommands {
   }
 
   public Command runFrontIntakeCommand() {
-    return 
-    m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))  
-    .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
+    return Commands.parallel(
+      m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake),
+      m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
+        .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
+      )
     .withName("RunFrontIntakeCommand");
   }
 
@@ -87,7 +88,7 @@ public class GameCommands {
     return Commands.repeatingSequence(
       m_intakeSubsystem.runIntakeForLaunchPositionCommand().withTimeout(0.1) // Might need to slow down intake 0.2)
     )
-    .until(() -> distanceSupplier.get() > 4.5) // TODO: refactor to get value is between min/max distance values?
+    .until(() -> distanceSupplier.get() > 5.5) // TODO: refactor to get value is between min/max distance values?
     .withName("getNoteIntoLaunchPosition " + distanceSupplier.get().toString());
   }
 

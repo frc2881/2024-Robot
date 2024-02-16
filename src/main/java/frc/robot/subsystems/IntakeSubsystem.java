@@ -122,8 +122,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command runIntakeForLaunchPositionCommand() {
     return
     startEnd(() -> {
-      runTopBelts(MotorDirection.Reverse, 0.25); 
-      runBottomBelts(MotorDirection.Reverse, 0.25); 
+      runTopBelts(MotorDirection.Reverse, 0.15); 
+      runBottomBelts(MotorDirection.Reverse, 0.15); 
     }, () -> {
       runTopBelts(MotorDirection.None);
       runBottomBelts(MotorDirection.None);
@@ -136,7 +136,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return
     startEnd(() -> {
       runTopBelts(MotorDirection.Forward); 
-      runBottomBelts(MotorDirection.Forward, 0.25);  
+      runBottomBelts(MotorDirection.Reverse, 0.25);  
     }, () -> {
       runTopBelts(MotorDirection.None);
       runBottomBelts(MotorDirection.None);
