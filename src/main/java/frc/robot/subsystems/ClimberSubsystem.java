@@ -22,8 +22,10 @@ public class ClimberSubsystem extends SubsystemBase {
   private final RelativeEncoder m_armEncoder;
   private final CANSparkMax m_rollerMotor;
 
-  private boolean m_isArmAtPosition = false;
+  private boolean m_isArmAlignedToPosition = false;
   
+  // TODO: add position safety check after robot power on to not allow operation unless soft limit reset to zero has been confirmed (manual or auto)
+
   public ClimberSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Arm.kArmMotorCANId, MotorType.kBrushless);
     m_armMotor.restoreFactoryDefaults();
@@ -73,10 +75,10 @@ public class ClimberSubsystem extends SubsystemBase {
     return
     run(() -> {
       m_armPIDController.setReference(position, ControlType.kSmartMotion);
-      m_isArmAtPosition = Math.abs(m_armEncoder.getPosition() - position) < 0.1; // TODO: determine if this is correct tolerance
+      m_isArmAlignedToPosition = Math.abs(m_armEncoder.getPosition() - position) < 0.1; // TODO: determine if this is correct tolerance
     })
-    .beforeStarting(() -> m_isArmAtPosition = false)
-    .until(() -> m_isArmAtPosition)
+    .beforeStarting(() -> m_isArmAlignedToPosition = false)
+    .until(() -> m_isArmAlignedToPosition)
     .finallyDo(() -> m_armMotor.set(0.0))
     .withName("MoveClimberArmToPosition");
   }

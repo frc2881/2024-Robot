@@ -131,7 +131,7 @@ public class DriveSubsystem extends SubsystemBase {
       }
       drive(speedX, speedY, speedRotation);
     })
-    .unless(() -> m_lockState == DriveLockState.Locked)
+    .onlyIf(() -> m_lockState != DriveLockState.Locked)
     .withName("DriveWithController");
   }
 
@@ -233,7 +233,7 @@ public class DriveSubsystem extends SubsystemBase {
       m_targetAlignmentThetaController.setSetpoint(yawToTarget);
       m_targetAlignmentThetaController.reset();
     })
-    .unless(() -> m_lockState == DriveLockState.Locked)
+    .onlyIf(() -> m_lockState != DriveLockState.Locked)
     .until(() -> m_isAlignedToTarget)
     .withName("AlignDriveRotationToTarget");
   }

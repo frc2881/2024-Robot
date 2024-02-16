@@ -25,6 +25,8 @@ public class LauncherArmSubsystem extends SubsystemBase {
 
   private boolean m_isAlignedToTarget = false;
 
+  // TODO: add position safety check after robot power on to not allow operation unless soft limit reset to zero has been confirmed (manual or auto)
+
   public LauncherArmSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Launcher.kArmMotorCANId, MotorType.kBrushless);
     m_armMotor.restoreFactoryDefaults();
@@ -89,10 +91,6 @@ public class LauncherArmSubsystem extends SubsystemBase {
     Utils.isValueBetween(position, Constants.Launcher.kArmMotorReverseSoftLimit, Constants.Launcher.kArmMotorForwardSoftLimit) 
       ? position 
       : Constants.Launcher.kArmPositionIntake;
-  }
-
-  public Double getPosition() {
-    return m_armEncoder.getPosition();
   }
 
   public Command resetCommand() {

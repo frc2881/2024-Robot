@@ -116,7 +116,7 @@ public class GameCommands {
         m_intakeSubsystem.runIntakeForLaunchCommand()
         )
     )
-    .unless(() -> !m_launcherDistanceSensor.hasTarget())
+    .onlyIf(() -> m_launcherDistanceSensor.hasTarget())
     .withName("RunLauncher");
   }
 

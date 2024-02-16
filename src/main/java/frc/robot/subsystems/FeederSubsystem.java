@@ -21,6 +21,8 @@ public class FeederSubsystem extends SubsystemBase {
   private final SparkPIDController m_armPIDController;
   private final CANSparkMax m_rollerMotor;
 
+  // TODO: add position safety check after robot power on to not allow operation unless soft limit reset to zero has been confirmed (manual or auto)
+
   public FeederSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Feeder.kArmMotorCANId, MotorType.kBrushless);
     m_armMotor.restoreFactoryDefaults();
