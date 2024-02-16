@@ -52,8 +52,8 @@ public class IntakeSubsystem extends SubsystemBase {
     .until(intakeHasTarget::get)
     .andThen(
       startEnd(() -> {
-        runTopBelts(MotorDirection.Forward, 0.75);
-        runBottomBelts(MotorDirection.Reverse, 0.75);
+        runTopBelts(MotorDirection.Forward, 0.5);
+        runBottomBelts(MotorDirection.Reverse, 0.5);
         runRollers(MotorDirection.Forward);
       }, () -> {})
       .unless(launcherHasTarget::get)
@@ -136,7 +136,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return
     startEnd(() -> {
       runTopBelts(MotorDirection.Forward); 
-      runBottomBelts(MotorDirection.None); 
+      runBottomBelts(MotorDirection.Forward, 0.25);  
     }, () -> {
       runTopBelts(MotorDirection.None);
       runBottomBelts(MotorDirection.None);

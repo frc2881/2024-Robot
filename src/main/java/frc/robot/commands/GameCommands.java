@@ -76,7 +76,7 @@ public class GameCommands {
     .withName("RunRearIntakeCommand");
   }
 
-  // TODO: this needs testing to confirm proper ejection of note out of bottom of robot (create back/forth "wiggle" as part of sequence?)
+  // TODO: create back/forth "wiggle" as part of sequence? 
   public Command runEjectIntakeCommand() {
     return
     m_intakeSubsystem.runIntakeEjectCommand()
@@ -85,9 +85,9 @@ public class GameCommands {
 
   public Command getNoteIntoLaunchPositionCommand(Supplier<Double> distanceSupplier){
     return Commands.repeatingSequence(
-      m_intakeSubsystem.runIntakeForLaunchPositionCommand().withTimeout(0.1) // Might need to slow down intake0.2)
+      m_intakeSubsystem.runIntakeForLaunchPositionCommand().withTimeout(0.1) // Might need to slow down intake 0.2)
     )
-    .until(() -> distanceSupplier.get() > 3.5) // TODO: refactor to get value is between min/max distance values?
+    .until(() -> distanceSupplier.get() > 4.5) // TODO: refactor to get value is between min/max distance values?
     .withName("getNoteIntoLaunchPosition " + distanceSupplier.get().toString());
   }
 

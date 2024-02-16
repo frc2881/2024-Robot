@@ -224,15 +224,15 @@ public final class Constants {
         entry(
           "Rear",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-4.9375), Units.inchesToMeters(-11.875), Units.inchesToMeters(15)),
-            new Rotation3d(0, Units.degreesToRadians(23.5), Units.degreesToRadians(180))
+            new Translation3d(Units.inchesToMeters(-5.7489), Units.inchesToMeters(-11.5491), Units.inchesToMeters(14.8804)),
+            new Rotation3d(Units.degreesToRadians(3.73), Units.degreesToRadians(23.5), Units.degreesToRadians(180))
           )
         ),
         entry(
           "Side",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-4.9375), Units.inchesToMeters(-11.875), Units.inchesToMeters(24)),
-            new Rotation3d(0, Units.degreesToRadians(28), Units.degreesToRadians(-90))
+            new Translation3d(Units.inchesToMeters(-5.1260), Units.inchesToMeters(-12.9691), Units.inchesToMeters(23.9813)),
+            new Rotation3d(0, Units.degreesToRadians(24.27), Units.degreesToRadians(-90))
           )
         )
       );
