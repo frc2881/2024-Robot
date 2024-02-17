@@ -20,6 +20,7 @@ import frc.robot.commands.GameCommands;
 import frc.robot.lib.common.Enums.DriveDriftCorrection;
 import frc.robot.lib.common.Enums.DriveOrientation;
 import frc.robot.lib.common.Enums.DriveSpeedMode;
+import frc.robot.lib.common.Enums.MotorDirection;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.GyroSensor;
@@ -131,9 +132,11 @@ public class RobotContainer {
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     // TODO: Once launcher angle alignment is tested/done, make alignLauncherToTargetCommand the default and make the tiltLauncherCommand a trigger
     // m_operatorController.leftY().whileTrue(m_launcherArmSubsystem.tiltLauncherCommand(() -> m_operatorController.getLeftY()));
-    //m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmCommand(m_operatorController::getRightY));
+    m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand());
     m_operatorController.x().onTrue(m_feederSubsystem.runFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
+    m_operatorController.leftBumper().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
+    m_operatorController.rightBumper().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
     m_operatorController.povRight().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionSubwoofer));
     m_operatorController.povUp().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionMidRange)); 
     m_operatorController.povLeft().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionLongRange));

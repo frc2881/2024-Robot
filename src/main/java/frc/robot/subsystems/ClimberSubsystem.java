@@ -11,6 +11,7 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.common.Enums.MotorDirection;
@@ -27,30 +28,30 @@ public class ClimberSubsystem extends SubsystemBase {
   // TODO: add position safety check after robot power on to not allow operation unless soft limit reset to zero has been confirmed (manual or auto)
 
   public ClimberSubsystem() {
-    m_armMotor = new CANSparkMax(Constants.Arm.kArmMotorCANId, MotorType.kBrushless);
+    m_armMotor = new CANSparkMax(Constants.Climber.kArmMotorCANId, MotorType.kBrushless);
     m_armMotor.restoreFactoryDefaults();
-    m_armMotor.setIdleMode(Constants.Arm.kArmMotorIdleMode); 
-    m_armMotor.setSmartCurrentLimit(Constants.Arm.kArmMotorCurrentLimit);
-    m_armMotor.setSecondaryCurrentLimit(Constants.Arm.kArmMotorCurrentLimit);
+    m_armMotor.setIdleMode(Constants.Climber.kArmMotorIdleMode); 
+    m_armMotor.setSmartCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
+    m_armMotor.setSecondaryCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
     // m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
     // m_armMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Arm.kArmMotorForwardSoftLimit); 
     // m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     // m_armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Arm.kArmMotorReverseSoftLimit);
 
     m_armEncoder = m_armMotor.getEncoder();
-    m_armEncoder.setPositionConversionFactor(Constants.Arm.kArmMotorPositionConversionFactor);
-    m_armEncoder.setVelocityConversionFactor(Constants.Arm.kArmMotorVelocityConversionFactor);
+    m_armEncoder.setPositionConversionFactor(Constants.Climber.kArmMotorPositionConversionFactor);
+    m_armEncoder.setVelocityConversionFactor(Constants.Climber.kArmMotorVelocityConversionFactor);
     
     m_armPIDController = m_armMotor.getPIDController();
     m_armPIDController.setFeedbackDevice(m_armEncoder);
-    m_armPIDController.setP(Constants.Arm.kArmMotorPIDConstants.P);
-    m_armPIDController.setD(Constants.Arm.kArmMotorPIDConstants.D);
-    m_armPIDController.setOutputRange(Constants.Arm.kArmMotorMinOutput, Constants.Arm.kArmMotorMaxOutput);
-    m_armPIDController.setSmartMotionMaxVelocity(Constants.Arm.kArmMotorSmartMotionMaxVelocity, 0);
-    m_armPIDController.setSmartMotionMaxAccel(Constants.Arm.kArmMotorSmartMotionMaxAccel, 0);
+    m_armPIDController.setP(Constants.Climber.kArmMotorPIDConstants.P);
+    m_armPIDController.setD(Constants.Climber.kArmMotorPIDConstants.D);
+    m_armPIDController.setOutputRange(Constants.Climber.kArmMotorMinOutput, Constants.Climber.kArmMotorMaxOutput);
+    m_armPIDController.setSmartMotionMaxVelocity(Constants.Climber.kArmMotorSmartMotionMaxVelocity, 0);
+    m_armPIDController.setSmartMotionMaxAccel(Constants.Climber.kArmMotorSmartMotionMaxAccel, 0);
 
     // TODO: get correct motor configuration for brushed/bag motor
-    m_rollerMotor = new CANSparkMax(Constants.Arm.kRollerMotorCANId, MotorType.kBrushless);
+    m_rollerMotor = new CANSparkMax(Constants.Climber.kRollerMotorCANId, MotorType.kBrushed);
     // m_rollerMotor.restoreFactoryDefaults();
     // m_rollerMotor.setIdleMode(Constants.Arm.kRollerMotorIdleMode); 
     // m_rollerMotor.setSmartCurrentLimit(Constants.Arm.kRollerMotorCurrentLimit);
@@ -85,17 +86,17 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public Command runRollersCommand(MotorDirection direction) {
     return 
-    startEnd(() -> {
+    Commands.startEnd(() -> {
       // TODO: determine correct direction of travel for inward/outward with motor
       m_rollerMotor.set(
         direction == MotorDirection.Forward ? 
-        Constants.Arm.kRollerMotorMaxOutput : 
-        Constants.Arm.kRollerMotorMinOutput
+        Constants.Climber.kRollerMotorMaxOutput : 
+        Constants.Climber.kRollerMotorMinOutput
       ); 
     }, () -> {
       m_rollerMotor.set(0.0);
     })
-    .until(() -> false) // TODO: determine current limit on bag motor to stop rollers when performing inward intake
+    //.until(() -> false) // TODO: determine current limit on bag motor to stop rollers when performing inward intake
     .withName("RunClimberArmRollers");
   }
 

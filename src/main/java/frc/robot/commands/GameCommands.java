@@ -5,11 +5,13 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.lib.sensors.GyroSensor;
@@ -88,7 +90,7 @@ public class GameCommands {
     return Commands.repeatingSequence(
       m_intakeSubsystem.runIntakeForLaunchPositionCommand().withTimeout(0.1) // Might need to slow down intake 0.2)
     )
-    .until(() -> distanceSupplier.get() > 5.5) // TODO: refactor to get value is between min/max distance values?
+    .until(() -> distanceSupplier.get() > 5.5) // Utils.isValueBetween(distanceSupplier.get(), 5.5, 10)
     .withName("getNoteIntoLaunchPosition " + distanceSupplier.get().toString());
   }
 
@@ -109,10 +111,9 @@ public class GameCommands {
   // TODO: refactor this command to use different speed configurations based on speaker or amp target using the isCurrentTargetAmp check
   public Command runLauncherCommand() {
     return Commands.parallel(
-      m_launcherRollerSubsystem.runRollersCommand(-0.8, 0.8),
-      //m_launcherArmSubsystem.alignToPositionCommand(m_launcherArmSubsystem.getPosition()),
+      m_launcherRollerSubsystem.runRollersCommand(-0.8, 0.8), //-0.4, 0.6
       Commands.sequence(
-        new WaitCommand(1.5),
+        new WaitCommand(2.0),
         m_intakeSubsystem.runIntakeForLaunchCommand()
         )
     )
@@ -140,7 +141,10 @@ public class GameCommands {
   }
 
   private Pose3d getCurrentTargetPose() {
+    boolean isCurrTargetAmp = isCurrentTargetAmp(m_poseSubsystem.getPose());
+    SmartDashboard.putBoolean("currentTargetIsAmp", isCurrTargetAmp);
     return isCurrentTargetAmp(m_poseSubsystem.getPose()) ? getAmpPose() : getSpeakerPose();
+
   }
 
   private Pose3d getSpeakerPose() {
