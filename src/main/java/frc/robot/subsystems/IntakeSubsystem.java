@@ -51,8 +51,8 @@ public class IntakeSubsystem extends SubsystemBase {
     .onlyWhile(() -> !intakeHasTarget.get())
     .andThen(
       startEnd(() -> {
-        runTopBelts(MotorDirection.Forward, 0.5);
-        runBottomBelts(MotorDirection.Reverse, 0.5);
+        runTopBelts(MotorDirection.Forward, 0.4);
+        runBottomBelts(MotorDirection.Reverse, 0.4);
         runRollers(MotorDirection.Forward);
       }, () -> {})
       .onlyWhile(() -> !launcherHasTarget.get())
@@ -60,9 +60,11 @@ public class IntakeSubsystem extends SubsystemBase {
     .andThen(
       runOnce(() -> {
         runTopBelts(MotorDirection.None);
-        runBottomBelts(MotorDirection.None);
         runRollers(MotorDirection.Reverse);
       })
+      .andThen(
+        run(() -> runBottomBelts(MotorDirection.Reverse)).withTimeout(0.5)
+        )
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None);
@@ -115,6 +117,24 @@ public class IntakeSubsystem extends SubsystemBase {
     .withName("RunIntakeEject");
   }
 
+  public Command runIntakeForLaunchPositionCommand(Supplier<Double> distanceSupplier) {
+    return
+    startEnd(() -> {
+      if(distanceSupplier.get() < 5.5){
+        runTopBelts(MotorDirection.Reverse, 0.15); 
+        runBottomBelts(MotorDirection.Reverse, 0.15); 
+      }
+      else if (distanceSupplier.get() > 10.0){
+        runTopBelts(MotorDirection.Forward, 0.15); 
+        runBottomBelts(MotorDirection.Forward, 0.15); 
+      }
+    }, () -> {
+      runTopBelts(MotorDirection.None);
+      runBottomBelts(MotorDirection.None);
+    })
+    .withName("RunIntakeForLaunchPosition");
+  }
+
   public Command runIntakeForLaunchPositionCommand() {
     return
     startEnd(() -> {
@@ -132,7 +152,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return
     startEnd(() -> {
       runTopBelts(MotorDirection.Forward); 
-      runBottomBelts(MotorDirection.Reverse, 0.25);  
+      runBottomBelts(MotorDirection.Reverse, 0.5);  
     }, () -> {
       runTopBelts(MotorDirection.None);
       runBottomBelts(MotorDirection.None);

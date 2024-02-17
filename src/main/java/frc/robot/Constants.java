@@ -180,14 +180,14 @@ public final class Constants {
     // TODO: proprtion calculation should be rate of angle change per unit of position change based on physical measurements
     public static final double kArmPositionFromTargetPitchConversionFactor = (12.0 - 11.25) / (55.3 - 52.2);
 
-    public static final double kArmPositionIntake = 14.0; // TODO: get degrees
-    public static final double kArmPositionSubwoofer = 12.0; // TODO: configure on field (12.0 measured at 55.3 degrees)
-    public static final double kArmPositionMidRange = 11.25; // TODO: configure on field (11.25 measured at 52.2 degrees)
-    public static final double kArmPositionLongRange = 9.25; // TODO: configure on field
-    public static final double kArmPositionAmp = 14.0; // TODO: configure on field
+    public static final double kArmPositionIntake = 14.0; // TODO: get degrees 
+    public static final double kArmPositionSubwoofer = 13.10; // TODO: configure on field (12.0 measured at 55.3 degrees, 13.10 measured at 58.0 degrees)
+    public static final double kArmPositionMidRange = 7.5; // TODO: configure on field (11.25 measured at 52.2 degrees)
+    public static final double kArmPositionLongRange = 4.20; // TODO: configure on field (4.20 measure at 23.8 degrees)
+    public static final double kArmPositionAmp = 11.4; // TODO: configure on field
   }
 
-  public static final class Arm {
+  public static final class Climber {
     public static final int kArmMotorCANId = 16;
     public static final int kRollerMotorCANId = 17;
 
@@ -204,9 +204,11 @@ public final class Constants {
     public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
 
     public static final int kRollerMotorCurrentLimit = 60;
-    public static final double kRollerMotorMinOutput = -0.2; // TODO: update after testing
-    public static final double kRollerMotorMaxOutput = 0.2; // TODO: update after testing
+    public static final double kRollerMotorMinOutput = -1.0; // TODO: update after testing
+    public static final double kRollerMotorMaxOutput = 1.0; // TODO: update after testing
     public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
+
+    //37.7 is position for arm to lock
   }
 
   public static final class Sensors {
@@ -224,15 +226,15 @@ public final class Constants {
         entry(
           "Rear",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5.7489), Units.inchesToMeters(-11.5491), Units.inchesToMeters(14.8804)),
-            new Rotation3d(Units.degreesToRadians(3.73), Units.degreesToRadians(23.5), Units.degreesToRadians(180))
+            new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15)), //  23.0 24.2
+            new Rotation3d(Units.degreesToRadians(3.73), Units.degreesToRadians(-90 + 24.2), Units.degreesToRadians(180))
           )
         ),
         entry(
           "Side",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5.1260), Units.inchesToMeters(-12.9691), Units.inchesToMeters(23.9813)),
-            new Rotation3d(0, Units.degreesToRadians(24.27), Units.degreesToRadians(-90))
+            new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-11.5), Units.inchesToMeters(24)),
+            new Rotation3d(0, Units.degreesToRadians(-90 + 23.0), Units.degreesToRadians(-90))
           )
         )
       );
