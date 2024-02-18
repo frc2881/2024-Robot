@@ -80,8 +80,11 @@ public class LauncherArmSubsystem extends SubsystemBase {
     })
     .beforeStarting(() -> m_isAlignedToTarget = false)
     .until(() -> m_isAlignedToTarget)
+    //.unless(() -> !m_isTiltLocked)
     .finallyDo(() -> m_armMotor.set(0.0))
     .withName("AlignLauncherArmToTarget");
+
+    
   }
 
   private double calculateArmPosition(Pose2d robotPose, Pose3d targetPose) {

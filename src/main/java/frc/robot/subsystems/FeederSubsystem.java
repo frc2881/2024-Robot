@@ -63,6 +63,22 @@ public class FeederSubsystem extends SubsystemBase {
     .withName("StartFeeder");
   }
 
+  public Command moveFeedOutCommand() {
+    return 
+    run(() -> {
+      m_armPIDController.setReference(Constants.Feeder.kArmMotorForwardSoftLimit, ControlType.kPosition);
+    })
+    .withName("MoveFeederOut");
+  }
+
+  public Command moveFeedInCommand() {
+    return 
+    run(() -> {
+      m_armPIDController.setReference(Constants.Feeder.kArmMotorReverseSoftLimit, ControlType.kPosition);
+    })
+    .withName("MoveFeederIn");
+  }
+
   public Command stopFeederCommand() {
     return
     run(() -> {

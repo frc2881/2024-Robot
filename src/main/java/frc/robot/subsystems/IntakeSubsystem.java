@@ -81,10 +81,12 @@ public class IntakeSubsystem extends SubsystemBase {
       runBottomBelts(MotorDirection.Reverse);
       runRollers(MotorDirection.Forward);
     }, () -> {})
-    .onlyWhile(() -> !intakeHasTarget.get())
+    .onlyWhile(() -> !intakeHasTarget.get()) // TODO: Check for value getting smaller before switching
     .andThen(
       startEnd(() -> {
-        runRollers(MotorDirection.Reverse);
+        runTopBelts(MotorDirection.Forward, 0.4);
+        runBottomBelts(MotorDirection.Reverse, 0.4);
+        runRollers(MotorDirection.Forward);
       }, () -> {})
       .onlyWhile(() -> !launcherHasTarget.get())
     )
@@ -103,7 +105,7 @@ public class IntakeSubsystem extends SubsystemBase {
     .withName("RunIntakeFromRear");
   }
 
-  public Command runIntakeEjectCommand() {
+  public Command runIntakeEjectRearCommand() {
     return
     startEnd(() -> {
       runTopBelts(MotorDirection.Forward);
@@ -116,6 +118,22 @@ public class IntakeSubsystem extends SubsystemBase {
     })
     .withName("RunIntakeEject");
   }
+
+  public Command runIntakeEjectFrontCommand() {
+    return
+    startEnd(() -> {
+      runTopBelts(MotorDirection.Reverse);
+      runBottomBelts(MotorDirection.Reverse);
+      runRollers(MotorDirection.Forward);
+    }, () -> {
+      runTopBelts(MotorDirection.None);
+      runBottomBelts(MotorDirection.None);
+      runRollers(MotorDirection.None);
+    })
+    .withName("RunIntakeEject");
+  }
+
+
 
   public Command runIntakeForLaunchPositionCommand(Supplier<Double> distanceSupplier) {
     return
@@ -147,7 +165,6 @@ public class IntakeSubsystem extends SubsystemBase {
     .withName("RunIntakeForLaunchPosition");
   }
 
-  // TODO: experiment with running bottom belts at slow speed during launch to help note into rollers
   public Command runIntakeForLaunchCommand() {
     return
     startEnd(() -> {

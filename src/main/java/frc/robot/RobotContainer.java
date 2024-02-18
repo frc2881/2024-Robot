@@ -124,9 +124,12 @@ public class RobotContainer {
     m_driverController.x().whileTrue(m_driveSubsystem.setLockedCommand());
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runFrontIntakeCommand());
     m_driverController.leftTrigger().whileTrue(m_gameCommands.runRearIntakeCommand());
-    m_driverController.rightTrigger().and(m_driverController.leftTrigger()).whileTrue(m_gameCommands.runEjectIntakeCommand());
+    m_driverController.rightTrigger().and(m_driverController.leftTrigger()).whileTrue(m_gameCommands.runEjectIntakeCommand(true));
+    m_driverController.rightBumper().and(m_driverController.leftBumper()).whileTrue(m_gameCommands.runEjectIntakeCommand(false));
     m_driverController.rightBumper().whileTrue(m_gameCommands.getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance));
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
+    m_driverController.b().whileTrue(m_gameCommands.moveToClimbCommand());
+    m_driverController.y().whileTrue(m_gameCommands.climbCommand());
 
     // OPERATOR ========================================
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));

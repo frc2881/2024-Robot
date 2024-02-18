@@ -14,17 +14,19 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.lib.common.Utils;
+import frc.robot.Robot;
 import frc.robot.lib.common.Enums.DriveDriftCorrection;
 import frc.robot.lib.common.Enums.DriveLockState;
 import frc.robot.lib.common.Enums.DriveOrientation;
 import frc.robot.lib.common.Enums.DriveSpeedMode;
 import frc.robot.lib.common.Enums.SwerveModuleLocation;
+import frc.robot.lib.common.Utils;
 import frc.robot.lib.drive.SwerveModule;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -216,8 +218,13 @@ public class DriveSubsystem extends SubsystemBase {
     return
     run(() -> {
       double robotYaw = robotPose.get().getRotation().getDegrees();
+      if(Robot.getAlliance() == Alliance.Red){
+        robotYaw = -robotYaw;
+      }
       double speedRotation = m_targetAlignmentThetaController.calculate(robotYaw);
       speedRotation += Math.copySign(0.15, speedRotation);
+      SmartDashboard.putNumber("AutoAlignRobotYaw", robotYaw);
+      SmartDashboard.putNumber("AutoAlignSpeedRotation", speedRotation);
       if (m_targetAlignmentThetaController.atSetpoint()) {
         speedRotation = 0.0;
         m_isAlignedToTarget = true;
@@ -230,6 +237,10 @@ public class DriveSubsystem extends SubsystemBase {
     .beforeStarting(() -> {
       m_isAlignedToTarget = false; 
       double yawToTarget = Math.toDegrees(Utils.getTargetRotation(robotPose.get(), targetPose).getZ());
+      if(Robot.getAlliance() == Alliance.Red){
+        yawToTarget = Math.toDegrees(Utils.getTargetRotation(robotPose.get().times(-1), targetPose).getZ());
+      }
+      SmartDashboard.putNumber("AutoAlignStartYaw", yawToTarget);
       m_targetAlignmentThetaController.setSetpoint(yawToTarget);
       m_targetAlignmentThetaController.reset();
     })

@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.function.Supplier;
 
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -33,10 +34,10 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armMotor.setIdleMode(Constants.Climber.kArmMotorIdleMode); 
     m_armMotor.setSmartCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
     m_armMotor.setSecondaryCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
-    // m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-    // m_armMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Arm.kArmMotorForwardSoftLimit); 
-    // m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    // m_armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Arm.kArmMotorReverseSoftLimit);
+    m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
+    m_armMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Climber.kArmMotorForwardSoftLimit); 
+    m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    m_armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Climber.kArmMotorReverseSoftLimit);
 
     m_armEncoder = m_armMotor.getEncoder();
     m_armEncoder.setPositionConversionFactor(Constants.Climber.kArmMotorPositionConversionFactor);

@@ -79,11 +79,15 @@ public class GameCommands {
     .withName("RunRearIntakeCommand");
   }
 
-  // TODO: create back/forth "wiggle" as part of sequence? 
-  public Command runEjectIntakeCommand() {
-    return
-    m_intakeSubsystem.runIntakeEjectCommand()
-    .withName("RunEjectIntakeCommand");
+  // TODO: make enum?
+  public Command runEjectIntakeCommand(Boolean isRearEject) {
+    if(isRearEject){
+      return m_intakeSubsystem.runIntakeEjectRearCommand()
+      .withName("RunEjectIntakeRearCommand");
+    }
+    return m_intakeSubsystem.runIntakeEjectFrontCommand()
+      .withName("RunEjectIntakeFrontCommand");
+    
   }
 
   public Command getNoteIntoLaunchPositionCommand(Supplier<Double> distanceSupplier){
@@ -121,6 +125,20 @@ public class GameCommands {
     .withName("RunLauncher");
   }
 
+  public Command moveToClimbCommand() {
+    return Commands.parallel(
+      m_launcherArmSubsystem.alignToPositionCommand(1.0),
+        m_feederSubsystem.moveFeedOutCommand().withTimeout(0.5),
+      m_climberSubsystem.moveArmToPositionCommand(Constants.Climber.kArmMotorForwardSoftLimit-0.1)
+    )
+    .withName("MoveToClimb");
+  }
+
+  public Command climbCommand() {
+    return m_climberSubsystem.moveArmToPositionCommand(0.0) // TODO: update?
+      .withName("Climb");
+  }
+
   // TODO: work with build to confirm that hard stops for all arm mechanisms are in place so that zeroing out all in parallel is safe
   public Command resetSubsystems() {
     return 
@@ -146,6 +164,7 @@ public class GameCommands {
     return isCurrentTargetAmp(m_poseSubsystem.getPose()) ? getAmpPose() : getSpeakerPose();
 
   }
+
 
   private Pose3d getSpeakerPose() {
     return Robot.getAlliance() == Alliance.Blue ? Constants.Game.Field.Targets.kBlueSpeaker : Constants.Game.Field.Targets.kRedSpeaker;

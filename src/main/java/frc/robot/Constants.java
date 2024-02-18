@@ -81,12 +81,12 @@ public final class Constants {
       public static final double kOffsetRearRight = Math.PI / 2;
 
       public static final int kDrivingMotorPinionTeeth = 14;
-      public static final double kFreeSpeedRpm = 5676;
+      public static final double kFreeSpeedRpm = 6238.73054766; //5676
       public static final double kWheelDiameterMeters = Units.inchesToMeters(3.0);
       public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
-      public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
+      public static final double kDrivingMotorReduction = (45.0 * 20) / (kDrivingMotorPinionTeeth * 15);
       public static final double kDrivingMotorFreeSpeedRps = kFreeSpeedRpm / 60;
-      public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction;
+      public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters) / kDrivingMotorReduction; 
       public static final double kDrivingEncoderPositionConversionFactor = (kWheelDiameterMeters * Math.PI) / kDrivingMotorReduction;
       public static final double kDrivingEncoderVelocityConversionFactor = ((kWheelDiameterMeters * Math.PI) / kDrivingMotorReduction) / 60.0;
       
@@ -185,6 +185,9 @@ public final class Constants {
     public static final double kArmPositionMidRange = 7.5; // TODO: configure on field (11.25 measured at 52.2 degrees)
     public static final double kArmPositionLongRange = 4.20; // TODO: configure on field (4.20 measure at 23.8 degrees)
     public static final double kArmPositionAmp = 11.4; // TODO: configure on field
+
+    public static final double kLauncherTopEdgeLength = 0.0; // TODO: Find value
+    public static final double kLauncherBottomEdgeLength = 0.0; // TODO: Find value
   }
 
   public static final class Climber {
@@ -192,13 +195,13 @@ public final class Constants {
     public static final int kRollerMotorCANId = 17;
 
     public static final int kArmMotorCurrentLimit = 60;
-    public static final double kArmMotorMinOutput = -0.2; // TODO: update after testing
-    public static final double kArmMotorMaxOutput = 0.2; // TODO: update after testing
+    public static final double kArmMotorMinOutput = -0.8; // TODO: update after testing
+    public static final double kArmMotorMaxOutput = 0.8; // TODO: update after testing
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
-    public static final double kArmMotorForwardSoftLimit = 100; // TODO: update
-    public static final double kArmMotorReverseSoftLimit = 0.5; // TODO: update
-    public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0; // TODO: update (gear ratio for the leadscrew that converts rotations to inches of extension)
+    public static final double kArmMotorForwardSoftLimit = 38.7;
+    public static final double kArmMotorReverseSoftLimit = 0.0; 
+    public static final double kArmMotorPositionConversionFactor = 1.0 / 9.0; 
     public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
     public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
     public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
@@ -223,20 +226,20 @@ public final class Constants {
     public static final class Pose {
       // TODO: enable and configure cameras and transforms after mounting to robot
       public static final Map<String, Transform3d> kPoseSensors = Map.ofEntries(
-        entry(
-          "Rear",
-          new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15)), //  23.0 24.2
-            new Rotation3d(Units.degreesToRadians(3.73), Units.degreesToRadians(-90 + 24.2), Units.degreesToRadians(180))
-          )
-        ),
-        entry(
-          "Side",
-          new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-11.5), Units.inchesToMeters(24)),
-            new Rotation3d(0, Units.degreesToRadians(-90 + 23.0), Units.degreesToRadians(-90))
-          )
-        )
+        // entry(
+        //   "Rear",
+        //   new Transform3d(
+        //     new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15)), //  23.0 24.2
+        //     new Rotation3d(Units.degreesToRadians(3.73), Units.degreesToRadians(-90 + 24.2), Units.degreesToRadians(180))
+        //   )
+        // )
+        // entry(
+        //   "Side",
+        //   new Transform3d(
+        //     new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-11.5), Units.inchesToMeters(24)),
+        //     new Rotation3d(0, Units.degreesToRadians(-90 + 23.0), Units.degreesToRadians(-90))
+        //   )
+        // )
       );
       public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
       public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
