@@ -27,6 +27,7 @@ import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.lib.sensors.ObjectSensor;
 import frc.robot.lib.sensors.PoseSensor;
 import frc.robot.lib.sensors.DistanceSensor;
+import frc.robot.lib.sensors.DistanceSensorsLocal;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
@@ -95,6 +96,8 @@ public class RobotContainer {
       Constants.Sensors.Distance.Launcher.kMaxTargetDistance
     );
     m_objectSensor = new ObjectSensor(Constants.Sensors.Object.kCameraName);
+
+    // new DistanceSensorsLocal(); // TODO: for testing distance sensors connected to I2C via the roboRIO MXP port (on robot only ... disable for sim)
     
     // SUBSYSTEMS ========================================
     m_driveSubsystem = new DriveSubsystem(m_gyroSensor::getHeading);
