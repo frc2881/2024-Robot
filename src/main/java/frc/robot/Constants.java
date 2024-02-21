@@ -224,22 +224,21 @@ public final class Constants {
     }
 
     public static final class Pose {
-      // TODO: enable and configure cameras and transforms after mounting to robot
       public static final Map<String, Transform3d> kPoseSensors = Map.ofEntries(
-        // entry(
-        //   "Rear",
-        //   new Transform3d(
-        //     new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15)), //  23.0 24.2
-        //     new Rotation3d(Units.degreesToRadians(3.73), Units.degreesToRadians(-90 + 24.2), Units.degreesToRadians(180))
-        //   )
-        // )
-        // entry(
-        //   "Side",
-        //   new Transform3d(
-        //     new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-11.5), Units.inchesToMeters(24)),
-        //     new Rotation3d(0, Units.degreesToRadians(-90 + 23.0), Units.degreesToRadians(-90))
-        //   )
-        // )
+        entry(
+          "Rear",
+          new Transform3d(
+            new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15)), //  23.0 24.2
+            new Rotation3d(Units.degreesToRadians(3.73), Units.degreesToRadians(-90 + 24.2), Units.degreesToRadians(180))
+          )
+        ),
+        entry(
+          "Side",
+          new Transform3d(
+            new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-11.5), Units.inchesToMeters(24)),
+            new Rotation3d(0, Units.degreesToRadians(-90 + 23.0), Units.degreesToRadians(-90))
+          )
+        )
       );
       public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
       public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
@@ -256,12 +255,12 @@ public final class Constants {
       public static final class Intake {
         public static final String kSensorName = "Intake";
         public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 25; // TODO: update after testing note detection within intake
+        public static final double kMaxTargetDistance = 250; // TODO: update after testing note detection within intake
       }
       public static final class Launcher {
         public static final String kSensorName = "Launcher";
         public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 25; // TODO: update after testing note detection within launcher
+        public static final double kMaxTargetDistance = 250; // TODO: update after testing note detection within launcher
       }
     }
   }
