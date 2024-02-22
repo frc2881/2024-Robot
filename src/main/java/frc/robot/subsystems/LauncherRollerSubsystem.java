@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkFlex;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -9,17 +9,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class LauncherRollerSubsystem extends SubsystemBase {
-  private final CANSparkMax m_topRollerMotor;
-  private final CANSparkMax m_bottomRollerMotor;
+  private final CANSparkFlex m_topRollerMotor;
+  private final CANSparkFlex m_bottomRollerMotor;
 
   public LauncherRollerSubsystem() {
-    m_topRollerMotor = new CANSparkMax(Constants.Launcher.kTopRollerMotorCANId, MotorType.kBrushless);
+    m_topRollerMotor = new CANSparkFlex(Constants.Launcher.kTopRollerMotorCANId, MotorType.kBrushless);
     m_topRollerMotor.restoreFactoryDefaults();
     m_topRollerMotor.setIdleMode(Constants.Launcher.kTopRollerMotorIdleMode); 
     m_topRollerMotor.setSmartCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
     m_topRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
 
-    m_bottomRollerMotor = new CANSparkMax(Constants.Launcher.kBottomRollerMotorCANId, MotorType.kBrushless);
+    m_bottomRollerMotor = new CANSparkFlex(Constants.Launcher.kBottomRollerMotorCANId, MotorType.kBrushless);
     m_bottomRollerMotor.restoreFactoryDefaults();
     m_bottomRollerMotor.setIdleMode(Constants.Launcher.kBottomRollerMotorIdleMode); 
     m_bottomRollerMotor.setSmartCurrentLimit(Constants.Launcher.kBottomRollerMotorCurrentLimit);

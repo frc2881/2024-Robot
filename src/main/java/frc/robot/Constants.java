@@ -228,7 +228,7 @@ public final class Constants {
         entry(
           "Rear",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15)), //  23.0 24.2
+            new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15)),
             new Rotation3d(Units.degreesToRadians(3.73), Units.degreesToRadians(-90 + 24.2), Units.degreesToRadians(180))
           )
         ),
