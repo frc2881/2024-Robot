@@ -220,7 +220,7 @@ public final class Constants {
       public static final IMUAxis kIMUAxisRoll = IMUAxis.kY;
       public static final IMUAxis kIMUAxisPitch = IMUAxis.kX;
       public static final SPI.Port kSPIPort = SPI.Port.kOnboardCS0;
-      public static final CalibrationTime kCalibrationTime = CalibrationTime._2s;
+      public static final CalibrationTime kCalibrationTime = CalibrationTime._16s;
     }
 
     public static final class Pose {
