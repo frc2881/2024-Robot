@@ -97,8 +97,6 @@ public class RobotContainer {
     );
     m_objectSensor = new ObjectSensor(Constants.Sensors.Object.kCameraName);
 
-    // new DistanceSensorsLocal(); // TODO: for testing distance sensors connected to I2C via the roboRIO MXP port (on robot only ... disable for sim)
-    
     // SUBSYSTEMS ========================================
     m_driveSubsystem = new DriveSubsystem(m_gyroSensor::getHeading);
     m_poseSubsystem = new PoseSubsystem(m_poseSensors, m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);

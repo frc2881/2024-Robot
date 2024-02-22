@@ -1,19 +1,19 @@
-package frc.robot.lib.sensors;
+package frc.robot.lib.sensors.hardware;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.I2C.Port;
 
-public class TCA9548A {
+public class I2CMuxTCA9548A {
   private final int kI2CAddress;
   private final I2C m_i2c;
 
-  public TCA9548A(int addr) {
+  public I2CMuxTCA9548A(int addr) {
     kI2CAddress = addr;
     m_i2c = new I2C(Port.kMXP, addr);
   }
 
-  public TCA9548A() {
+  public I2CMuxTCA9548A() {
     this(0x70);
   }
 

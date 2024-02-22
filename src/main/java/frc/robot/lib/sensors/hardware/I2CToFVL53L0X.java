@@ -1,15 +1,15 @@
-package frc.robot.lib.sensors;
+package frc.robot.lib.sensors.hardware;
 
 import com.revrobotics.jni.VL53L0XJNI;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C.Port;
 
-public class VL53L0X {
+public class I2CToFVL53L0X {
     private int m_addr = 0x53;
     private int m_port;
 
-    public VL53L0X(Port port) {
+    public I2CToFVL53L0X(Port port) {
       m_port = (port == Port.kOnboard) ? 0 : 1;
       VL53L0XJNI.Init(m_port, m_addr);
       if (!initialize()) {
@@ -48,9 +48,13 @@ public class VL53L0X {
 
     public double getDistance() {
       double distance = -1.0;
-      if (VL53L0XJNI.GetMeasurementDataReady(m_port, m_addr)) {
-        distance = VL53L0XJNI.GetRangingMeasurementData(m_port, m_addr);
-        VL53L0XJNI.ClearInterruptMask(m_port, m_addr);
+      try {
+        if (VL53L0XJNI.GetMeasurementDataReady(m_port, m_addr)) {
+            distance = VL53L0XJNI.GetRangingMeasurementData(m_port, m_addr);
+            VL53L0XJNI.ClearInterruptMask(m_port, m_addr);
+        }
+      } catch(Exception ex) {
+        DriverStation.reportError("getDistance call through VL53L0XJNI reported an exception", true);
       }
       return distance > 0 ? distance : -1.0;
     }
