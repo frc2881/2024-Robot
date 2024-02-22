@@ -26,6 +26,7 @@ import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.lib.sensors.ObjectSensor;
 import frc.robot.lib.sensors.PoseSensor;
+import frc.robot.lib.sensors.BeamBreakSensor;
 import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -41,6 +42,9 @@ public class RobotContainer {
   private final GameController m_operatorController;
   private final GyroSensor m_gyroSensor;
   private final List<PoseSensor> m_poseSensors;
+  private final BeamBreakSensor m_intakeBeamBreakSensor;
+  private final BeamBreakSensor m_launcherBottomBeamBreakSensor;
+  private final BeamBreakSensor m_launcherTopBeamBreakSensor;
   private final DistanceSensor m_intakeDistanceSensor;
   private final DistanceSensor m_launcherDistanceSensor;
   private final ObjectSensor m_objectSensor;
@@ -84,6 +88,18 @@ public class RobotContainer {
         Constants.Game.Field.kAprilTagFieldLayout
       ));
     });
+    m_intakeBeamBreakSensor = new BeamBreakSensor(
+      Constants.Sensors.BeamBreak.Intake.kSensorName,
+      Constants.Sensors.BeamBreak.Intake.kChannel
+    );
+    m_launcherBottomBeamBreakSensor = new BeamBreakSensor(
+      Constants.Sensors.BeamBreak.LauncherBottom.kSensorName,
+      Constants.Sensors.BeamBreak.LauncherBottom.kChannel
+    );
+    m_launcherTopBeamBreakSensor = new BeamBreakSensor(
+      Constants.Sensors.BeamBreak.LauncherTop.kSensorName,
+      Constants.Sensors.BeamBreak.LauncherTop.kChannel
+    );
     m_intakeDistanceSensor = new DistanceSensor(
       Constants.Sensors.Distance.Intake.kSensorName,
       Constants.Sensors.Distance.Intake.kMinTargetDistance,
@@ -94,7 +110,10 @@ public class RobotContainer {
       Constants.Sensors.Distance.Launcher.kMinTargetDistance,
       Constants.Sensors.Distance.Launcher.kMaxTargetDistance
     );
-    m_objectSensor = new ObjectSensor(Constants.Sensors.Object.kCameraName);
+    m_objectSensor = new ObjectSensor(
+      Constants.Sensors.Object.kCameraName,
+      Constants.Sensors.Object.kObjectName
+    );
     
     // SUBSYSTEMS ========================================
     m_driveSubsystem = new DriveSubsystem(m_gyroSensor::getHeading);
@@ -109,8 +128,8 @@ public class RobotContainer {
     m_lightsController = new LightsController();
 
     // COMMANDS ========================================
-    m_gameCommands = new GameCommands(m_gyroSensor, m_intakeDistanceSensor, m_launcherDistanceSensor, m_driveSubsystem, m_poseSubsystem, m_feederSubsystem, m_intakeSubsystem, m_launcherArmSubsystem, m_launcherRollerSubsystem, m_climberSubsystem, m_lightsController);
-    m_autoCommands = new AutoCommands(m_gameCommands, m_gyroSensor, m_objectSensor, m_driveSubsystem, m_poseSubsystem, m_lightsController);
+    m_gameCommands = new GameCommands(m_gyroSensor, m_intakeBeamBreakSensor, m_launcherBottomBeamBreakSensor, m_launcherTopBeamBreakSensor, m_intakeDistanceSensor, m_launcherDistanceSensor, m_driveSubsystem, m_poseSubsystem, m_feederSubsystem, m_intakeSubsystem, m_launcherArmSubsystem, m_launcherRollerSubsystem, m_climberSubsystem, m_lightsController);
+    m_autoCommands = new AutoCommands(m_gameCommands, m_gyroSensor, m_objectSensor, m_driveSubsystem, m_poseSubsystem);
     m_autoChooser = new SendableChooser<Command>();
 
     configureBindings();
@@ -199,6 +218,9 @@ public class RobotContainer {
   public void updateTelemetry() {
     m_gyroSensor.updateTelemetry();
     m_poseSensors.forEach(poseSensor -> poseSensor.updateTelemetry());
+    m_intakeBeamBreakSensor.updateTelemetry();
+    m_launcherBottomBeamBreakSensor.updateTelemetry();
+    m_launcherTopBeamBreakSensor.updateTelemetry();
     m_intakeDistanceSensor.updateTelemetry();
     m_launcherDistanceSensor.updateTelemetry();
     m_objectSensor.updateTelemetry();

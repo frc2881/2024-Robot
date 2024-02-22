@@ -7,28 +7,28 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ObjectSensor {
   private final PhotonCamera m_photonCamera;
+  private final String m_topicName;
 
-  public ObjectSensor(
-    String cameraName
-  ) {
+  public ObjectSensor(String cameraName, String objectName) {
     m_photonCamera = new PhotonCamera(cameraName);
+    m_topicName = "Robot/Sensor/Object/" + m_photonCamera.getName() + "/" + objectName;
   }
 
   private PhotonPipelineResult getLatestResult() {
     return m_photonCamera.getLatestResult();
   }
 
-  public boolean hasTargets() {
+  public boolean hasTarget() {
     return m_photonCamera.getLatestResult().hasTargets();
   }
 
   public double getTargetYaw() {
     PhotonPipelineResult result = getLatestResult();
-    return result.hasTargets() ? result.getBestTarget().getYaw() : 0.0;
+    return result.hasTargets() ? result.getBestTarget().getYaw() : Double.NaN;
   }
 
   public void updateTelemetry() {
-    SmartDashboard.putBoolean("Robot/Sensor/Object/" + m_photonCamera.getName() + "/HasTargets", hasTargets());
-    SmartDashboard.putNumber("Robot/Sensor/Object/" + m_photonCamera.getName() + "/Target/Yaw", getTargetYaw());
+    SmartDashboard.putBoolean(m_topicName + "/HasTarget", hasTarget());
+    SmartDashboard.putNumber(m_topicName + "/Target/Yaw", getTargetYaw());
   }
 }

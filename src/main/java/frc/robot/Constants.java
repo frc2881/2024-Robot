@@ -246,8 +246,24 @@ public final class Constants {
       public static final Matrix<N3, N1> kMultiTagStandardDeviations = VecBuilder.fill(0.5, 0.5, 1);
     }
 
+    public static final class BeamBreak {
+      public static final class Intake {
+        public static final String kSensorName = "Intake";
+        public static final int kChannel = 0;
+      }
+      public static final class LauncherBottom {
+        public static final String kSensorName = "LauncherBottom";
+        public static final int kChannel = 1;
+      }
+      public static final class LauncherTop {
+        public static final String kSensorName = "LauncherTop";
+        public static final int kChannel = 2;
+      }
+    }
+
     public static final class Object {
       public static final String kCameraName = "Front";
+      public static final String kObjectName = "Note";
       public static final double kObjectRangeYaw = 10.0; // TODO: update after testing
     }
 
@@ -255,12 +271,12 @@ public final class Constants {
       public static final class Intake {
         public static final String kSensorName = "Intake";
         public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 250; // TODO: update after testing note detection within intake
+        public static final double kMaxTargetDistance = 250;
       }
       public static final class Launcher {
         public static final String kSensorName = "Launcher";
         public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 250; // TODO: update after testing note detection within launcher
+        public static final double kMaxTargetDistance = 250;
       }
     }
   }

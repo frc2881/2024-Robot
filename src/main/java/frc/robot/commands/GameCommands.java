@@ -13,6 +13,7 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.LightsController;
+import frc.robot.lib.sensors.BeamBreakSensor;
 import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -24,7 +25,10 @@ import frc.robot.subsystems.LauncherRollerSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
 
 public class GameCommands {
-  private final GyroSensor m_gyroSensor;    
+  private final GyroSensor m_gyroSensor;   
+  private final BeamBreakSensor m_intakeBeamBreakSensor;
+  private final BeamBreakSensor m_launcherBottomBeamBreakSensor;
+  private final BeamBreakSensor m_launcherTopBeamBreakSensor; 
   private final DistanceSensor m_intakeDistanceSensor;
   private final DistanceSensor m_launcherDistanceSensor;
   private final DriveSubsystem m_driveSubsystem;
@@ -38,6 +42,9 @@ public class GameCommands {
 
   public GameCommands(
     GyroSensor gyroSensor, 
+    BeamBreakSensor intakeBeamBreakSensor,
+    BeamBreakSensor launcherBottomBeamBreakSensor,
+    BeamBreakSensor launcherTopBeamBreakSensor,
     DistanceSensor intakeDistanceSensor,
     DistanceSensor launcherDistanceSensor,
     DriveSubsystem driveSubsystem, 
@@ -50,6 +57,9 @@ public class GameCommands {
     LightsController lightsController
   ) {
     m_gyroSensor = gyroSensor;
+    m_intakeBeamBreakSensor = intakeBeamBreakSensor;
+    m_launcherBottomBeamBreakSensor = launcherBottomBeamBreakSensor;
+    m_launcherTopBeamBreakSensor = launcherTopBeamBreakSensor;
     m_intakeDistanceSensor = intakeDistanceSensor;
     m_launcherDistanceSensor = launcherDistanceSensor;
     m_driveSubsystem = driveSubsystem;
@@ -62,10 +72,12 @@ public class GameCommands {
     m_lightsController = lightsController;
   }
 
+ // TODO: [HIGHEST PRIORITY] refactor intake and launcher sensor logic for boolean beam breaks in place of distance calcuations
+
   public Command runFrontIntakeCommand() {
     return Commands.parallel(
       m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake),
-      m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
+      m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
         .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
       )
     .withName("RunFrontIntakeCommand");
@@ -73,10 +85,18 @@ public class GameCommands {
 
   public Command runRearIntakeCommand() {
     return
-    m_intakeSubsystem.runIntakeFromRearCommand(m_intakeDistanceSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
+    m_intakeSubsystem.runIntakeFromRearCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
     .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
     // .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
     .withName("RunRearIntakeCommand");
+  }
+
+  public Command getNoteIntoLaunchPositionCommand(Supplier<Double> distanceSupplier){
+    return Commands.repeatingSequence(
+      m_intakeSubsystem.runIntakeForLaunchPositionCommand().withTimeout(0.1) // Might need to slow down intake 0.2)
+    )
+    .until(() -> distanceSupplier.get() > 5.5) // Utils.isValueBetween(distanceSupplier.get(), 5.5, 10)
+    .withName("getNoteIntoLaunchPosition " + distanceSupplier.get().toString());
   }
 
   // TODO: make enum?
@@ -88,14 +108,6 @@ public class GameCommands {
     return m_intakeSubsystem.runIntakeEjectFrontCommand()
       .withName("RunEjectIntakeFrontCommand");
     
-  }
-
-  public Command getNoteIntoLaunchPositionCommand(Supplier<Double> distanceSupplier){
-    return Commands.repeatingSequence(
-      m_intakeSubsystem.runIntakeForLaunchPositionCommand().withTimeout(0.1) // Might need to slow down intake 0.2)
-    )
-    .until(() -> distanceSupplier.get() > 5.5) // Utils.isValueBetween(distanceSupplier.get(), 5.5, 10)
-    .withName("getNoteIntoLaunchPosition " + distanceSupplier.get().toString());
   }
 
   // TODO: this needs more testing once vision cameras are mounted and configured

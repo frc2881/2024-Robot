@@ -19,22 +19,19 @@ public class AutoCommands {
   private final ObjectSensor m_objectSensor; 
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
-  private final LightsController m_lightsController;
 
   public AutoCommands(
     GameCommands gameCommands,
     GyroSensor gyroSensor, 
     ObjectSensor objectSensor, 
     DriveSubsystem driveSubsystem, 
-    PoseSubsystem poseSubsystem,
-    LightsController lightsController
+    PoseSubsystem poseSubsystem
   ) {
     m_gameCommmands = gameCommands;
     m_gyroSensor = gyroSensor;
     m_objectSensor = objectSensor;
     m_driveSubsystem = driveSubsystem;
     m_poseSubsystem = poseSubsystem;
-    m_lightsController = lightsController;
   }
 
   private Command resetGyroCommand() {

@@ -4,21 +4,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.lib.common.Utils;
 
 public class DistanceSensor {
-  private String m_sensorName;
-  private double m_minTargetDistance;
-  private double m_maxTargetDistance;
-
-  private String m_topicName;
+  private final String m_sensorName;
+  private final double m_minTargetDistance;
+  private final double m_maxTargetDistance;
+  private final String m_topicName;
   
-  public DistanceSensor(
-    String sensorName,
-    double minTargetDistance,
-    double maxTargetDistance
-  ) {
+  public DistanceSensor(String sensorName, double minTargetDistance, double maxTargetDistance) {
     m_sensorName = sensorName;
     m_minTargetDistance = minTargetDistance;
     m_maxTargetDistance = maxTargetDistance;
-
     m_topicName = "Robot/Sensor/Distance/" + m_sensorName;
   }
 
