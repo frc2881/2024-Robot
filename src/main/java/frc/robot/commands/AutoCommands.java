@@ -40,53 +40,41 @@ public class AutoCommands {
     .withName("ResetGyro"); 
   }
 
-  public Command test3NoteAuto() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test1");
-    PathPlannerPath path2 = PathPlannerPath.fromPathFile("Test2");
-    PathPlannerPath path3 = PathPlannerPath.fromPathFile("Test3");
-    PathConstraints constraints = new PathConstraints(2.0, 2.0, Units.degreesToRadians(540), Units.degreesToRadians(720));
+  public Command testPath() {
+    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test");
     return Commands
     .sequence(
-      resetGyroCommand(), // ADD TO START OF ALL AUTOS
-      //m_poseSubsystem.resetPoseCommand(), //path.getPreviewStartingHolonomicPose()
-      AutoBuilder.followPath(path1),
-      //AutoBuilder.pathfindThenFollowPath(path1, constraints),
-      Commands.waitSeconds(1),
-      AutoBuilder.followPath(path2),
-      //AutoBuilder.pathfindThenFollowPath(path2, constraints),
-      Commands.waitSeconds(2),
-      AutoBuilder.pathfindThenFollowPath(path3, constraints),
-      Commands.waitSeconds(2)
-      //Commands.runOnce(() -> m_driveSubsystem.setLockState(LockState.LOCKED))
-    )
-    .withName("RunAutoTest3NoteAuto");
-  }
-
-  public Command testPath4() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test4");
-    return Commands
-    .sequence(
-      resetGyroCommand(),
+      //Commands.runOnce(() -> m_poseSubsystem.resetPose(path1.getPreviewStartingHolonomicPose())),
       AutoBuilder.followPath(path1)
     )
-    .withName("");
-  }
+    .withName("Test");
+  } 
 
-  public Command testPath5() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test5");
+  public Command Pos1Note1Path() {
+    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Position1Grab");
     return Commands
     .sequence(
       AutoBuilder.followPath(path1)
     )
-    .withName("");
+    .withName("Pos1To3NotePath");
   }
 
-  public Command testPath6() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Test6");
+  public Command Pos2Note1Path() {
+    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Position2Grab");
     return Commands
     .sequence(
       AutoBuilder.followPath(path1)
     )
-    .withName("testPath4");
+    .withName("Pos1To3NotePath");
   }
+
+  public Command Pos3Note1Path() {
+    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Position3Grab");
+    return Commands
+    .sequence(
+      AutoBuilder.followPath(path1)
+    )
+    .withName("Pos1To3NotePath");
+  }
+
 }

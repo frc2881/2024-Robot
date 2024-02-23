@@ -121,6 +121,11 @@ public final class Constants {
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.1, 0, 0); // TODO: calibrate to be more gentle with arm (convert to smart motion in subsytem?)
     public static final double kArmMotorForwardSoftLimit = 19.0; // TODO: recalibrate soft limits
     public static final double kArmMotorReverseSoftLimit = 0.0; // TODO: recalibrate soft limits
+    public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0;
+    public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
+    public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
+    public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
+    
 
     public static final int kRollerMotorCurrentLimit = 60;
     public static final double kRollerMotorMaxOutput = 0.75;
@@ -249,15 +254,15 @@ public final class Constants {
     public static final class BeamBreak {
       public static final class Intake {
         public static final String kSensorName = "Intake";
-        public static final int kChannel = 0;
+        public static final int kChannel = 9;
       }
       public static final class LauncherBottom {
         public static final String kSensorName = "LauncherBottom";
-        public static final int kChannel = 1;
+        public static final int kChannel = 7;
       }
       public static final class LauncherTop {
         public static final String kSensorName = "LauncherTop";
-        public static final int kChannel = 2;
+        public static final int kChannel = 5;
       }
     }
 

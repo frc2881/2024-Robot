@@ -39,6 +39,8 @@ public class FeederSubsystem extends SubsystemBase {
     m_armPIDController.setI(Constants.Feeder.kArmMotorPIDConstants.I);
     m_armPIDController.setD(Constants.Feeder.kArmMotorPIDConstants.D);
     m_armPIDController.setOutputRange(Constants.Feeder.kArmMotorMinOutput, Constants.Feeder.kArmMotorMaxOutput);
+    m_armPIDController.setSmartMotionMaxVelocity(Constants.Feeder.kArmMotorSmartMotionMaxVelocity, 0);
+    m_armPIDController.setSmartMotionMaxAccel(Constants.Feeder.kArmMotorSmartMotionMaxAccel, 0);
 
     m_armEncoder = m_armMotor.getEncoder();
 
@@ -57,7 +59,7 @@ public class FeederSubsystem extends SubsystemBase {
   public Command runFeederCommand() {
     return
     run(() -> {
-      m_armPIDController.setReference(Constants.Feeder.kArmMotorForwardSoftLimit, ControlType.kPosition);
+      m_armPIDController.setReference(Constants.Feeder.kArmMotorForwardSoftLimit, ControlType.kSmartMotion);
       m_rollerMotor.set(Constants.Feeder.kRollerMotorMaxOutput);
     })
     .withName("StartFeeder");
@@ -66,7 +68,7 @@ public class FeederSubsystem extends SubsystemBase {
   public Command moveFeedOutCommand() {
     return 
     run(() -> {
-      m_armPIDController.setReference(Constants.Feeder.kArmMotorForwardSoftLimit, ControlType.kPosition);
+      m_armPIDController.setReference(Constants.Feeder.kArmMotorForwardSoftLimit, ControlType.kSmartMotion);
     })
     .withName("MoveFeederOut");
   }
@@ -74,7 +76,7 @@ public class FeederSubsystem extends SubsystemBase {
   public Command moveFeedInCommand() {
     return 
     run(() -> {
-      m_armPIDController.setReference(Constants.Feeder.kArmMotorReverseSoftLimit, ControlType.kPosition);
+      m_armPIDController.setReference(Constants.Feeder.kArmMotorReverseSoftLimit, ControlType.kSmartMotion);
     })
     .withName("MoveFeederIn");
   }
@@ -82,7 +84,7 @@ public class FeederSubsystem extends SubsystemBase {
   public Command stopFeederCommand() {
     return
     run(() -> {
-      m_armPIDController.setReference(Constants.Feeder.kArmMotorReverseSoftLimit, ControlType.kPosition);
+      m_armPIDController.setReference(Constants.Feeder.kArmMotorReverseSoftLimit, ControlType.kSmartMotion);
       m_rollerMotor.set(0.0);
     })
     .withTimeout(3.0)

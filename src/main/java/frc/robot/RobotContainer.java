@@ -145,7 +145,7 @@ public class RobotContainer {
     m_driverController.leftTrigger().whileTrue(m_gameCommands.runRearIntakeCommand());
     m_driverController.rightTrigger().and(m_driverController.leftTrigger()).whileTrue(m_gameCommands.runEjectIntakeCommand(true));
     m_driverController.rightBumper().and(m_driverController.leftBumper()).whileTrue(m_gameCommands.runEjectIntakeCommand(false));
-    m_driverController.rightBumper().whileTrue(m_gameCommands.getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance));
+    //m_driverController.rightBumper().whileTrue(m_gameCommands.getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance));
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
     m_driverController.b().whileTrue(m_gameCommands.moveToClimbCommand());
     m_driverController.y().whileTrue(m_gameCommands.climbCommand());
@@ -204,9 +204,10 @@ public class RobotContainer {
     );
 
     m_autoChooser.setDefaultOption("None", Commands.none());
-    m_autoChooser.addOption("Test- 3 Note Auto", m_autoCommands.test3NoteAuto());
-    m_autoChooser.addOption("Test- Path6", m_autoCommands.testPath6());
-    m_autoChooser.addOption("Test- Path4", m_autoCommands.testPath4());
+    m_autoChooser.addOption("TEST", m_autoCommands.testPath());
+    m_autoChooser.addOption("Position1Grab", m_autoCommands.Pos1Note1Path());
+    m_autoChooser.addOption("Position2Grab", m_autoCommands.Pos2Note1Path());
+    m_autoChooser.addOption("Position3Grab", m_autoCommands.Pos3Note1Path());
     
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }
