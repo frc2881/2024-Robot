@@ -77,27 +77,27 @@ public class GameCommands {
   public Command runFrontIntakeCommand() {
     return Commands.parallel(
       m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake),
-      m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
-        .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
+      m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+        //.andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
       )
     .withName("RunFrontIntakeCommand");
   }
 
   public Command runRearIntakeCommand() {
     return
-    m_intakeSubsystem.runIntakeFromRearCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherDistanceSensor::hasTarget)
+    m_intakeSubsystem.runIntakeFromRearCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
     .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
     // .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
     .withName("RunRearIntakeCommand");
   }
 
-  public Command getNoteIntoLaunchPositionCommand(Supplier<Double> distanceSupplier){
-    return Commands.repeatingSequence(
-      m_intakeSubsystem.runIntakeForLaunchPositionCommand().withTimeout(0.1) // Might need to slow down intake 0.2)
-    )
-    .until(() -> distanceSupplier.get() > 5.5) // Utils.isValueBetween(distanceSupplier.get(), 5.5, 10)
-    .withName("getNoteIntoLaunchPosition " + distanceSupplier.get().toString());
-  }
+  // public Command getNoteIntoLaunchPositionCommand(Supplier<Double> distanceSupplier){
+  //   return Commands.repeatingSequence(
+  //     m_intakeSubsystem.runIntakeForLaunchPositionCommand().withTimeout(0.1) // Might need to slow down intake 0.2)
+  //   )
+  //   .until(() -> distanceSupplier.get() > 5.5) // Utils.isValueBetween(distanceSupplier.get(), 5.5, 10)
+  //   .withName("getNoteIntoLaunchPosition " + distanceSupplier.get().toString());
+  // }
 
   // TODO: make enum?
   public Command runEjectIntakeCommand(Boolean isRearEject) {
@@ -133,7 +133,7 @@ public class GameCommands {
         m_intakeSubsystem.runIntakeForLaunchCommand()
         )
     )
-    .onlyIf(() -> m_launcherDistanceSensor.hasTarget())
+    .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
     .withName("RunLauncher");
   }
 
