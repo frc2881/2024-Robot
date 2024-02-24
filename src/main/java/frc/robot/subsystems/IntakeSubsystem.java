@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.lib.common.Enums.MotorDirection;
 
@@ -41,7 +42,7 @@ public class IntakeSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command runIntakeFromFrontCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherHasTarget) {
+  public Command runIntakeFromFrontCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
       runTopBelts(MotorDirection.Forward);
@@ -50,12 +51,18 @@ public class IntakeSubsystem extends SubsystemBase {
     }, () -> {})
     .onlyWhile(() -> !intakeHasTarget.get())
     .andThen(
+      new WaitCommand(0.14)
+    )
+    .andThen(
       startEnd(() -> {
         runTopBelts(MotorDirection.Forward, 0.4);
         runBottomBelts(MotorDirection.Reverse, 0.4);
         runRollers(MotorDirection.Forward);
       }, () -> {})
-      .onlyWhile(() -> !launcherHasTarget.get())
+      .onlyWhile(() -> !launcherBottomHasTarget.get())
+      .andThen(
+      new WaitCommand(0.06)
+    )
     )
     .andThen(
       runOnce(() -> {
@@ -74,28 +81,36 @@ public class IntakeSubsystem extends SubsystemBase {
     .withName("RunIntakeFromFront");
   }
 
-  public Command runIntakeFromRearCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherHasTarget) {
+  public Command runIntakeFromRearCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return    
     startEnd(() -> {
       runTopBelts(MotorDirection.Reverse);
       runBottomBelts(MotorDirection.Reverse);
       runRollers(MotorDirection.Forward);
     }, () -> {})
-    .onlyWhile(() -> !intakeHasTarget.get()) // TODO: Check for value getting smaller before switching
+    .onlyWhile(() -> !intakeHasTarget.get()) 
+    .andThen(
+      new WaitCommand(0.05)
+    )
     .andThen(
       startEnd(() -> {
         runTopBelts(MotorDirection.Forward, 0.4);
         runBottomBelts(MotorDirection.Reverse, 0.4);
         runRollers(MotorDirection.Forward);
       }, () -> {})
-      .onlyWhile(() -> !launcherHasTarget.get())
+      .onlyWhile(() -> !launcherBottomHasTarget.get())
+      .andThen(
+      new WaitCommand(0.06)
+    )
     )
     .andThen(
       runOnce(() -> {
-        runTopBelts(MotorDirection.None); 
-        runBottomBelts(MotorDirection.None); 
-        runRollers(MotorDirection.Reverse); 
+        runTopBelts(MotorDirection.None);
+        runRollers(MotorDirection.Reverse);
       })
+      .andThen(
+        run(() -> runBottomBelts(MotorDirection.Reverse)).withTimeout(0.5)
+        )
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None);

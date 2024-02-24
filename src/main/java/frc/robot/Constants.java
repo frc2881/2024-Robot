@@ -118,7 +118,7 @@ public final class Constants {
     public static final double kArmMotorMinOutput = -0.5;
     public static final double kArmMotorMaxOutput = 0.5;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.1, 0, 0); // TODO: calibrate to be more gentle with arm (convert to smart motion in subsytem?)
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.05, 0, 0); // TODO: calibrate to be more gentle with arm (convert to smart motion in subsytem?)
     public static final double kArmMotorForwardSoftLimit = 19.0; // TODO: recalibrate soft limits
     public static final double kArmMotorReverseSoftLimit = 0.0; // TODO: recalibrate soft limits
     public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0;
@@ -138,18 +138,18 @@ public final class Constants {
     public static final int kRollerMotorCANId = 20;
 
     public static final int kTopBeltMotorCurrentLimit = 60;
-    public static final double kTopBeltMotorMinOutput = -0.5; // TODO: update after testing
-    public static final double kTopBeltMotorMaxOutput = 0.5; // TODO: update after testing
+    public static final double kTopBeltMotorMinOutput = -0.6; // TODO: update after testing
+    public static final double kTopBeltMotorMaxOutput = 0.6; // TODO: update after testing
     public static final IdleMode kTopBeltMotorIdleMode = IdleMode.kBrake;
 
     public static final int kBottomBeltMotorCurrentLimit = 60;
-    public static final double kBottomBeltMotorMinOutput = -0.5; // TODO: update after testing
-    public static final double kBottomBeltMotorMaxOutput = 0.5; // TODO: update after testing
+    public static final double kBottomBeltMotorMinOutput = -0.6; // TODO: update after testing
+    public static final double kBottomBeltMotorMaxOutput = 0.6; // TODO: update after testing
     public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kCoast;
 
     public static final int kRollerMotorCurrentLimit = 60;
-    public static final double kRollerMotorMinOutput = -0.5; // TODO: update after testing
-    public static final double kRollerMotorMaxOutput = 0.5; // TODO: update after testing
+    public static final double kRollerMotorMinOutput = -0.6; // TODO: update after testing
+    public static final double kRollerMotorMaxOutput = 0.6; // TODO: update after testing
     public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
   }
 
@@ -187,7 +187,7 @@ public final class Constants {
 
     public static final double kArmPositionIntake = 14.0; // TODO: get degrees 
     public static final double kArmPositionSubwoofer = 13.10; // TODO: configure on field (12.0 measured at 55.3 degrees, 13.10 measured at 58.0 degrees)
-    public static final double kArmPositionMidRange = 7.5; // TODO: configure on field (11.25 measured at 52.2 degrees)
+    public static final double kArmPositionMidRange = 7.0; // TODO: configure on field (11.25 measured at 52.2 degrees)
     public static final double kArmPositionLongRange = 4.20; // TODO: configure on field (4.20 measure at 23.8 degrees)
     public static final double kArmPositionAmp = 11.4; // TODO: configure on field
 
@@ -225,7 +225,7 @@ public final class Constants {
       public static final IMUAxis kIMUAxisRoll = IMUAxis.kY;
       public static final IMUAxis kIMUAxisPitch = IMUAxis.kX;
       public static final SPI.Port kSPIPort = SPI.Port.kOnboardCS0;
-      public static final CalibrationTime kCalibrationTime = CalibrationTime._16s;
+      public static final CalibrationTime kCalibrationTime = CalibrationTime._8s;
     }
 
     public static final class Pose {
@@ -233,15 +233,15 @@ public final class Constants {
         entry(
           "Rear",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15)),
-            new Rotation3d(Units.degreesToRadians(3.73), Units.degreesToRadians(-90 + 24.2), Units.degreesToRadians(180))
+            new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15.00)),
+            new Rotation3d(0.0, Units.degreesToRadians(-24.3), Units.degreesToRadians(180))
           )
         ),
         entry(
           "Side",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-11.5), Units.inchesToMeters(24)),
-            new Rotation3d(0, Units.degreesToRadians(-90 + 23.0), Units.degreesToRadians(-90))
+            new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-12), Units.inchesToMeters(23.75)),
+            new Rotation3d(0, Units.degreesToRadians(-24.1), Units.degreesToRadians(-87))
           )
         )
       );

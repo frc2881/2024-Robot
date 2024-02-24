@@ -96,6 +96,11 @@ public class LauncherArmSubsystem extends SubsystemBase {
       : Constants.Launcher.kArmPositionIntake;
   }
 
+  public double getLauncherArmPosition() {
+    return m_armEncoder.getPosition();
+  }
+
+
   public Command resetCommand() {
     return 
     startEnd(

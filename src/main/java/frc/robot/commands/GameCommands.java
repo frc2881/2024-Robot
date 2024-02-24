@@ -40,6 +40,8 @@ public class GameCommands {
   private final ClimberSubsystem m_climberSubsystem;
   private final LightsController m_lightsController;
 
+  private double m_launchSpeed;
+
   public GameCommands(
     GyroSensor gyroSensor, 
     BeamBreakSensor intakeBeamBreakSensor,
@@ -77,27 +79,17 @@ public class GameCommands {
   public Command runFrontIntakeCommand() {
     return Commands.parallel(
       m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake),
-      m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-        //.andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
+      m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
       )
     .withName("RunFrontIntakeCommand");
   }
 
   public Command runRearIntakeCommand() {
     return
-    m_intakeSubsystem.runIntakeFromRearCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+    m_intakeSubsystem.runIntakeFromRearCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
     .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
-    // .andThen(getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance)).withTimeout(5.0)
     .withName("RunRearIntakeCommand");
   }
-
-  // public Command getNoteIntoLaunchPositionCommand(Supplier<Double> distanceSupplier){
-  //   return Commands.repeatingSequence(
-  //     m_intakeSubsystem.runIntakeForLaunchPositionCommand().withTimeout(0.1) // Might need to slow down intake 0.2)
-  //   )
-  //   .until(() -> distanceSupplier.get() > 5.5) // Utils.isValueBetween(distanceSupplier.get(), 5.5, 10)
-  //   .withName("getNoteIntoLaunchPosition " + distanceSupplier.get().toString());
-  // }
 
   // TODO: make enum?
   public Command runEjectIntakeCommand(Boolean isRearEject) {
@@ -127,7 +119,7 @@ public class GameCommands {
   // TODO: refactor this command to use different speed configurations based on speaker or amp target using the isCurrentTargetAmp check
   public Command runLauncherCommand() {
     return Commands.parallel(
-      m_launcherRollerSubsystem.runRollersCommand(-0.8, 0.8), //-0.4, 0.6
+      m_launcherRollerSubsystem.runRollersCommand(getLauncherRollerSpeeds()),
       Commands.sequence(
         new WaitCommand(2.0),
         m_intakeSubsystem.runIntakeForLaunchCommand()
@@ -156,7 +148,6 @@ public class GameCommands {
     return 
     m_feederSubsystem.resetCommand()
     .alongWith(
-      m_launcherArmSubsystem.resetCommand(),
       m_climberSubsystem.resetCommand()
     )
     .withName("ResetSubsystems");
@@ -175,6 +166,15 @@ public class GameCommands {
     SmartDashboard.putBoolean("currentTargetIsAmp", isCurrTargetAmp);
     return isCurrentTargetAmp(m_poseSubsystem.getPose()) ? getAmpPose() : getSpeakerPose();
 
+  }
+
+  private double[] getLauncherRollerSpeeds() {
+    // double launcherArmPos = m_launcherArmSubsystem.getLauncherArmPosition();
+    // SmartDashboard.putNumber("LauncherArmPosition", launcherArmPos);
+    // if(launcherArmPos > Constants.Launcher.kArmPositionAmp){
+    //   return new double[] {-0.65, 0.65};
+    // }
+    return new double[] {-0.8, 0.8};
   }
 
 

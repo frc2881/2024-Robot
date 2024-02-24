@@ -149,6 +149,7 @@ public class RobotContainer {
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
     m_driverController.b().whileTrue(m_gameCommands.moveToClimbCommand());
     m_driverController.y().whileTrue(m_gameCommands.climbCommand());
+    // TODO: make X the left stick press
 
     // OPERATOR ========================================
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
@@ -165,6 +166,7 @@ public class RobotContainer {
     m_operatorController.povDown().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionAmp));
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
     m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
+    m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
 
     // DASHBOARD ========================================
     SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();
