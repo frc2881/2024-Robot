@@ -140,14 +140,21 @@ public class RobotContainer {
   private void configureBindings() {
     // DRIVER ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
-    m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
-    m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand(IntakeLocation.Front));
     m_driverController.leftTrigger().whileTrue(m_gameCommands.runIntakeCommand(IntakeLocation.Rear));
-    m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand(IntakeLocation.Front));
+    m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand(IntakeLocation.Front));
     m_driverController.leftBumper().whileTrue(m_gameCommands.runEjectCommand(IntakeLocation.Rear));
+    m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand(IntakeLocation.Front));
+    m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
+    // m_driverController.rightStick().whileTrue(Commands.none());
+    // m_driverController.povLeft().whileTrue(Commands.none());
+    // m_driverController.povUp().whileTrue(Commands.none()); 
+    // m_driverController.povRight().whileTrue(Commands.none());
+    // m_driverController.povDown().whileTrue(Commands.none());
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     m_driverController.b().whileTrue(m_gameCommands.moveToClimbCommand());
     m_driverController.y().whileTrue(m_gameCommands.climbCommand());
+    // m_driverController.x().whileTrue(Commands.none());
+    // m_driverController.start().whileTrue(Commands.none());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
@@ -155,17 +162,23 @@ public class RobotContainer {
     // TODO: if/when launcher auto angle alignment is working, make alignLauncherToTargetCommand the default command
     // m_operatorController.leftY().whileTrue(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
-    m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer));
-    m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange)); 
-    m_operatorController.povLeft().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionLongRange));
-    m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionAmp));
-    m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand());
+    // m_operatorController.leftTrigger().whileTrue(Commands.none());
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
     m_operatorController.leftBumper().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
     m_operatorController.rightBumper().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
+    // m_operatorController.leftStick().whileTrue(Commands.none());
+    // m_operatorController.rightStick().whileTrue(Commands.none());
+    m_operatorController.povLeft().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionLongRange));
+    m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange)); 
+    m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer));
+    m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionAmp));
+    m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand());
+    // m_operatorController.b().whileTrue(Commands.none());
+    // m_operatorController.y().whileTrue(Commands.none());
     m_operatorController.x().onTrue(m_feederSubsystem.runCommand()).onFalse(m_feederSubsystem.stopCommand());
-    m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
     m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
+    m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
+
 
     // DASHBOARD ========================================
     SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();
