@@ -159,6 +159,7 @@ public class RobotContainer {
 
     // OPERATOR ========================================
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
+    m_feederSubsystem.setDefaultCommand(m_feederSubsystem.moveArmInCommand());
     // TODO: if/when launcher auto angle alignment is working, make alignLauncherToTargetCommand the default command
     // m_operatorController.leftY().whileTrue(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
@@ -218,11 +219,11 @@ public class RobotContainer {
     );
 
     m_autoChooser.setDefaultOption("None", Commands.none());
-    m_autoChooser.addOption("Score", m_autoCommands.scoreSubwooferAuto());
-    m_autoChooser.addOption("TEST", m_autoCommands.testPath());
-    m_autoChooser.addOption("Position1Grab", m_autoCommands.Pos1Note1Path());
-    m_autoChooser.addOption("Position2Grab", m_autoCommands.Pos2Note1Path());
-    m_autoChooser.addOption("Position3Grab", m_autoCommands.Pos3Note1Path());
+    m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupShootPickup14());
+    m_autoChooser.addOption("ShootPickup1", m_autoCommands.shootPickup1());
+    m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupShootPickup1());
+    m_autoChooser.addOption("ShootPickup2", m_autoCommands.shootPickup2());
+    m_autoChooser.addOption("ShootPickup3", m_autoCommands.shootPickup3());
     
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }

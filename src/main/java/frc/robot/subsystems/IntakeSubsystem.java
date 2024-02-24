@@ -70,7 +70,7 @@ public class IntakeSubsystem extends SubsystemBase {
         runRollers(MotorDirection.Reverse);
       })
       .andThen(
-        run(() -> runBottomBelts(MotorDirection.Reverse)).withTimeout(0.5)
+        run(() -> runBottomBelts(MotorDirection.Reverse)).withTimeout(0.4)
       )
     )
     .finallyDo(() -> {

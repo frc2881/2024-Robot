@@ -75,12 +75,12 @@ public class GameCommands {
       case Front:
         return 
         m_intakeSubsystem.runIntakeFrontCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-        .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
+        .raceWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
         .withName("RunIntakeFront");
       case Rear:
         return
         m_intakeSubsystem.runIntakeRearCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-        .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
+        .raceWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
         .withName("RunIntakeRear");
       default:
         return Commands.none();
@@ -108,6 +108,12 @@ public class GameCommands {
     .withName("AlignRobotToTarget");
   }
 
+  public Command alignRobotToTargetAutoCommand() {
+    return
+    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, () -> getTargetPose())
+    .withName("AlignRobotToTarget");
+  }
+
   public Command alignLauncherToPositionCommand(double position, boolean startRollers) {
     return
     m_launcherArmSubsystem.alignToPositionCommand(position)
@@ -115,7 +121,13 @@ public class GameCommands {
       m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kLowestLauncherSpeeds)
       .onlyIf(() -> startRollers)
       )
-    
+    .withName("AlignLauncherToPosition");
+  }
+
+  public Command alignLauncherToPositionAutoCommand(double position) {
+    return
+    m_launcherArmSubsystem.alignToPositionCommand(position)
+    .until(() -> Math.abs(m_launcherArmSubsystem.getArmPosition() - position) < 0.5)
     .withName("AlignLauncherToPosition");
   }
 
@@ -126,11 +138,26 @@ public class GameCommands {
     .withName("AlignLauncherToTarget");
   }
 
+  public Command stopLauncherRollersCommand() {
+    return m_launcherRollerSubsystem.runAutoCommand(() -> new RollerSpeeds(0.0, 0.0))
+    .withName("StopRollers");
+  }
+
   public Command runLauncherCommand() {
     return 
     m_launcherRollerSubsystem.runCommand(() -> getLauncherRollerSpeeds())
     .alongWith(
       Commands.waitSeconds(1.5)
+      .andThen(m_intakeSubsystem.runLaunchCommand())
+    )
+    .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
+    .withName("RunLauncher");
+  }
+
+  public Command runLauncherAutoCommand(double time, boolean shouldEnd) {
+    return 
+    Commands.sequence(
+      Commands.waitSeconds(time)
       .andThen(m_intakeSubsystem.runLaunchCommand())
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())

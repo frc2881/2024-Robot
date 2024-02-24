@@ -65,7 +65,7 @@ public final class Constants {
     public static final double kDriftCorrectionThetaControllerPositionTolerance = 0.5;
     public static final double kDriftCorrectionThetaControllerVelocityTolerance = 0.5;
 
-    public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.15, 0, 0);
+    public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01);
     public static final double kTargetAlignmentThetaControllerPositionTolerance = 0.5;
     public static final double kTargetAlignmentThetaControllerVelocityTolerance = 0.5;
 
@@ -121,7 +121,7 @@ public final class Constants {
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.05, 0, 0);
     public static final double kArmMotorForwardSoftLimit = 19.0; // TODO: recalibrate
-    public static final double kArmMotorReverseSoftLimit = 0.0; // TODO: recalibrate
+    public static final double kArmMotorReverseSoftLimit = 1.0; // TODO: recalibrate
     public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0;
     public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
     public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
@@ -191,6 +191,7 @@ public final class Constants {
 
     public static final double kArmPositionIntake = 14.0; // TODO: get degrees 
     public static final double kArmPositionSubwoofer = 13.10; // TODO: configure on field (12.0 measured at 55.3 degrees, 13.10 measured at 58.0 degrees)
+    public static final double kArmPositionBlueLine = 9.0;
     public static final double kArmPositionMidRange = 7.0; // TODO: configure on field (11.25 measured at 52.2 degrees)
     public static final double kArmPositionLongRange = 4.20; // TODO: configure on field (4.20 measure at 23.8 degrees)
     public static final double kArmPositionAmp = 11.4; // TODO: configure on field
