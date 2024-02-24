@@ -13,12 +13,15 @@ public class LauncherRollerSubsystem extends SubsystemBase {
   private final CANSparkFlex m_topRollerMotor;
   private final CANSparkFlex m_bottomRollerMotor;
 
+  public record RollerSpeeds(double top, double bottom) {}
+
   public LauncherRollerSubsystem() {
     m_topRollerMotor = new CANSparkFlex(Constants.Launcher.kTopRollerMotorCANId, MotorType.kBrushless);
     m_topRollerMotor.restoreFactoryDefaults();
     m_topRollerMotor.setIdleMode(Constants.Launcher.kTopRollerMotorIdleMode); 
     m_topRollerMotor.setSmartCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
     m_topRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
+    m_topRollerMotor.setInverted(true);
 
     m_bottomRollerMotor = new CANSparkFlex(Constants.Launcher.kBottomRollerMotorCANId, MotorType.kBrushless);
     m_bottomRollerMotor.restoreFactoryDefaults();
@@ -32,13 +35,11 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  // TODO: fix this subsystem to run top motor inverted and use only max output value for both motors in order to prevent ripping notes apart due to incorrect values sent in
-  public Command runRollersCommand(double[] rollerSpeeds) {
+  public Command runCommand(RollerSpeeds rollerSpeeds) {
     return 
     startEnd(() -> {
-      SmartDashboard.putNumber("Robot/Launcher/Roller/Speed", rollerSpeeds[0]);
-      m_topRollerMotor.set(rollerSpeeds[0] * Constants.Launcher.kTopRollerMotorMaxOutput);
-      m_bottomRollerMotor.set(rollerSpeeds[1] * Constants.Launcher.kBottomRollerMotorMaxOutput);
+      m_topRollerMotor.set(rollerSpeeds.top * Constants.Launcher.kTopRollerMotorMaxOutput);
+      m_bottomRollerMotor.set(rollerSpeeds.bottom * Constants.Launcher.kBottomRollerMotorMaxOutput);
     },
     () -> { 
       m_topRollerMotor.set(0.0);
@@ -48,6 +49,8 @@ public class LauncherRollerSubsystem extends SubsystemBase {
   }
 
   private void updateTelemetry() {
+    SmartDashboard.putNumber("Robot/Launcher/Roller/Top/Speed", m_topRollerMotor.get());
+    SmartDashboard.putNumber("Robot/Launcher/Roller/Bottom/Speed", m_bottomRollerMotor.get());
   }
 
   @Override

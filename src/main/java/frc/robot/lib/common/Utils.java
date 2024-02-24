@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.revrobotics.CANSparkBase;
+import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
 import edu.wpi.first.math.MathUtil;
@@ -12,6 +13,8 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj.Timer;
+import frc.robot.lib.logging.Logger;
 
 public final class Utils {
 
@@ -57,5 +60,12 @@ public final class Utils {
 
   public static double voltsToPsi(double sensorVoltage, double supplyVoltage) {
     return 250 * (sensorVoltage / supplyVoltage) - 25;
+  }
+
+  public static void setConfiguration(REVLibError error, String source) {
+    Timer.delay(0.005);
+    if (error != REVLibError.kOk) {
+      Logger.log("!!!!!!!!!! REVLibError Returned: " + source + ":" + error.toString() + " !!!!!!!!!!");
+    }
   }
 }

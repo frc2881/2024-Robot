@@ -64,15 +64,15 @@ public final class Constants {
     public static final double kDriftCorrectionThetaControllerPositionTolerance = 0.5;
     public static final double kDriftCorrectionThetaControllerVelocityTolerance = 0.5;
 
-    public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01); // TODO: calibrate with testing (faster?)
+    public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01);
     public static final double kTargetAlignmentThetaControllerPositionTolerance = 0.5;
     public static final double kTargetAlignmentThetaControllerVelocityTolerance = 0.5;
 
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
 
-    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0); // TODO: update after testing
-    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0); // TODO: update after testing
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0); // TODO: update with testing
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0); // TODO: update with testing
 
     public static final class SwerveModule {
       public static final double kOffsetFrontLeft = -Math.PI / 2;
@@ -118,9 +118,9 @@ public final class Constants {
     public static final double kArmMotorMinOutput = -0.5;
     public static final double kArmMotorMaxOutput = 0.5;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.05, 0, 0); // TODO: calibrate to be more gentle with arm (convert to smart motion in subsytem?)
-    public static final double kArmMotorForwardSoftLimit = 19.0; // TODO: recalibrate soft limits
-    public static final double kArmMotorReverseSoftLimit = 0.0; // TODO: recalibrate soft limits
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.05, 0, 0);
+    public static final double kArmMotorForwardSoftLimit = 19.0; // TODO: recalibrate
+    public static final double kArmMotorReverseSoftLimit = 0.0; // TODO: recalibrate
     public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0;
     public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
     public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
@@ -190,9 +190,6 @@ public final class Constants {
     public static final double kArmPositionMidRange = 7.0; // TODO: configure on field (11.25 measured at 52.2 degrees)
     public static final double kArmPositionLongRange = 4.20; // TODO: configure on field (4.20 measure at 23.8 degrees)
     public static final double kArmPositionAmp = 11.4; // TODO: configure on field
-
-    public static final double kLauncherTopEdgeLength = 0.0; // TODO: Find value
-    public static final double kLauncherBottomEdgeLength = 0.0; // TODO: Find value
   }
 
   public static final class Climber {
@@ -200,8 +197,8 @@ public final class Constants {
     public static final int kRollerMotorCANId = 17;
 
     public static final int kArmMotorCurrentLimit = 60;
-    public static final double kArmMotorMinOutput = -0.8; // TODO: update after testing
-    public static final double kArmMotorMaxOutput = 0.8; // TODO: update after testing
+    public static final double kArmMotorMinOutput = -0.8; // TODO: update with testing
+    public static final double kArmMotorMaxOutput = 0.8; // TODO: update with testing
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
     public static final double kArmMotorForwardSoftLimit = 38.7;
@@ -212,8 +209,8 @@ public final class Constants {
     public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
 
     public static final int kRollerMotorCurrentLimit = 60;
-    public static final double kRollerMotorMinOutput = -1.0; // TODO: update after testing
-    public static final double kRollerMotorMaxOutput = 1.0; // TODO: update after testing
+    public static final double kRollerMotorMinOutput = -1.0; // TODO: update with testing
+    public static final double kRollerMotorMaxOutput = 1.0; // TODO: update with testing
     public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
 
     //37.7 is position for arm to lock
@@ -269,7 +266,7 @@ public final class Constants {
     public static final class Object {
       public static final String kCameraName = "Front";
       public static final String kObjectName = "Note";
-      public static final double kObjectRangeYaw = 10.0; // TODO: update after testing
+      public static final double kObjectRangeYaw = 10.0; // TODO: update with testing
     }
 
     public static final class Distance {
@@ -295,20 +292,8 @@ public final class Constants {
         new Pose2d(kAprilTagFieldLayout.getFieldLength(), kAprilTagFieldLayout.getFieldWidth(), null)
       );
 
-      // TODO: define proper launch zones based on testing - may only need a minimum distance and rotation angle defined for speaker and amp targets instead of bounding boxes
-      public static final class LaunchZones {
-        public static final Pair<Pose2d, Pose2d> kSpeaker = Pair.of(
-          new Pose2d(0, 0, null), 
-          new Pose2d(0, 0, null)
-        );
-        public static final Pair<Pose2d, Pose2d> kAmp = Pair.of(
-          new Pose2d(0, 0, null), 
-          new Pose2d(0, 0, null)
-        );
-      }
-
       public static final class Targets {
-        public static final double kSpeakerXDelta = 0.3; // TODO: validate this through testing
+        public static final double kSpeakerXDelta = 0.3; // TODO: update with testing
         public static final double kSpeakerZDelta = 0.616675;
         public static final Pose3d kAprilTag7 = kAprilTagFieldLayout.getTagPose(7).orElse(new Pose3d());
         public static final Pose3d kBlueSpeaker = new Pose3d(kAprilTag7.getX() + kSpeakerXDelta, kAprilTag7.getY(), kAprilTag7.getZ() + kSpeakerZDelta, kAprilTag7.getRotation());

@@ -28,7 +28,6 @@ public class PoseSubsystem extends SubsystemBase {
     m_poseSensors = poseSensors;
     m_gyroRotation = gyroRotation;
     m_swerveModulePosition = swerveModulePosition;
-
     m_poseEstimator = new SwerveDrivePoseEstimator(
       Constants.Drive.kSwerveDriveKinematics, 
       m_gyroRotation.get(),
@@ -62,8 +61,6 @@ public class PoseSubsystem extends SubsystemBase {
 
   public void resetPose(Pose2d pose) {
     m_poseEstimator.resetPosition(m_gyroRotation.get(), m_swerveModulePosition.get(), pose);
-    SmartDashboard.putNumber("ResetPoseX", pose.getX());
-    SmartDashboard.putNumber("ResetPoseY", pose.getY());
   }
 
   private void updateTelemetry() {

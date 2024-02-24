@@ -20,6 +20,7 @@ import frc.robot.commands.GameCommands;
 import frc.robot.lib.common.Enums.DriveDriftCorrection;
 import frc.robot.lib.common.Enums.DriveOrientation;
 import frc.robot.lib.common.Enums.DriveSpeedMode;
+import frc.robot.lib.common.Enums.IntakeLocation;
 import frc.robot.lib.common.Enums.MotorDirection;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
@@ -139,32 +140,30 @@ public class RobotContainer {
   private void configureBindings() {
     // DRIVER ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
+    m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
+    m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand(IntakeLocation.Front));
+    m_driverController.leftTrigger().whileTrue(m_gameCommands.runIntakeCommand(IntakeLocation.Rear));
+    m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand(IntakeLocation.Front));
+    m_driverController.leftBumper().whileTrue(m_gameCommands.runEjectCommand(IntakeLocation.Rear));
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
-    m_driverController.x().whileTrue(m_driveSubsystem.setLockedCommand());
-    m_driverController.rightTrigger().whileTrue(m_gameCommands.runFrontIntakeCommand());
-    m_driverController.leftTrigger().whileTrue(m_gameCommands.runRearIntakeCommand());
-    m_driverController.rightTrigger().and(m_driverController.leftTrigger()).whileTrue(m_gameCommands.runEjectIntakeCommand(true));
-    m_driverController.rightBumper().and(m_driverController.leftBumper()).whileTrue(m_gameCommands.runEjectIntakeCommand(false));
-    //m_driverController.rightBumper().whileTrue(m_gameCommands.getNoteIntoLaunchPositionCommand(m_launcherDistanceSensor::getDistance));
-    m_driverController.back().onTrue(m_gyroSensor.resetCommand());
     m_driverController.b().whileTrue(m_gameCommands.moveToClimbCommand());
     m_driverController.y().whileTrue(m_gameCommands.climbCommand());
-    // TODO: make X the left stick press
+    m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
-    // TODO: Once launcher angle alignment is tested/done, make alignLauncherToTargetCommand the default and make the tiltLauncherCommand a trigger
-    // m_operatorController.leftY().whileTrue(m_launcherArmSubsystem.tiltLauncherCommand(() -> m_operatorController.getLeftY()));
+    // TODO: if/when launcher auto angle alignment is working, make alignLauncherToTargetCommand the default command
+    // m_operatorController.leftY().whileTrue(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
+    m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer));
+    m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange)); 
+    m_operatorController.povLeft().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionLongRange));
+    m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionAmp));
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand());
-    m_operatorController.x().onTrue(m_feederSubsystem.runFeederCommand()).onFalse(m_feederSubsystem.stopFeederCommand());
+    m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
     m_operatorController.leftBumper().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
     m_operatorController.rightBumper().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
-    m_operatorController.povRight().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionSubwoofer));
-    m_operatorController.povUp().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionMidRange)); 
-    m_operatorController.povLeft().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionLongRange));
-    m_operatorController.povDown().whileTrue(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionAmp));
-    m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
+    m_operatorController.x().onTrue(m_feederSubsystem.runCommand()).onFalse(m_feederSubsystem.stopCommand());
     m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
     m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
 

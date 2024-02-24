@@ -1,17 +1,12 @@
 package frc.robot.commands;
 
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.lib.common.Utils;
+import frc.robot.lib.common.Enums.IntakeLocation;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
 import frc.robot.lib.sensors.DistanceSensor;
@@ -23,6 +18,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
 import frc.robot.subsystems.LauncherRollerSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
+import frc.robot.subsystems.LauncherRollerSubsystem.RollerSpeeds;
 
 public class GameCommands {
   private final GyroSensor m_gyroSensor;   
@@ -74,115 +70,102 @@ public class GameCommands {
     m_lightsController = lightsController;
   }
 
- // TODO: [HIGHEST PRIORITY] refactor intake and launcher sensor logic for boolean beam breaks in place of distance calcuations
-
-  public Command runFrontIntakeCommand() {
-    return Commands.parallel(
-      m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake),
-      m_intakeSubsystem.runIntakeFromFrontCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-      )
-    .withName("RunFrontIntakeCommand");
-  }
-
-  public Command runRearIntakeCommand() {
-    return
-    m_intakeSubsystem.runIntakeFromRearCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-    .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
-    .withName("RunRearIntakeCommand");
-  }
-
-  // TODO: make enum?
-  public Command runEjectIntakeCommand(Boolean isRearEject) {
-    if(isRearEject){
-      return m_intakeSubsystem.runIntakeEjectRearCommand()
-      .withName("RunEjectIntakeRearCommand");
+  public Command runIntakeCommand(IntakeLocation intakeDirection) {
+    switch (intakeDirection) {
+      case Front:
+        return 
+        m_intakeSubsystem.runIntakeFrontCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+        .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
+        .withName("RunIntakeFront");
+      case Rear:
+        return
+        m_intakeSubsystem.runIntakeRearCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+        .alongWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
+        .withName("RunIntakeRear");
+      default:
+        return Commands.none();
     }
-    return m_intakeSubsystem.runIntakeEjectFrontCommand()
-      .withName("RunEjectIntakeFrontCommand");
-    
   }
 
-  // TODO: this needs more testing once vision cameras are mounted and configured
+  public Command runEjectCommand(IntakeLocation intakeDirection) {
+    switch (intakeDirection) {
+      case Front:
+        return
+        m_intakeSubsystem.runEjectFrontCommand()
+        .withName("RunEjectFront");
+      case Rear:
+        return
+        m_intakeSubsystem.runEjectRearCommand()
+        .withName("RunEjectRear");
+      default:
+        return Commands.none();
+    }
+  }
+
   public Command alignRobotToTargetCommand() {
     return
-    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getCurrentTargetPose())
+    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getTargetPose())
     .withName("AlignRobotToTarget");
   }
 
-  // TODO: this needs more testing once vision cameras are mounted and configured
+  public Command alignLauncherToPositionCommand(double position) {
+    return
+    m_launcherArmSubsystem.alignToPositionCommand(position)
+    //.alongWith(m_launcherRollerSubsystem.runCommand(getLauncherRollerSpeeds()))
+    .withName("AlignLauncherToPosition");
+  }
+
   public Command alignLauncherToTargetCommand() {
     return
-    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getCurrentTargetPose())
+    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getTargetPose())
+    //.alongWith(m_launcherRollerSubsystem.runCommand(getLauncherRollerSpeeds()))
     .withName("AlignLauncherToTarget");
   }
 
-  // TODO: refactor this command to use different speed configurations based on speaker or amp target using the isCurrentTargetAmp check
   public Command runLauncherCommand() {
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runRollersCommand(getLauncherRollerSpeeds()),
-      Commands.sequence(
-        new WaitCommand(2.0),
-        m_intakeSubsystem.runIntakeForLaunchCommand()
-        )
+    return 
+    m_launcherRollerSubsystem.runCommand(getLauncherRollerSpeeds())
+    .alongWith(
+      Commands.waitSeconds(2.0)
+      .andThen(m_intakeSubsystem.runLaunchCommand())
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
     .withName("RunLauncher");
   }
 
   public Command moveToClimbCommand() {
-    return Commands.parallel(
-      m_launcherArmSubsystem.alignToPositionCommand(1.0),
-        m_feederSubsystem.moveFeedOutCommand().withTimeout(0.5),
-      m_climberSubsystem.moveArmToPositionCommand(Constants.Climber.kArmMotorForwardSoftLimit-0.1)
-    )
+    return 
+    m_launcherArmSubsystem.alignToPositionCommand(1.0)
+    .alongWith(m_feederSubsystem.moveArmOutCommand().withTimeout(0.5))
+    .alongWith(m_climberSubsystem.moveArmToPositionCommand(Constants.Climber.kArmMotorForwardSoftLimit - 0.1))
     .withName("MoveToClimb");
   }
 
   public Command climbCommand() {
-    return m_climberSubsystem.moveArmToPositionCommand(0.0) // TODO: update?
-      .withName("Climb");
+    return 
+    m_climberSubsystem.moveArmToPositionCommand(0.0) // TODO: update?
+    .withName("Climb");
   }
 
-  // TODO: work with build to confirm that hard stops for all arm mechanisms are in place so that zeroing out all in parallel is safe
   public Command resetSubsystems() {
     return 
     m_feederSubsystem.resetCommand()
-    .alongWith(
-      m_climberSubsystem.resetCommand()
-    )
+    .alongWith(m_climberSubsystem.resetCommand())
     .withName("ResetSubsystems");
   }
 
-  // TODO: update values based on testing: +/- 10 degrees rotation to amp and within 1 meter
-  private boolean isCurrentTargetAmp(Pose2d robotPose) {
-    Pose2d targetPose = getAmpPose().toPose2d();
+  private Pose3d getTargetPose() {
     return 
-    robotPose.getRotation().minus(targetPose.getRotation()).getDegrees() <= 10.0 && 
-    robotPose.getTranslation().getDistance(targetPose.getTranslation()) < 1.0;
+    Robot.getAlliance() == Alliance.Blue 
+    ? Constants.Game.Field.Targets.kBlueSpeaker 
+    : Constants.Game.Field.Targets.kRedSpeaker;
   }
 
-  private Pose3d getCurrentTargetPose() {
-    boolean isCurrTargetAmp = isCurrentTargetAmp(m_poseSubsystem.getPose());
-    SmartDashboard.putBoolean("currentTargetIsAmp", isCurrTargetAmp);
-    return isCurrentTargetAmp(m_poseSubsystem.getPose()) ? getAmpPose() : getSpeakerPose();
-
-  }
-
-  private double[] getLauncherRollerSpeeds() {
-    // double launcherArmPos = m_launcherArmSubsystem.getLauncherArmPosition();
-    // SmartDashboard.putNumber("LauncherArmPosition", launcherArmPos);
-    // if(launcherArmPos > Constants.Launcher.kArmPositionAmp){
-    //   return new double[] {-0.65, 0.65};
-    // }
-    return new double[] {-0.8, 0.8};
-  }
-
-
-  private Pose3d getSpeakerPose() {
-    return Robot.getAlliance() == Alliance.Blue ? Constants.Game.Field.Targets.kBlueSpeaker : Constants.Game.Field.Targets.kRedSpeaker;
-  }
-
-  private Pose3d getAmpPose() {
-    return Robot.getAlliance() == Alliance.Blue ? Constants.Game.Field.Targets.kBlueAmp : Constants.Game.Field.Targets.kRedAmp;
+  private RollerSpeeds getLauncherRollerSpeeds() {
+    // if (m_launcherArmSubsystem.getArmPosition() >= Constants.Launcher.kArmPositionAmp) {
+    //   return new RollerSpeeds(0.6, 0.6);
+    // } else {
+      return new RollerSpeeds(0.8, 0.8);
+    //}
   }
 }

@@ -21,8 +21,6 @@ public class FeederSubsystem extends SubsystemBase {
   private final SparkPIDController m_armPIDController;
   private final CANSparkMax m_rollerMotor;
 
-  // TODO: add position safety check after robot power on to not allow operation unless soft limit reset to zero has been confirmed (manual or auto)
-
   public FeederSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Feeder.kArmMotorCANId, MotorType.kBrushless);
     m_armMotor.restoreFactoryDefaults();
@@ -39,8 +37,6 @@ public class FeederSubsystem extends SubsystemBase {
     m_armPIDController.setI(Constants.Feeder.kArmMotorPIDConstants.I);
     m_armPIDController.setD(Constants.Feeder.kArmMotorPIDConstants.D);
     m_armPIDController.setOutputRange(Constants.Feeder.kArmMotorMinOutput, Constants.Feeder.kArmMotorMaxOutput);
-    // m_armPIDController.setSmartMotionMaxVelocity(Constants.Feeder.kArmMotorSmartMotionMaxVelocity, 0);
-    // m_armPIDController.setSmartMotionMaxAccel(Constants.Feeder.kArmMotorSmartMotionMaxAccel, 0);
 
     m_armEncoder = m_armMotor.getEncoder();
 
@@ -56,7 +52,7 @@ public class FeederSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command runFeederCommand() {
+  public Command runCommand() {
     return
     run(() -> {
       m_armPIDController.setReference(Constants.Feeder.kArmMotorForwardSoftLimit, ControlType.kPosition);
@@ -65,7 +61,18 @@ public class FeederSubsystem extends SubsystemBase {
     .withName("StartFeeder");
   }
 
-  public Command moveFeedOutCommand() {
+  public Command stopCommand() {
+    return
+    run(() -> {
+      m_armPIDController.setReference(Constants.Feeder.kArmMotorReverseSoftLimit, ControlType.kPosition);
+      m_rollerMotor.set(0.0);
+    })
+    .withTimeout(3.0)
+    .finallyDo(() -> m_armMotor.set(0.0))
+    .withName("StopFeeder");
+  }
+
+  public Command moveArmOutCommand() {
     return 
     run(() -> {
       m_armPIDController.setReference(Constants.Feeder.kArmMotorForwardSoftLimit, ControlType.kPosition);
@@ -73,24 +80,12 @@ public class FeederSubsystem extends SubsystemBase {
     .withName("MoveFeederOut");
   }
 
-  public Command moveFeedInCommand() {
+  public Command moveArmInCommand() {
     return 
     run(() -> {
       m_armPIDController.setReference(Constants.Feeder.kArmMotorReverseSoftLimit, ControlType.kPosition);
     })
     .withName("MoveFeederIn");
-  }
-
-  public Command stopFeederCommand() {
-    return
-    run(() -> {
-      m_armPIDController.setReference(Constants.Feeder.kArmMotorReverseSoftLimit, ControlType.kPosition);
-      m_rollerMotor.set(0.0);
-    })
-    .withTimeout(3.0)
-    // .until(() -> m_armEncoder.getPosition() == Constants.Feeder.kArmMotorReverseSoftLimit)
-    .finallyDo(() -> m_armMotor.set(0.0))
-    .withName("StopFeeder");
   }
 
   public Command resetCommand() {

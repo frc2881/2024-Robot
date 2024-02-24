@@ -213,18 +213,15 @@ public class DriveSubsystem extends SubsystemBase {
     .withName("SetDriveLockedState");
   }
 
-  // TODO: investigate/experiment with auto alignment (lock) to target while driving/strafing instead of just stationary assumption per this command (would have to work within controller driving command in parallel ... replacing drift correction while active)
   public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Pose3d targetPose) {
     return
     run(() -> {
       double robotYaw = robotPose.get().getRotation().getDegrees();
-      if(Robot.getAlliance() == Alliance.Red){
+      if (Robot.getAlliance() == Alliance.Red) {
         robotYaw = -robotYaw;
       }
       double speedRotation = m_targetAlignmentThetaController.calculate(robotYaw);
       speedRotation += Math.copySign(0.15, speedRotation);
-      SmartDashboard.putNumber("AutoAlignRobotYaw", robotYaw);
-      SmartDashboard.putNumber("AutoAlignSpeedRotation", speedRotation);
       if (m_targetAlignmentThetaController.atSetpoint()) {
         speedRotation = 0.0;
         m_isAlignedToTarget = true;
@@ -237,10 +234,9 @@ public class DriveSubsystem extends SubsystemBase {
     .beforeStarting(() -> {
       m_isAlignedToTarget = false; 
       double yawToTarget = Math.toDegrees(Utils.getTargetRotation(robotPose.get(), targetPose).getZ());
-      if(Robot.getAlliance() == Alliance.Red){
+      if (Robot.getAlliance() == Alliance.Red) {
         yawToTarget = Math.toDegrees(Utils.getTargetRotation(robotPose.get().times(-1), targetPose).getZ());
       }
-      SmartDashboard.putNumber("AutoAlignStartYaw", yawToTarget);
       m_targetAlignmentThetaController.setSetpoint(yawToTarget);
       m_targetAlignmentThetaController.reset();
     })

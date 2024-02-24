@@ -7,8 +7,8 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.lib.common.Enums.MotorDirection;
 
@@ -42,7 +42,7 @@ public class IntakeSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command runIntakeFromFrontCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
+  public Command runIntakeFrontCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
       runTopBelts(MotorDirection.Forward);
@@ -51,7 +51,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }, () -> {})
     .onlyWhile(() -> !intakeHasTarget.get())
     .andThen(
-      new WaitCommand(0.14)
+      Commands.waitSeconds(0.14)
     )
     .andThen(
       startEnd(() -> {
@@ -61,8 +61,8 @@ public class IntakeSubsystem extends SubsystemBase {
       }, () -> {})
       .onlyWhile(() -> !launcherBottomHasTarget.get())
       .andThen(
-      new WaitCommand(0.06)
-    )
+        Commands.waitSeconds(0.06)
+      )
     )
     .andThen(
       runOnce(() -> {
@@ -71,17 +71,17 @@ public class IntakeSubsystem extends SubsystemBase {
       })
       .andThen(
         run(() -> runBottomBelts(MotorDirection.Reverse)).withTimeout(0.5)
-        )
+      )
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None);
       runBottomBelts(MotorDirection.None);
       runRollers(MotorDirection.None);
     })
-    .withName("RunIntakeFromFront");
+    .withName("RunIntakeFront");
   }
 
-  public Command runIntakeFromRearCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
+  public Command runIntakeRearCommand(Supplier<Boolean> intakeHasTarget, Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return    
     startEnd(() -> {
       runTopBelts(MotorDirection.Reverse);
@@ -90,7 +90,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }, () -> {})
     .onlyWhile(() -> !intakeHasTarget.get()) 
     .andThen(
-      new WaitCommand(0.05)
+      Commands.waitSeconds(0.05)
     )
     .andThen(
       startEnd(() -> {
@@ -100,8 +100,8 @@ public class IntakeSubsystem extends SubsystemBase {
       }, () -> {})
       .onlyWhile(() -> !launcherBottomHasTarget.get())
       .andThen(
-      new WaitCommand(0.06)
-    )
+        Commands.waitSeconds(0.06)
+      )
     )
     .andThen(
       runOnce(() -> {
@@ -110,17 +110,31 @@ public class IntakeSubsystem extends SubsystemBase {
       })
       .andThen(
         run(() -> runBottomBelts(MotorDirection.Reverse)).withTimeout(0.5)
-        )
+      )
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None);
       runBottomBelts(MotorDirection.None); 
       runRollers(MotorDirection.None); 
     })
-    .withName("RunIntakeFromRear");
+    .withName("RunIntakeRear");
   }
 
-  public Command runIntakeEjectRearCommand() {
+  public Command runEjectFrontCommand() {
+    return
+    startEnd(() -> {
+      runTopBelts(MotorDirection.Reverse);
+      runBottomBelts(MotorDirection.Reverse);
+      runRollers(MotorDirection.Forward);
+    }, () -> {
+      runTopBelts(MotorDirection.None);
+      runBottomBelts(MotorDirection.None);
+      runRollers(MotorDirection.None);
+    })
+    .withName("RunEjectFront");
+  }
+
+  public Command runEjectRearCommand() {
     return
     startEnd(() -> {
       runTopBelts(MotorDirection.Forward);
@@ -131,56 +145,10 @@ public class IntakeSubsystem extends SubsystemBase {
       runBottomBelts(MotorDirection.None);
       runRollers(MotorDirection.None);
     })
-    .withName("RunIntakeEject");
+    .withName("RunEjectRear");
   }
 
-  public Command runIntakeEjectFrontCommand() {
-    return
-    startEnd(() -> {
-      runTopBelts(MotorDirection.Reverse);
-      runBottomBelts(MotorDirection.Reverse);
-      runRollers(MotorDirection.Forward);
-    }, () -> {
-      runTopBelts(MotorDirection.None);
-      runBottomBelts(MotorDirection.None);
-      runRollers(MotorDirection.None);
-    })
-    .withName("RunIntakeEject");
-  }
-
-
-
-  public Command runIntakeForLaunchPositionCommand(Supplier<Double> distanceSupplier) {
-    return
-    startEnd(() -> {
-      if(distanceSupplier.get() < 5.5){
-        runTopBelts(MotorDirection.Reverse, 0.15); 
-        runBottomBelts(MotorDirection.Reverse, 0.15); 
-      }
-      else if (distanceSupplier.get() > 10.0){
-        runTopBelts(MotorDirection.Forward, 0.15); 
-        runBottomBelts(MotorDirection.Forward, 0.15); 
-      }
-    }, () -> {
-      runTopBelts(MotorDirection.None);
-      runBottomBelts(MotorDirection.None);
-    })
-    .withName("RunIntakeForLaunchPosition");
-  }
-
-  public Command runIntakeForLaunchPositionCommand() {
-    return
-    startEnd(() -> {
-      runTopBelts(MotorDirection.Reverse, 0.15); 
-      runBottomBelts(MotorDirection.Reverse, 0.15); 
-    }, () -> {
-      runTopBelts(MotorDirection.None);
-      runBottomBelts(MotorDirection.None);
-    })
-    .withName("RunIntakeForLaunchPosition");
-  }
-
-  public Command runIntakeForLaunchCommand() {
+  public Command runLaunchCommand() {
     return
     startEnd(() -> {
       runTopBelts(MotorDirection.Forward); 
@@ -189,7 +157,7 @@ public class IntakeSubsystem extends SubsystemBase {
       runTopBelts(MotorDirection.None);
       runBottomBelts(MotorDirection.None);
     })
-    .withName("RunIntakeForLaunch");
+    .withName("RunLaunch");
   }
 
   private void runTopBelts(MotorDirection motorDirection) {
