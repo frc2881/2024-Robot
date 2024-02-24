@@ -1,7 +1,9 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkFlex;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,11 +37,11 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command runCommand(RollerSpeeds rollerSpeeds) {
+  public Command runCommand(Supplier<RollerSpeeds> rollerSpeeds) {
     return 
     startEnd(() -> {
-      m_topRollerMotor.set(rollerSpeeds.top * Constants.Launcher.kTopRollerMotorMaxOutput);
-      m_bottomRollerMotor.set(rollerSpeeds.bottom * Constants.Launcher.kBottomRollerMotorMaxOutput);
+      m_topRollerMotor.set(rollerSpeeds.get().top * Constants.Launcher.kTopRollerMotorMaxOutput);
+      m_bottomRollerMotor.set(rollerSpeeds.get().bottom * Constants.Launcher.kBottomRollerMotorMaxOutput);
     },
     () -> { 
       m_topRollerMotor.set(0.0);

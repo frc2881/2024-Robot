@@ -130,7 +130,7 @@ public class RobotContainer {
 
     // COMMANDS ========================================
     m_gameCommands = new GameCommands(m_gyroSensor, m_intakeBeamBreakSensor, m_launcherBottomBeamBreakSensor, m_launcherTopBeamBreakSensor, m_intakeDistanceSensor, m_launcherDistanceSensor, m_driveSubsystem, m_poseSubsystem, m_feederSubsystem, m_intakeSubsystem, m_launcherArmSubsystem, m_launcherRollerSubsystem, m_climberSubsystem, m_lightsController);
-    m_autoCommands = new AutoCommands(m_gameCommands, m_gyroSensor, m_objectSensor, m_driveSubsystem, m_poseSubsystem);
+    m_autoCommands = new AutoCommands(m_gameCommands, m_gyroSensor, m_intakeBeamBreakSensor, m_launcherBottomBeamBreakSensor, m_launcherTopBeamBreakSensor, m_intakeDistanceSensor, m_launcherDistanceSensor, m_driveSubsystem, m_poseSubsystem, m_feederSubsystem, m_intakeSubsystem, m_launcherArmSubsystem, m_launcherRollerSubsystem, m_climberSubsystem, m_lightsController);
     m_autoChooser = new SendableChooser<Command>();
 
     configureBindings();
@@ -168,10 +168,10 @@ public class RobotContainer {
     m_operatorController.rightBumper().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
     // m_operatorController.leftStick().whileTrue(Commands.none());
     // m_operatorController.rightStick().whileTrue(Commands.none());
-    m_operatorController.povLeft().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionLongRange));
-    m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange)); 
-    m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer));
-    m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionAmp));
+    m_operatorController.povLeft().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionLongRange, true));
+    m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true)); 
+    m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
+    m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionAmp, true));
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand());
     // m_operatorController.b().whileTrue(Commands.none());
     // m_operatorController.y().whileTrue(Commands.none());
@@ -218,6 +218,7 @@ public class RobotContainer {
     );
 
     m_autoChooser.setDefaultOption("None", Commands.none());
+    m_autoChooser.addOption("Score", m_autoCommands.scoreSubwooferAuto());
     m_autoChooser.addOption("TEST", m_autoCommands.testPath());
     m_autoChooser.addOption("Position1Grab", m_autoCommands.Pos1Note1Path());
     m_autoChooser.addOption("Position2Grab", m_autoCommands.Pos2Note1Path());

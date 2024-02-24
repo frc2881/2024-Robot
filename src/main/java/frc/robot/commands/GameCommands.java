@@ -104,29 +104,33 @@ public class GameCommands {
 
   public Command alignRobotToTargetCommand() {
     return
-    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getTargetPose())
+    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, () -> getTargetPose())
     .withName("AlignRobotToTarget");
   }
 
-  public Command alignLauncherToPositionCommand(double position) {
+  public Command alignLauncherToPositionCommand(double position, boolean startRollers) {
     return
     m_launcherArmSubsystem.alignToPositionCommand(position)
-    //.alongWith(m_launcherRollerSubsystem.runCommand(getLauncherRollerSpeeds()))
+    .alongWith(
+      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kLowestLauncherSpeeds)
+      .onlyIf(() -> startRollers)
+      )
+    
     .withName("AlignLauncherToPosition");
   }
 
   public Command alignLauncherToTargetCommand() {
     return
-    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, getTargetPose())
+    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, () -> getTargetPose())
     //.alongWith(m_launcherRollerSubsystem.runCommand(getLauncherRollerSpeeds()))
     .withName("AlignLauncherToTarget");
   }
 
   public Command runLauncherCommand() {
     return 
-    m_launcherRollerSubsystem.runCommand(getLauncherRollerSpeeds())
+    m_launcherRollerSubsystem.runCommand(() -> getLauncherRollerSpeeds())
     .alongWith(
-      Commands.waitSeconds(2.0)
+      Commands.waitSeconds(1.5)
       .andThen(m_intakeSubsystem.runLaunchCommand())
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
@@ -162,10 +166,10 @@ public class GameCommands {
   }
 
   private RollerSpeeds getLauncherRollerSpeeds() {
-    // if (m_launcherArmSubsystem.getArmPosition() >= Constants.Launcher.kArmPositionAmp) {
-    //   return new RollerSpeeds(0.6, 0.6);
-    // } else {
+    if (m_launcherArmSubsystem.getArmPosition() >= Constants.Launcher.kArmPositionAmp) {
+      return new RollerSpeeds(0.6, 0.6);
+    } else {
       return new RollerSpeeds(0.8, 0.8);
-    //}
+    }
   }
 }

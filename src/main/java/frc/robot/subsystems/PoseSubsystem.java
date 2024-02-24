@@ -60,7 +60,7 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    m_poseEstimator.resetPosition(m_gyroRotation.get(), m_swerveModulePosition.get(), pose);
+    //m_poseEstimator.resetPosition(m_gyroRotation.get(), m_swerveModulePosition.get(), pose);
   }
 
   private void updateTelemetry() {

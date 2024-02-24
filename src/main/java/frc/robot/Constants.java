@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU.CalibrationTime;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.lib.common.PIDConstants;
+import frc.robot.subsystems.LauncherRollerSubsystem.RollerSpeeds;
 
 public final class Constants {
 
@@ -64,15 +65,15 @@ public final class Constants {
     public static final double kDriftCorrectionThetaControllerPositionTolerance = 0.5;
     public static final double kDriftCorrectionThetaControllerVelocityTolerance = 0.5;
 
-    public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01);
+    public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.15, 0, 0);
     public static final double kTargetAlignmentThetaControllerPositionTolerance = 0.5;
     public static final double kTargetAlignmentThetaControllerVelocityTolerance = 0.5;
 
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
 
-    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0); // TODO: update with testing
-    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0); // TODO: update with testing
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.5, 0, 0); // TODO: update with testing
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.7, 0, 0); // TODO: update with testing
 
     public static final class SwerveModule {
       public static final double kOffsetFrontLeft = -Math.PI / 2;
@@ -179,6 +180,9 @@ public final class Constants {
     public static final double kBottomRollerMotorMinOutput = -1.0;
     public static final double kBottomRollerMotorMaxOutput = 1.0;
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
+
+    // TODO: Test/update
+    public static final RollerSpeeds kLowestLauncherSpeeds = new RollerSpeeds(0.6, 0.6); // Lowest speed that can be used to score in speaker from subwoofer
 
     // TODO: calculate and set as constant the launcher position to angle conversion factor to use for dynamic adjustment based on distance from target
     // TODO: recalibrate position measurements/angles while maintaining/holding position (keep holding the controller button for the set position)

@@ -69,10 +69,10 @@ public class LauncherArmSubsystem extends SubsystemBase {
     .withName("AlignLauncherArmToPosition");
   }
 
-  public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Pose3d targetPose) {
+  public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Supplier<Pose3d> targetPose) {
     return
     run(() -> {
-      double position = calculateArmPosition(robotPose.get(), targetPose); // TODO: determine through testing if this should be first-time-only calculation
+      double position = calculateArmPosition(robotPose.get(), targetPose.get()); // TODO: determine through testing if this should be first-time-only calculation
       m_armPIDController.setReference(position, ControlType.kSmartMotion);
       m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < 0.1; // TODO: determine if this is correct tolerance
     })
