@@ -60,7 +60,8 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    //m_poseEstimator.resetPosition(m_gyroRotation.get(), m_swerveModulePosition.get(), pose);
+    // NO-OP as current pose is always maintained by pose sensors in the configuration for this robot
+    // m_poseEstimator.resetPosition(m_gyroRotation.get(), m_swerveModulePosition.get(), pose);
   }
 
   private void updateTelemetry() {

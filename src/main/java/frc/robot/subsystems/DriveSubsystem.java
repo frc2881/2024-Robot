@@ -251,6 +251,10 @@ public class DriveSubsystem extends SubsystemBase {
     }
   }
 
+  public void reset() {
+    drive(0.0, 0.0, 0.0);
+  }
+
   private void updateTelemetry() {
     SmartDashboard.putString("Robot/Drive/LockState", m_lockState.toString());
     SmartDashboard.putString("Robot/Drive/IdleMode", m_idleMode.toString().substring(1));

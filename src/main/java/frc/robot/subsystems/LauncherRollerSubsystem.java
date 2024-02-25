@@ -63,6 +63,11 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     .withName("RunLauncherRollers");
   }
 
+  public void reset() {
+    m_topRollerMotor.set(0.0);
+    m_bottomRollerMotor.set(0.0);
+  }
+
   private void updateTelemetry() {
     SmartDashboard.putNumber("Robot/Launcher/Roller/Top/Speed", m_topRollerMotor.get());
     SmartDashboard.putNumber("Robot/Launcher/Roller/Bottom/Speed", m_bottomRollerMotor.get());

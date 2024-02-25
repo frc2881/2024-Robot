@@ -108,33 +108,30 @@ public class GameCommands {
     .withName("AlignRobotToTarget");
   }
 
-  public Command alignRobotToTargetAutoCommand() {
-    return
-    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, () -> getTargetPose())
-    .withName("AlignRobotToTarget");
-  }
-
-  public Command alignLauncherToPositionCommand(double position, boolean startRollers) {
+  public Command alignLauncherToPositionCommand(double position, boolean isRollersEnabled) {
     return
     m_launcherArmSubsystem.alignToPositionCommand(position)
     .alongWith(
       m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kLowestLauncherSpeeds)
-      .onlyIf(() -> startRollers)
-      )
+      .onlyIf(() -> isRollersEnabled)
+    )
     .withName("AlignLauncherToPosition");
   }
 
   public Command alignLauncherToPositionAutoCommand(double position) {
     return
     m_launcherArmSubsystem.alignToPositionCommand(position)
-    .until(() -> Math.abs(m_launcherArmSubsystem.getArmPosition() - position) < 0.5)
+    .until(() -> Math.abs(m_launcherArmSubsystem.getArmPosition() - position) < 0.5) // TODO: why stopping short of reference position?
     .withName("AlignLauncherToPosition");
   }
 
-  public Command alignLauncherToTargetCommand() {
+  public Command alignLauncherToTargetCommand(boolean isRollersEnabled) {
     return
     m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, () -> getTargetPose())
-    //.alongWith(m_launcherRollerSubsystem.runCommand(getLauncherRollerSpeeds()))
+    .alongWith(
+      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kLowestLauncherSpeeds)
+      .onlyIf(() -> isRollersEnabled)
+    )
     .withName("AlignLauncherToTarget");
   }
 

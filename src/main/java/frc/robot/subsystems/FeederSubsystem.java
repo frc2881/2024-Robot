@@ -101,6 +101,11 @@ public class FeederSubsystem extends SubsystemBase {
     .withName("ResetFeeder");
   }
 
+  public void reset() {
+    m_armMotor.set(0.0);
+    m_rollerMotor.set(0.0);
+  }
+
   private void updateTelemetry() {
     SmartDashboard.putNumber("Robot/Feeder/Arm/Position", m_armEncoder.getPosition());
   }

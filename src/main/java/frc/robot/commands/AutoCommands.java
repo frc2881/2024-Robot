@@ -76,7 +76,15 @@ public class AutoCommands {
     m_lightsController = lightsController;
   }
 
-  private Command resetGyroCommand() { // TODO: Add to autos
+  // TODO: add reset gyro command as initial sequence command to all autos
+  // TODO: update local path constraints instances to use constant 
+  // TODO: update local defined auto waypoint poses to use waypoints in constants
+  // TODO: consider running intake for launch directly in place of the runAutoLauncherCommand
+  // TODO: reconsider why alignLauncherToPositionAutoCommand is stopping 0.5 short of reference target
+  // TODO: reconsider why launcher starts at slower speed when aligning before scoring
+  // TODO: reconsider the need for manually stopping the rollers now that they run as top-level parallel in auto commands AND they are reset at the end of auto / beginning of teleop
+
+  private Command resetGyroCommand() { 
     return Commands
     .runOnce(() -> m_gyroSensor.reset(m_poseSubsystem.getPose().getRotation().getDegrees()))
     .withName("ResetGyro"); 
@@ -182,7 +190,7 @@ public class AutoCommands {
         m_gameCommmands.alignRobotToTargetCommand(),
         m_gameCommmands.runLauncherAutoCommand(0.0, false) // SHOOT THIRD NOTE
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
-    )
+      )
     )
     .finallyDo(() -> m_gameCommmands.stopLauncherRollersCommand())
     .withName("BackupShootPickup14");

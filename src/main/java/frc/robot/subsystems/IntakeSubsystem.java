@@ -220,6 +220,12 @@ public class IntakeSubsystem extends SubsystemBase {
     }
   }
 
+  public void reset() {
+    m_topBeltMotor.set(0.0);
+    m_bottomBeltMotor.set(0.0);
+    m_rollerMotor.set(0.0);
+  }
+
   private void updateTelemetry() {}
 
   @Override

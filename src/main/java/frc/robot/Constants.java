@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import com.pathplanner.lib.path.PathConstraints;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -15,6 +16,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -74,6 +76,7 @@ public final class Constants {
 
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.5, 0, 0); // TODO: update with testing
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.7, 0, 0); // TODO: update with testing
+    public static final PathConstraints kPathFindingConstraints = new PathConstraints(3.0, 3.0, 540.00, 720.00);
 
     public static final class SwerveModule {
       public static final double kOffsetFrontLeft = -Math.PI / 2;
@@ -127,7 +130,6 @@ public final class Constants {
     public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
     public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
     
-
     public static final int kRollerMotorCurrentLimit = 60;
     public static final double kRollerMotorMaxOutput = 0.75;
     public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
@@ -139,18 +141,18 @@ public final class Constants {
     public static final int kRollerMotorCANId = 20;
 
     public static final int kTopBeltMotorCurrentLimit = 60;
-    public static final double kTopBeltMotorMinOutput = -0.6; // TODO: update after testing
-    public static final double kTopBeltMotorMaxOutput = 0.6; // TODO: update after testing
+    public static final double kTopBeltMotorMinOutput = -0.6;
+    public static final double kTopBeltMotorMaxOutput = 0.6;
     public static final IdleMode kTopBeltMotorIdleMode = IdleMode.kBrake;
 
     public static final int kBottomBeltMotorCurrentLimit = 60;
-    public static final double kBottomBeltMotorMinOutput = -0.6; // TODO: update after testing
-    public static final double kBottomBeltMotorMaxOutput = 0.6; // TODO: update after testing
+    public static final double kBottomBeltMotorMinOutput = -0.6;
+    public static final double kBottomBeltMotorMaxOutput = 0.6;
     public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kCoast;
 
     public static final int kRollerMotorCurrentLimit = 60;
-    public static final double kRollerMotorMinOutput = -0.6; // TODO: update after testing
-    public static final double kRollerMotorMaxOutput = 0.6; // TODO: update after testing
+    public static final double kRollerMotorMinOutput = -0.6;
+    public static final double kRollerMotorMaxOutput = 0.6;
     public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
   }
 
@@ -180,6 +182,8 @@ public final class Constants {
     public static final double kBottomRollerMotorMinOutput = -1.0;
     public static final double kBottomRollerMotorMaxOutput = 1.0;
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
+
+    // TODO: move speeds and positions for game play to game constants
 
     // TODO: Test/update
     public static final RollerSpeeds kLowestLauncherSpeeds = new RollerSpeeds(0.6, 0.6); // Lowest speed that can be used to score in speaker from subwoofer
@@ -236,7 +240,7 @@ public final class Constants {
           "Rear",
           new Transform3d(
             new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15.00)),
-            new Rotation3d(0.0, Units.degreesToRadians(-24.3), Units.degreesToRadians(180))
+            new Rotation3d(0.0, Units.degreesToRadians(-24.3), Units.degreesToRadians(180)) // TODO: recalibrate roll angle and apply to configuration
           )
         ),
         entry(
@@ -271,7 +275,7 @@ public final class Constants {
     public static final class Object {
       public static final String kCameraName = "Front";
       public static final String kObjectName = "Note";
-      public static final double kObjectRangeYaw = 10.0; // TODO: update with testing
+      public static final double kObjectRangeYaw = 10.0;
     }
 
     public static final class Distance {
@@ -298,7 +302,7 @@ public final class Constants {
       );
 
       public static final class Targets {
-        public static final double kSpeakerXDelta = 0.3; // TODO: update with testing
+        public static final double kSpeakerXDelta = 0.3; // TODO: update with testing (check if this affects auto alignment overshoot)
         public static final double kSpeakerZDelta = 0.616675;
         public static final Pose3d kAprilTag7 = kAprilTagFieldLayout.getTagPose(7).orElse(new Pose3d());
         public static final Pose3d kBlueSpeaker = new Pose3d(kAprilTag7.getX() + kSpeakerXDelta, kAprilTag7.getY(), kAprilTag7.getZ() + kSpeakerZDelta, kAprilTag7.getRotation());
@@ -312,6 +316,36 @@ public final class Constants {
         public static final Pose3d kRedAmp = new Pose3d(kAprilTag6.getX(), kAprilTag6.getY(), kAprilTag6.getZ() + kAmpZDelta, kAprilTag6.getRotation());
 
         public static final double kSourceZ = 0.93;
+      }
+
+      public static final class AutoWaypoints {
+        public static final Pose2d kScoreNotePreload1 = new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(0));
+        public static final Pose2d kScoreNotePreload2 = new Pose2d(1.84, 5.38, Rotation2d.fromDegrees(0));
+        public static final Pose2d kScoreNotePreload3 = new Pose2d(1.84, 4.00, Rotation2d.fromDegrees(0));
+
+        public static final Pose2d kPickupNote1 = new Pose2d(2.78, 6.90, Rotation2d.fromDegrees(0));
+        public static final Pose2d kScoreNote1 = new Pose2d(2.78, 6.90, Rotation2d.fromDegrees(0));
+
+        public static final Pose2d kPickupNote2 = new Pose2d(2.78, 5.38, Rotation2d.fromDegrees(0));
+        public static final Pose2d kScoreNote2 = new Pose2d(2.78, 5.38, Rotation2d.fromDegrees(0));
+
+        public static final Pose2d kPickupNote3 = new Pose2d(2.52, 4.05, Rotation2d.fromDegrees(0));
+        public static final Pose2d kScoreNote3 = new Pose2d(2.52, 4.05, Rotation2d.fromDegrees(0));
+
+        public static final Pose2d kPickupNote4 = new Pose2d(7.87, 7.03, Rotation2d.fromDegrees(0));
+        public static final Pose2d kScoreNote4 = new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0));
+
+        public static final Pose2d kPickupNote5 = new Pose2d(7.87, 5.37, Rotation2d.fromDegrees(0));
+        public static final Pose2d kScoreNote5 = new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)); // TODO: validate - same as note 4 scoring position
+
+        public static final Pose2d kPickupNote6 = new Pose2d(7.87, 3.70, Rotation2d.fromDegrees(0));
+        public static final Pose2d kScoreNote6 = new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)); // TODO: validate - same as note 4 scoring position
+
+        public static final Pose2d kPickupNote7 = new Pose2d(7.87, 2.03, Rotation2d.fromDegrees(0));
+        public static final Pose2d kScoreNote7 = new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)); // TODO: validate angle and distance or move closer
+
+        public static final Pose2d kPickupNote8 = new Pose2d(7.87, 7.03, Rotation2d.fromDegrees(0));
+        public static final Pose2d kScoreNote8 = new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)); // TODO: validate angle and distance or move closer
       }
     }
   }

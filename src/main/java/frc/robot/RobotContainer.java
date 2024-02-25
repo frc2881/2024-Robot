@@ -173,7 +173,7 @@ public class RobotContainer {
     m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true)); 
     m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
     m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionAmp, true));
-    m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand());
+    m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand(true));
     // m_operatorController.b().whileTrue(Commands.none());
     // m_operatorController.y().whileTrue(Commands.none());
     m_operatorController.x().onTrue(m_feederSubsystem.runCommand()).onFalse(m_feederSubsystem.stopCommand());
@@ -230,6 +230,15 @@ public class RobotContainer {
 
   public Command getSelectedAutoCommand() {
     return m_autoChooser.getSelected();
+  }
+
+  public void resetRobot() {
+    m_driveSubsystem.reset();
+    m_intakeSubsystem.reset();
+    m_feederSubsystem.reset();
+    m_launcherRollerSubsystem.reset();
+    m_launcherArmSubsystem.reset();
+    m_climberSubsystem.reset();
   }
 
   public void updateTelemetry() {

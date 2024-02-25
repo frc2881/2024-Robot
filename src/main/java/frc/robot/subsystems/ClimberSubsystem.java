@@ -114,6 +114,11 @@ public class ClimberSubsystem extends SubsystemBase {
     .withName("ResetClimberArm");
   }
 
+  public void reset() {
+    m_armMotor.set(0.0);
+    m_rollerMotor.set(0.0);
+  }
+
   private void updateTelemetry() {
     SmartDashboard.putNumber("Robot/Climber/Arm/Position", m_armEncoder.getPosition());
   }

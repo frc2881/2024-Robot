@@ -111,6 +111,10 @@ public class LauncherArmSubsystem extends SubsystemBase {
     .withName("ResetLauncherArm");
   }
 
+  public void reset() {
+    m_armMotor.set(0.0);
+  }
+
   private void updateTelemetry() {
     SmartDashboard.putNumber("Robot/Launcher/Arm/Position", m_armEncoder.getPosition());
   }
