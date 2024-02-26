@@ -28,6 +28,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.CalibrationTime;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.SPI;
+import frc.robot.commands.AutoCommands.NotePoses;
 import frc.robot.lib.common.PIDConstants;
 import frc.robot.subsystems.LauncherRollerSubsystem.RollerSpeeds;
 
@@ -186,7 +187,7 @@ public final class Constants {
     // TODO: move speeds and positions for game play to game constants
 
     // TODO: Test/update
-    public static final RollerSpeeds kLowestLauncherSpeeds = new RollerSpeeds(0.6, 0.6); // Lowest speed that can be used to score in speaker from subwoofer
+    public static final RollerSpeeds kWarmupLauncherSpeeds = new RollerSpeeds(0.65, 0.65); // Lowest speed that can be used to score in speaker from subwoofer
 
     // TODO: calculate and set as constant the launcher position to angle conversion factor to use for dynamic adjustment based on distance from target
     // TODO: recalibrate position measurements/angles while maintaining/holding position (keep holding the controller button for the set position)
@@ -195,7 +196,7 @@ public final class Constants {
 
     public static final double kArmPositionIntake = 14.0; // TODO: get degrees 
     public static final double kArmPositionSubwoofer = 13.10; // TODO: configure on field (12.0 measured at 55.3 degrees, 13.10 measured at 58.0 degrees)
-    public static final double kArmPositionBlueLine = 9.0;
+    public static final double kArmPositionShortRange = 9.0;
     public static final double kArmPositionMidRange = 7.0; // TODO: configure on field (11.25 measured at 52.2 degrees)
     public static final double kArmPositionLongRange = 4.20; // TODO: configure on field (4.20 measure at 23.8 degrees)
     public static final double kArmPositionAmp = 11.4; // TODO: configure on field
@@ -240,7 +241,7 @@ public final class Constants {
           "Rear",
           new Transform3d(
             new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15.00)),
-            new Rotation3d(0.0, Units.degreesToRadians(-24.3), Units.degreesToRadians(180)) // TODO: recalibrate roll angle and apply to configuration
+            new Rotation3d(Units.degreesToRadians(3.2), Units.degreesToRadians(-24.3), Units.degreesToRadians(180)) // TODO: recalibrate roll angle and apply to configuration
           )
         ),
         entry(
@@ -319,33 +320,43 @@ public final class Constants {
       }
 
       public static final class AutoWaypoints {
-        public static final Pose2d kScoreNotePreload1 = new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(0));
+        public static final NotePoses kNotePreload1Poses = new NotePoses(new Pose2d(), new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(0)));
         public static final Pose2d kScoreNotePreload2 = new Pose2d(1.84, 5.38, Rotation2d.fromDegrees(0));
         public static final Pose2d kScoreNotePreload3 = new Pose2d(1.84, 4.00, Rotation2d.fromDegrees(0));
 
-        public static final Pose2d kPickupNote1 = new Pose2d(2.78, 6.90, Rotation2d.fromDegrees(0));
-        public static final Pose2d kScoreNote1 = new Pose2d(2.78, 6.90, Rotation2d.fromDegrees(0));
+        public static final NotePoses kNote1Poses = new NotePoses(
+          new Pose2d(2.78, 6.90, Rotation2d.fromDegrees(0)), 
+          new Pose2d(2.78, 6.90, Rotation2d.fromDegrees(0)));
 
-        public static final Pose2d kPickupNote2 = new Pose2d(2.78, 5.38, Rotation2d.fromDegrees(0));
-        public static final Pose2d kScoreNote2 = new Pose2d(2.78, 5.38, Rotation2d.fromDegrees(0));
+        public static final NotePoses kNote2Poses = new NotePoses(
+          new Pose2d(2.78, 5.38, Rotation2d.fromDegrees(0)), 
+          new Pose2d(2.78, 5.38, Rotation2d.fromDegrees(0)));
 
-        public static final Pose2d kPickupNote3 = new Pose2d(2.52, 4.05, Rotation2d.fromDegrees(0));
-        public static final Pose2d kScoreNote3 = new Pose2d(2.52, 4.05, Rotation2d.fromDegrees(0));
+        public static final NotePoses kNote3Poses = new NotePoses(
+          new Pose2d(2.52, 4.05, Rotation2d.fromDegrees(0)), 
+          new Pose2d(2.52, 4.05, Rotation2d.fromDegrees(0)));
 
-        public static final Pose2d kPickupNote4 = new Pose2d(7.87, 7.03, Rotation2d.fromDegrees(0));
-        public static final Pose2d kScoreNote4 = new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0));
+        public static final NotePoses kNote4Poses = new NotePoses(
+          new Pose2d(7.87, 7.03, Rotation2d.fromDegrees(0)), 
+          new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
 
-        public static final Pose2d kPickupNote5 = new Pose2d(7.87, 5.37, Rotation2d.fromDegrees(0));
-        public static final Pose2d kScoreNote5 = new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)); // TODO: validate - same as note 4 scoring position
+        public static final NotePoses kNote5Poses = new NotePoses(
+          new Pose2d(7.87, 5.37, Rotation2d.fromDegrees(0)), 
+          new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
 
-        public static final Pose2d kPickupNote6 = new Pose2d(7.87, 3.70, Rotation2d.fromDegrees(0));
-        public static final Pose2d kScoreNote6 = new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)); // TODO: validate - same as note 4 scoring position
+        public static final NotePoses kNote6Poses = new NotePoses(
+          new Pose2d(7.87, 3.70, Rotation2d.fromDegrees(0)), 
+          new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
 
-        public static final Pose2d kPickupNote7 = new Pose2d(7.87, 2.03, Rotation2d.fromDegrees(0));
-        public static final Pose2d kScoreNote7 = new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)); // TODO: validate angle and distance or move closer
+        public static final NotePoses kNote7Poses = new NotePoses(
+          new Pose2d(7.87, 2.03, Rotation2d.fromDegrees(0)), 
+          new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)));
 
-        public static final Pose2d kPickupNote8 = new Pose2d(7.87, 7.03, Rotation2d.fromDegrees(0));
-        public static final Pose2d kScoreNote8 = new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)); // TODO: validate angle and distance or move closer
+        public static final NotePoses kNote8Poses = new NotePoses(
+          new Pose2d(7.87, 7.03, Rotation2d.fromDegrees(0)), 
+          new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)));
+
+        // TODO: validate - same as note 4 scoring position
       }
     }
   }

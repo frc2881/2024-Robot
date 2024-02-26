@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Constants.Sensors.Pose;
 import frc.robot.lib.common.Enums.IntakeLocation;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
@@ -41,6 +42,8 @@ public class AutoCommands {
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ClimberSubsystem m_climberSubsystem;
   private final LightsController m_lightsController;
+
+  public record NotePoses(Pose2d pickupPose, Pose2d scorePose) {}
 
   public AutoCommands(
     GameCommands gameCommands,
@@ -76,18 +79,61 @@ public class AutoCommands {
     m_lightsController = lightsController;
   }
 
-  // TODO: add reset gyro command as initial sequence command to all autos
   // TODO: update local path constraints instances to use constant 
   // TODO: update local defined auto waypoint poses to use waypoints in constants
-  // TODO: consider running intake for launch directly in place of the runAutoLauncherCommand
-  // TODO: reconsider why alignLauncherToPositionAutoCommand is stopping 0.5 short of reference target
-  // TODO: reconsider why launcher starts at slower speed when aligning before scoring
-  // TODO: reconsider the need for manually stopping the rollers now that they run as top-level parallel in auto commands AND they are reset at the end of auto / beginning of teleop
 
   private Command resetGyroCommand() { 
     return Commands
     .runOnce(() -> m_gyroSensor.reset(m_poseSubsystem.getPose().getRotation().getDegrees()))
     .withName("ResetGyro"); 
+  }
+
+  private Command goToNote(Pose2d pickupPose) {
+    return Commands.either(
+          AutoBuilder.pathfindToPose(pickupPose, Constants.Drive.kPathFindingConstraints),
+          AutoBuilder.pathfindToPoseFlipped(pickupPose, Constants.Drive.kPathFindingConstraints),
+          () -> Robot.getAlliance() == Alliance.Blue
+        );
+  }
+
+  private Command pickupShootNote(NotePoses notePoses) {
+    return Commands.sequence(
+      Commands.parallel(
+      goToNote(notePoses.pickupPose),
+      m_gameCommmands.runIntakeCommand(IntakeLocation.Front)
+      )
+      .unless(() -> notePoses.pickupPose == new Pose2d()),
+      Commands.sequence(
+        goToNote(notePoses.scorePose)
+      )
+      .unless(() -> notePoses.scorePose == notePoses.pickupPose), 
+      Commands.parallel(
+        m_gameCommmands.alignRobotToTargetCommand(),
+        m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShortRange) // TODO: add command get launcher pos
+      ),
+      m_gameCommmands.runLauncherAutoCommand()
+      .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
+    );
+  }
+
+  private void runAutos(NotePoses[] notesPoses) {
+    if(notesPoses.length > 1){
+      for (int i = 1; i < notesPoses.length; i++) {
+        pickupShootNote(notesPoses[i]);
+      }
+    }
+  }
+
+  public Command runAuto(boolean shootFromSubwoofer, NotePoses[] notesPoses) {
+    return Commands.sequence(
+      Commands.either(
+        scoreSubwooferAuto(), 
+        pickupShootNote(notesPoses[0]), 
+        () -> shootFromSubwoofer),
+        Commands.runOnce(
+          () -> runAutos(notesPoses)
+        )
+    );
   }
 
   public Command shootPickup1() {
@@ -111,6 +157,7 @@ public class AutoCommands {
       //AutoBuilder.pathfindToPoseFlipped(new Pose2d(2.10, 7.00, Rotation2d.fromDegrees(0)), constraints)
       //AutoBuilder.followPath(path1)
     )
+    .beforeStarting(resetGyroCommand())
     .withName("Test");
   } 
 
@@ -125,10 +172,10 @@ public class AutoCommands {
           AutoBuilder.pathfindToPoseFlipped(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), constraints),
           () -> Robot.getAlliance() == Alliance.Blue
         ),
-        m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionBlueLine)
+        m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShortRange)
       ),
       m_gameCommmands.alignRobotToTargetCommand(),
-      m_gameCommmands.runLauncherAutoCommand(0.0, false)
+      m_gameCommmands.runLauncherAutoCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
       Commands.parallel(
         AutoBuilder.pathfindThenFollowPath(path1, constraints),
@@ -139,10 +186,10 @@ public class AutoCommands {
         m_gameCommmands.alignRobotToTargetCommand(),
         m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionMidRange)
       ),
-      m_gameCommmands.runLauncherAutoCommand(0.0, true)
+      m_gameCommmands.runLauncherAutoCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
     )
-    .finallyDo(() -> m_gameCommmands.stopLauncherRollersCommand())
+    .beforeStarting(resetGyroCommand())
     .withName("Test");
   } 
 
@@ -159,10 +206,10 @@ public class AutoCommands {
             AutoBuilder.pathfindToPoseFlipped(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), constraints), // Go to first position
             () -> Robot.getAlliance() == Alliance.Blue
           ),
-          m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionBlueLine) // move arm to blue line position
+          m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShortRange) // move arm to blue line position
         ),
         m_gameCommmands.alignRobotToTargetCommand(), // Align robot
-        m_gameCommmands.runLauncherAutoCommand(0.0, false) // SHOOT FIRST NOTE
+        m_gameCommmands.runLauncherAutoCommand() // SHOOT FIRST NOTE
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
         Commands.parallel(
           AutoBuilder.pathfindThenFollowPath(path1, constraints), // grab next note
@@ -172,7 +219,7 @@ public class AutoCommands {
           m_gameCommmands.alignRobotToTargetCommand(), // align to speaker
           m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionMidRange) // align launcher to speaker
         ),
-        m_gameCommmands.runLauncherAutoCommand(0.0, false) // SHOOT SECOND NOTE
+        m_gameCommmands.runLauncherAutoCommand() // SHOOT SECOND NOTE
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()), // TODO: Create run launcher command that stops when note shot
         
         Commands.parallel(
@@ -188,11 +235,11 @@ public class AutoCommands {
           m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionLongRange)
         ),
         m_gameCommmands.alignRobotToTargetCommand(),
-        m_gameCommmands.runLauncherAutoCommand(0.0, false) // SHOOT THIRD NOTE
+        m_gameCommmands.runLauncherAutoCommand() // SHOOT THIRD NOTE
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
       )
     )
-    .finallyDo(() -> m_gameCommmands.stopLauncherRollersCommand())
+    .beforeStarting(resetGyroCommand())
     .withName("BackupShootPickup14");
   } 
 
@@ -219,6 +266,7 @@ public class AutoCommands {
       //AutoBuilder.pathfindToPoseFlipped(new Pose2d(2.10, 7.00, Rotation2d.fromDegrees(0)), constraints)
       //AutoBuilder.followPath(path1)
     )
+    .beforeStarting(resetGyroCommand())
     .withName("Test");
   } 
 
@@ -241,10 +289,8 @@ public class AutoCommands {
       .withTimeout(1.0),
       m_gameCommmands.runLauncherCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
-      
-      //AutoBuilder.pathfindToPoseFlipped(new Pose2d(2.10, 7.00, Rotation2d.fromDegrees(0)), constraints)
-      //AutoBuilder.followPath(path1)
     )
+    .beforeStarting(resetGyroCommand())
     .withName("Test");
   } 
 
@@ -255,6 +301,7 @@ public class AutoCommands {
       m_gameCommmands.runLauncherCommand()
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
     )
+    .beforeStarting(resetGyroCommand())
     .withName("ScoreSubwooferAuto");
   }
 
@@ -264,6 +311,7 @@ public class AutoCommands {
     .sequence(
       AutoBuilder.followPath(path1)
     )
+    .beforeStarting(resetGyroCommand())
     .withName("Pos1To3NotePath");
   }
 
@@ -273,6 +321,7 @@ public class AutoCommands {
     .sequence(
       AutoBuilder.followPath(path1)
     )
+    .beforeStarting(resetGyroCommand())
     .withName("Pos1To3NotePath");
   }
 
@@ -282,6 +331,7 @@ public class AutoCommands {
     .sequence(
       AutoBuilder.followPath(path1)
     )
+    .beforeStarting(resetGyroCommand())
     .withName("Pos1To3NotePath");
   }
 

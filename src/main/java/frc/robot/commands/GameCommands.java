@@ -112,7 +112,7 @@ public class GameCommands {
     return
     m_launcherArmSubsystem.alignToPositionCommand(position)
     .alongWith(
-      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kLowestLauncherSpeeds)
+      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kWarmupLauncherSpeeds)
       .onlyIf(() -> isRollersEnabled)
     )
     .withName("AlignLauncherToPosition");
@@ -121,7 +121,7 @@ public class GameCommands {
   public Command alignLauncherToPositionAutoCommand(double position) {
     return
     m_launcherArmSubsystem.alignToPositionCommand(position)
-    .until(() -> Math.abs(m_launcherArmSubsystem.getArmPosition() - position) < 0.5) // TODO: why stopping short of reference position?
+    .until(() -> Math.abs(m_launcherArmSubsystem.getArmPosition() - position) < 0.1)
     .withName("AlignLauncherToPosition");
   }
 
@@ -129,17 +129,12 @@ public class GameCommands {
     return
     m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, () -> getTargetPose())
     .alongWith(
-      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kLowestLauncherSpeeds)
+      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kWarmupLauncherSpeeds)
       .onlyIf(() -> isRollersEnabled)
     )
     .withName("AlignLauncherToTarget");
   }
-
-  public Command stopLauncherRollersCommand() {
-    return m_launcherRollerSubsystem.runAutoCommand(() -> new RollerSpeeds(0.0, 0.0))
-    .withName("StopRollers");
-  }
-
+  
   public Command runLauncherCommand() {
     return 
     m_launcherRollerSubsystem.runCommand(() -> getLauncherRollerSpeeds())
@@ -151,11 +146,10 @@ public class GameCommands {
     .withName("RunLauncher");
   }
 
-  public Command runLauncherAutoCommand(double time, boolean shouldEnd) {
+  public Command runLauncherAutoCommand() {
     return 
-    Commands.sequence(
-      Commands.waitSeconds(time)
-      .andThen(m_intakeSubsystem.runLaunchCommand())
+    Commands.sequence( // TODO: Refactor later
+      m_intakeSubsystem.runLaunchCommand()
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
     .withName("RunLauncher");

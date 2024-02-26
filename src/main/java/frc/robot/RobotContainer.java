@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoCommands;
+import frc.robot.commands.AutoCommands.NotePoses;
 import frc.robot.commands.GameCommands;
 import frc.robot.lib.common.Enums.DriveDriftCorrection;
 import frc.robot.lib.common.Enums.DriveOrientation;
@@ -24,17 +24,17 @@ import frc.robot.lib.common.Enums.IntakeLocation;
 import frc.robot.lib.common.Enums.MotorDirection;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
+import frc.robot.lib.sensors.BeamBreakSensor;
+import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.lib.sensors.ObjectSensor;
 import frc.robot.lib.sensors.PoseSensor;
-import frc.robot.lib.sensors.BeamBreakSensor;
-import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.FeederSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
 import frc.robot.subsystems.LauncherRollerSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
 
 public class RobotContainer {
@@ -219,6 +219,7 @@ public class RobotContainer {
     );
 
     m_autoChooser.setDefaultOption("None", Commands.none());
+    m_autoChooser.addOption("BackupShoot1", m_autoCommands.runAuto(false, new NotePoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses})); // TODO: Make empty noteposes array
     m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupShootPickup14());
     m_autoChooser.addOption("ShootPickup1", m_autoCommands.shootPickup1());
     m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupShootPickup1());

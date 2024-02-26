@@ -231,8 +231,9 @@ public class DriveSubsystem extends SubsystemBase {
     .beforeStarting(() -> {
       m_isAlignedToTarget = false; 
       double yawToTarget = Math.toDegrees(Utils.getTargetRotation(robotPose.get(), targetPose.get()).getZ());
-      SmartDashboard.putString("targetPose", Utils.objectToJson(targetPose.get()));
-      SmartDashboard.putNumber("YawToTarget", yawToTarget);
+      yawToTarget += Math.copySign(-3.0, yawToTarget);
+      SmartDashboard.putString("Robot/Pose/TargetPose", Utils.objectToJson(targetPose.get()));
+      SmartDashboard.putNumber("Robot/Pose/YawToTarget", yawToTarget);
       if (Robot.getAlliance() == Alliance.Red) {
         yawToTarget += 180;
       }

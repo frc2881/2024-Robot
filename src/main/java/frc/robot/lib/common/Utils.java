@@ -63,7 +63,6 @@ public final class Utils {
   }
 
   public static void setConfiguration(REVLibError error, String source) {
-    Timer.delay(0.005);
     if (error != REVLibError.kOk) {
       Logger.log("!!!!!!!!!! REVLibError Returned: " + source + ":" + error.toString() + " !!!!!!!!!!");
     }

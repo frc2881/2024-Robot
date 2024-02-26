@@ -50,19 +50,6 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     .withName("RunLauncherRollers");
   }
 
-/*
- * Make sure you set to zero when it needs to finish as it does not set automatically
- */
-  public Command runAutoCommand(Supplier<RollerSpeeds> rollerSpeeds) {
-    return 
-    startEnd(() -> {
-      m_topRollerMotor.set(rollerSpeeds.get().top * Constants.Launcher.kTopRollerMotorMaxOutput);
-      m_bottomRollerMotor.set(rollerSpeeds.get().bottom * Constants.Launcher.kBottomRollerMotorMaxOutput);
-    },
-    () -> {})
-    .withName("RunLauncherRollers");
-  }
-
   public void reset() {
     m_topRollerMotor.set(0.0);
     m_bottomRollerMotor.set(0.0);
