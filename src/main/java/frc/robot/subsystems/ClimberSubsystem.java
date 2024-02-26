@@ -26,8 +26,6 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private boolean m_isArmAlignedToPosition = false;
   
-  // TODO: add position safety check after robot power on to not allow operation unless soft limit reset to zero has been confirmed (manual or auto)
-
   public ClimberSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Climber.kArmMotorCANId, MotorType.kBrushless);
     m_armMotor.restoreFactoryDefaults();
@@ -51,7 +49,6 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armPIDController.setSmartMotionMaxVelocity(Constants.Climber.kArmMotorSmartMotionMaxVelocity, 0);
     m_armPIDController.setSmartMotionMaxAccel(Constants.Climber.kArmMotorSmartMotionMaxAccel, 0);
 
-    // TODO: get correct motor configuration for brushed/bag motor
     m_rollerMotor = new CANSparkMax(Constants.Climber.kRollerMotorCANId, MotorType.kBrushed);
     // m_rollerMotor.restoreFactoryDefaults();
     // m_rollerMotor.setIdleMode(Constants.Arm.kRollerMotorIdleMode); 
@@ -67,7 +64,7 @@ public class ClimberSubsystem extends SubsystemBase {
   public Command moveArmManualCommand(Supplier<Double> speed) {
     return 
     run(() -> {
-      m_armMotor.set(speed.get() / 2); // TODO: test/tune speed ratio to determine why cutting in half is needed
+      m_armMotor.set(speed.get() * 0.5);
     })
     .finallyDo(() -> m_armMotor.set(0.0))
     .withName("MoveClimberArmManual");
@@ -77,7 +74,7 @@ public class ClimberSubsystem extends SubsystemBase {
     return
     run(() -> {
       m_armPIDController.setReference(position, ControlType.kSmartMotion);
-      m_isArmAlignedToPosition = Math.abs(m_armEncoder.getPosition() - position) < 0.1; // TODO: determine if this is correct tolerance
+      m_isArmAlignedToPosition = Math.abs(m_armEncoder.getPosition() - position) < 0.1;
     })
     .beforeStarting(() -> m_isArmAlignedToPosition = false)
     .until(() -> m_isArmAlignedToPosition)
@@ -88,7 +85,6 @@ public class ClimberSubsystem extends SubsystemBase {
   public Command runRollersCommand(MotorDirection direction) {
     return 
     Commands.startEnd(() -> {
-      // TODO: determine correct direction of travel for inward/outward with motor
       m_rollerMotor.set(
         direction == MotorDirection.Forward ? 
         Constants.Climber.kRollerMotorMaxOutput : 
@@ -97,7 +93,6 @@ public class ClimberSubsystem extends SubsystemBase {
     }, () -> {
       m_rollerMotor.set(0.0);
     })
-    //.until(() -> false) // TODO: determine current limit on bag motor to stop rollers when performing inward intake
     .withName("RunClimberArmRollers");
   }
 

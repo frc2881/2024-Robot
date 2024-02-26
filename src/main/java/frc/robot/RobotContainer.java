@@ -251,6 +251,7 @@ public class RobotContainer {
     m_intakeDistanceSensor.updateTelemetry();
     m_launcherDistanceSensor.updateTelemetry();
     m_objectSensor.updateTelemetry();
+    
     SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
   }
 }
