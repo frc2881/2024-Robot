@@ -50,6 +50,16 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     .withName("RunLauncherRollers");
   }
 
+  public RollerSpeeds getSpeedsForArmPosition(double armPosition) {
+    // TODO: add more logic to handle different/variable speed combinations for amp vs. speaker short/mid/long range
+    // TODO: move these RollerSpeed record values to be defined in constants
+    if (armPosition >= Constants.Launcher.kArmPositionAmp) {
+      return new RollerSpeeds(0.6, 0.6);
+    } else {
+      return new RollerSpeeds(0.8, 0.8);
+    }
+  }
+
   public void reset() {
     m_topRollerMotor.set(0.0);
     m_bottomRollerMotor.set(0.0);

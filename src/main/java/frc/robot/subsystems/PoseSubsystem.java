@@ -5,12 +5,15 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.sensors.PoseSensor;
 
@@ -64,8 +67,29 @@ public class PoseSubsystem extends SubsystemBase {
     // m_poseEstimator.resetPosition(m_gyroRotation.get(), m_swerveModulePosition.get(), pose);
   }
 
+  public Pose3d getTargetPose() {
+    return 
+    Robot.getAlliance() == Alliance.Blue 
+    ? Constants.Game.Field.Targets.kBlueSpeaker 
+    : Constants.Game.Field.Targets.kRedSpeaker;
+  }
+
+  public double getTargetYaw() {
+    double targetYaw = Math.toDegrees(Utils.getTargetRotation(getPose(), getTargetPose()).getZ());
+    targetYaw -= Math.copySign(Constants.Sensors.Pose.kTargetAlignmentYawCorrection, targetYaw);
+    if (Robot.getAlliance() == Alliance.Red) { targetYaw += 180; }
+    return targetYaw;
+  }
+
+  public double getTargetPitch() {
+    return Math.toDegrees(Utils.getTargetRotation(getPose(), getTargetPose()).getY());
+  }
+
   private void updateTelemetry() {
     SmartDashboard.putString("Robot/Pose", Utils.objectToJson(getPose()));
+    SmartDashboard.putString("Robot/Pose/Target/Pose", Utils.objectToJson(getTargetPose()));
+    SmartDashboard.putNumber("Robot/Pose/Target/Yaw", getTargetYaw());
+    SmartDashboard.putNumber("Robot/Pose/Target/Pitch", getTargetPitch());
   }
 
   @Override

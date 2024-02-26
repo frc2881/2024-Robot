@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.Constants.Sensors.Pose;
 import frc.robot.lib.common.Enums.IntakeLocation;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
@@ -88,23 +87,24 @@ public class AutoCommands {
     .withName("ResetGyro"); 
   }
 
-  private Command goToNote(Pose2d pickupPose) {
+  private Command pathFindToNote(Pose2d pickupPose) {
     return Commands.either(
-          AutoBuilder.pathfindToPose(pickupPose, Constants.Drive.kPathFindingConstraints),
-          AutoBuilder.pathfindToPoseFlipped(pickupPose, Constants.Drive.kPathFindingConstraints),
-          () -> Robot.getAlliance() == Alliance.Blue
-        );
+      AutoBuilder.pathfindToPose(pickupPose, Constants.Drive.kPathFindingConstraints),
+      AutoBuilder.pathfindToPoseFlipped(pickupPose, Constants.Drive.kPathFindingConstraints),
+      () -> Robot.getAlliance() == Alliance.Blue
+    )
+    .withName("PathFindToNote");
   }
 
   private Command pickupShootNote(NotePoses notePoses) {
     return Commands.sequence(
       Commands.parallel(
-      goToNote(notePoses.pickupPose),
+      pathFindToNote(notePoses.pickupPose),
       m_gameCommmands.runIntakeCommand(IntakeLocation.Front)
       )
       .unless(() -> notePoses.pickupPose == new Pose2d()),
       Commands.sequence(
-        goToNote(notePoses.scorePose)
+        pathFindToNote(notePoses.scorePose)
       )
       .unless(() -> notePoses.scorePose == notePoses.pickupPose), 
       Commands.parallel(

@@ -213,7 +213,7 @@ public class DriveSubsystem extends SubsystemBase {
     .withName("SetDriveLockedState");
   }
 
-  public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Supplier<Pose3d> targetPose) {
+  public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Supplier<Double> targetYaw) {
     return
     run(() -> {
       double robotYaw = robotPose.get().getRotation().getDegrees();
@@ -229,15 +229,8 @@ public class DriveSubsystem extends SubsystemBase {
         speedRotation));
     })
     .beforeStarting(() -> {
-      m_isAlignedToTarget = false; 
-      double yawToTarget = Math.toDegrees(Utils.getTargetRotation(robotPose.get(), targetPose.get()).getZ());
-      yawToTarget += Math.copySign(-3.0, yawToTarget);
-      SmartDashboard.putString("Robot/Pose/TargetPose", Utils.objectToJson(targetPose.get()));
-      SmartDashboard.putNumber("Robot/Pose/YawToTarget", yawToTarget);
-      if (Robot.getAlliance() == Alliance.Red) {
-        yawToTarget += 180;
-      }
-      m_targetAlignmentThetaController.setSetpoint(yawToTarget);
+      m_isAlignedToTarget = false;       
+      m_targetAlignmentThetaController.setSetpoint(targetYaw.get());
       m_targetAlignmentThetaController.reset();
     })
     .onlyIf(() -> m_lockState != DriveLockState.Locked)

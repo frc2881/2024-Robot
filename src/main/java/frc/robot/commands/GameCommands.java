@@ -1,11 +1,8 @@
 package frc.robot.commands;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.lib.common.Enums.IntakeLocation;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
@@ -18,7 +15,6 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
 import frc.robot.subsystems.LauncherRollerSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
-import frc.robot.subsystems.LauncherRollerSubsystem.RollerSpeeds;
 
 public class GameCommands {
   private final GyroSensor m_gyroSensor;   
@@ -35,8 +31,6 @@ public class GameCommands {
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ClimberSubsystem m_climberSubsystem;
   private final LightsController m_lightsController;
-
-  private double m_launchSpeed;
 
   public GameCommands(
     GyroSensor gyroSensor, 
@@ -104,8 +98,18 @@ public class GameCommands {
 
   public Command alignRobotToTargetCommand() {
     return
-    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, () -> getTargetPose())
+    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, m_poseSubsystem::getTargetYaw)
     .withName("AlignRobotToTarget");
+  }
+
+  public Command alignLauncherToTargetCommand(boolean isRollersEnabled) {
+    return
+    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getTargetPitch)
+    .alongWith(
+      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kWarmupLauncherSpeeds)
+      .onlyIf(() -> isRollersEnabled)
+    )
+    .withName("AlignLauncherToTarget");
   }
 
   public Command alignLauncherToPositionCommand(double position, boolean isRollersEnabled) {
@@ -122,24 +126,14 @@ public class GameCommands {
     return
     m_launcherArmSubsystem.alignToPositionCommand(position)
     .until(() -> Math.abs(m_launcherArmSubsystem.getArmPosition() - position) < 0.1)
-    .withName("AlignLauncherToPosition");
+    .withName("AlignLauncherToPositionAuto");
   }
 
-  public Command alignLauncherToTargetCommand(boolean isRollersEnabled) {
-    return
-    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, () -> getTargetPose())
-    .alongWith(
-      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kWarmupLauncherSpeeds)
-      .onlyIf(() -> isRollersEnabled)
-    )
-    .withName("AlignLauncherToTarget");
-  }
-  
   public Command runLauncherCommand() {
     return 
-    m_launcherRollerSubsystem.runCommand(() -> getLauncherRollerSpeeds())
+    m_launcherRollerSubsystem.runCommand(() -> m_launcherRollerSubsystem.getSpeedsForArmPosition(m_launcherArmSubsystem.getArmPosition()))
     .alongWith(
-      Commands.waitSeconds(1.5)
+      Commands.waitSeconds(1.5) // TODO: validate if shorter timeout is OK if rollers are already being warmed up by the launcher arm alignment by the operator
       .andThen(m_intakeSubsystem.runLaunchCommand())
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
@@ -148,11 +142,9 @@ public class GameCommands {
 
   public Command runLauncherAutoCommand() {
     return 
-    Commands.sequence( // TODO: Refactor later
-      m_intakeSubsystem.runLaunchCommand()
-    )
+    m_intakeSubsystem.runLaunchCommand()
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
-    .withName("RunLauncher");
+    .withName("RunLauncherAuto");
   }
 
   public Command moveToClimbCommand() {
@@ -174,20 +166,5 @@ public class GameCommands {
     m_feederSubsystem.resetCommand()
     .alongWith(m_climberSubsystem.resetCommand())
     .withName("ResetSubsystems");
-  }
-
-  private Pose3d getTargetPose() {
-    return 
-    Robot.getAlliance() == Alliance.Blue 
-    ? Constants.Game.Field.Targets.kBlueSpeaker 
-    : Constants.Game.Field.Targets.kRedSpeaker;
-  }
-
-  private RollerSpeeds getLauncherRollerSpeeds() {
-    if (m_launcherArmSubsystem.getArmPosition() >= Constants.Launcher.kArmPositionAmp) {
-      return new RollerSpeeds(0.6, 0.6);
-    } else {
-      return new RollerSpeeds(0.8, 0.8);
-    }
   }
 }

@@ -57,7 +57,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
   public Command alignManualCommand(Supplier<Double> speed) {
     return 
     run(() -> {
-      m_armMotor.set(speed.get() / 2);
+      m_armMotor.set(speed.get() * 0.5);
     })
     .finallyDo(() -> m_armMotor.set(0.0))
     .withName("AlignLauncherArmManual");
@@ -69,12 +69,12 @@ public class LauncherArmSubsystem extends SubsystemBase {
     .withName("AlignLauncherArmToPosition");
   }
 
-  public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Supplier<Pose3d> targetPose) {
+  public Command alignToTargetCommand(Supplier<Double> targetPitch) {
     return
     run(() -> {
-      double position = calculateArmPosition(robotPose.get(), targetPose.get()); // TODO: determine through testing if this should be first-time-only calculation
+      double position = calculateArmPosition(targetPitch.get()); 
       m_armPIDController.setReference(position, ControlType.kSmartMotion);
-      m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < 0.1; // TODO: determine if this is correct tolerance
+      m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < 0.1;
     })
     .beforeStarting(() -> m_isAlignedToTarget = false)
     .until(() -> m_isAlignedToTarget)
@@ -82,8 +82,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
     .withName("AlignLauncherArmToTarget");
   }
 
-  private double calculateArmPosition(Pose2d robotPose, Pose3d targetPose) {
-    double pitch = Math.toDegrees(Utils.getTargetRotation(robotPose, targetPose).getY());
+  private double calculateArmPosition(double pitch) {
     double position = pitch * Constants.Launcher.kArmPositionFromTargetPitchConversionFactor;
     return 
     Utils.isValueBetween(position, Constants.Launcher.kArmMotorReverseSoftLimit, Constants.Launcher.kArmMotorForwardSoftLimit) 

@@ -219,7 +219,7 @@ public class RobotContainer {
     );
 
     m_autoChooser.setDefaultOption("None", Commands.none());
-    m_autoChooser.addOption("BackupShoot1", m_autoCommands.runAuto(false, new NotePoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses})); // TODO: Make empty noteposes array
+    m_autoChooser.addOption("BackupShoot1", m_autoCommands.runAuto(false, new NotePoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses })); // TODO: Make empty noteposes array
     m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupShootPickup14());
     m_autoChooser.addOption("ShootPickup1", m_autoCommands.shootPickup1());
     m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupShootPickup1());

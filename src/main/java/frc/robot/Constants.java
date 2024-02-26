@@ -256,6 +256,8 @@ public final class Constants {
       public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
       public static final Matrix<N3, N1> kSingleTagStandardDeviations = VecBuilder.fill(2, 2, 4);
       public static final Matrix<N3, N1> kMultiTagStandardDeviations = VecBuilder.fill(0.5, 0.5, 1);
+
+      public static final double kTargetAlignmentYawCorrection = 3.0;
     }
 
     public static final class BeamBreak {
