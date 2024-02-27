@@ -6,6 +6,7 @@ import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -199,6 +200,12 @@ public class RobotContainer {
     driveDriftCorrectionChooser.addOption(DriveDriftCorrection.Disabled.toString(), DriveDriftCorrection.Disabled);
     driveDriftCorrectionChooser.onChange(driftCorrection -> m_driveSubsystem.setDriftCorrection(driftCorrection));
     SmartDashboard.putData("Robot/Drive/DriftCorrection", driveDriftCorrectionChooser);
+
+    SendableChooser<IdleMode> driveIdleModeChooser = new SendableChooser<IdleMode>();
+    driveIdleModeChooser.setDefaultOption(IdleMode.kBrake.toString().substring(1), IdleMode.kBrake);
+    driveIdleModeChooser.addOption(IdleMode.kCoast.toString().substring(1), IdleMode.kCoast);
+    driveIdleModeChooser.onChange(idleMode -> m_driveSubsystem.setIdleMode(idleMode));
+    SmartDashboard.putData("Robot/Drive/IdleMode", driveIdleModeChooser);
   }
 
   private void configureAutos() {
