@@ -48,6 +48,7 @@ public class SwerveModule implements Sendable {
     m_drivingMotor = new CANSparkFlex(drivingMotorCanId, MotorType.kBrushless);
     m_motorControllers.add(m_drivingMotor);
     Utils.setConfiguration(m_drivingMotor.restoreFactoryDefaults(), logPrefix + ":m_drivingSparkFlex.restoreFactoryDefaults");
+    Timer.delay(0.05);
     m_drivingEncoder = m_drivingMotor.getEncoder();
     Utils.setConfiguration(m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionConversionFactor), logPrefix + ":m_drivingEncoder.setPositionConversionFactor");
     Utils.setConfiguration(m_drivingEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderVelocityConversionFactor), logPrefix + ":m_drivingEncoder.setVelocityConversionFactor");
@@ -66,6 +67,7 @@ public class SwerveModule implements Sendable {
     m_turningMotor = new CANSparkMax(turningMotorCanId, MotorType.kBrushless);
     m_motorControllers.add(m_turningMotor);
     Utils.setConfiguration(m_turningMotor.restoreFactoryDefaults(), logPrefix + ":m_turningSparkMax.restoreFactoryDefaults");
+    Timer.delay(0.05);
     m_turningEncoder = m_turningMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     Utils.setConfiguration(m_turningEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderPositionConversionFactor), logPrefix + ":m_turningEncoder.setPositionConversionFactor");
     Utils.setConfiguration(m_turningEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderVelocityConversionFactor), logPrefix + ":m_turningEncoder.setVelocityConversionFactor");
@@ -115,7 +117,7 @@ public class SwerveModule implements Sendable {
   }
 
   public static void burnFlashForAllMotorControllers() {
-    //Timer.delay(0.5);
+    Timer.delay(0.5);
     for (CANSparkBase motorController : m_motorControllers) {
       motorController.burnFlash();
       Timer.delay(0.05);
