@@ -1,5 +1,7 @@
 package frc.robot.lib.common;
 
+import java.util.Arrays;
+
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -46,6 +48,34 @@ public final class Utils {
     double pitch = Math.atan2(height, distance);
 
     return new Rotation3d(0.0, pitch, yaw);
+  }
+
+  public static double getLinearInterpolation(double[] xValues, double[] yValues, double x) {
+    double[] dx = new double[xValues.length - 1];
+    double[] dy = new double[xValues.length - 1];
+    double[] slope = new double[xValues.length - 1];
+    double[] intercept = new double[xValues.length - 1];
+    for (int i = 0; i < xValues.length - 1; i++) {
+      dx[i] = xValues[i + 1] - xValues[i];
+      dy[i] = yValues[i + 1] - yValues[i];
+      slope[i] = dy[i] / dx[i];
+      intercept[i] = yValues[i] - xValues[i] * slope[i];
+    }
+    double y;
+    if ((x > xValues[xValues.length - 1]) || (x < xValues[0])) {
+      y = Double.NaN;
+    }
+    else {
+      int loc = Arrays.binarySearch(xValues, x);
+      if (loc < -1) {
+        loc = -loc - 2;
+        y = slope[loc] * x + intercept[loc];
+      }
+      else {
+        y = yValues[loc];
+      }
+    }
+    return y;
   }
 
   public static double squareInput(double input, double deadband) {

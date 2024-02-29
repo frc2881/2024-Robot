@@ -186,20 +186,19 @@ public final class Constants {
 
     // TODO: move speeds and positions for game play to game constants
 
-    // TODO: Test/update
-    public static final RollerSpeeds kWarmupLauncherSpeeds = new RollerSpeeds(0.65, 0.65); // Lowest speed that can be used to score in speaker from subwoofer
-
-    // TODO: calculate and set as constant the launcher position to angle conversion factor to use for dynamic adjustment based on distance from target
-    // TODO: recalibrate position measurements/angles while maintaining/holding position (keep holding the controller button for the set position)
-    // TODO: proprtion calculation should be rate of angle change per unit of position change based on physical measurements
+    public static final RollerSpeeds kWarmupLauncherSpeeds = new RollerSpeeds(0.65, 0.65); // TODO: test/update ... lowest speed that can be used to score in speaker from subwoofer
+    
     public static final double kArmPositionFromTargetPitchConversionFactor = (12.0 - 11.25) / (55.3 - 52.2);
 
-    public static final double kArmPositionIntake = 14.0; // TODO: get degrees 
-    public static final double kArmPositionSubwoofer = 13.10; // TODO: configure on field (12.0 measured at 55.3 degrees, 13.10 measured at 58.0 degrees)
-    public static final double kArmPositionShortRange = 9.0;
-    public static final double kArmPositionMidRange = 7.0; // TODO: configure on field (11.25 measured at 52.2 degrees)
-    public static final double kArmPositionLongRange = 4.20; // TODO: configure on field (4.20 measure at 23.8 degrees)
-    public static final double kArmPositionAmp = 11.4; // TODO: configure on field
+    public static final double kArmPositionIntake = 14.0;
+    public static final double kArmPositionAmp = 11.4;
+    public static final double kArmPositionSubwoofer = 13.10; // 1.35m
+    public static final double kArmPositionShortRange = 9.0; // 1.84m
+    public static final double kArmPositionMidRange = 7.0; // 2.78m
+    public static final double kArmPositionLongRange = 4.20; // 5.37m
+
+    public static final double[] kDistances = new double[] { 1.35, 1.84, 2.78, 5.37 };
+    public static final double[] kPositions = new double[] { 13.10, 9.0, 7.0, 4.20 };
   }
 
   public static final class Climber {

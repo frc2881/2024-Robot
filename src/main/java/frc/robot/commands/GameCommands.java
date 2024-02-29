@@ -104,7 +104,7 @@ public class GameCommands {
 
   public Command alignLauncherToTargetCommand(boolean isRollersEnabled) {
     return
-    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getTargetPitch)
+    m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getTargetDistance)
     .alongWith(
       m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kWarmupLauncherSpeeds)
       .onlyIf(() -> isRollersEnabled)

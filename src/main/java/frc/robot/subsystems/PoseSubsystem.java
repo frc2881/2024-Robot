@@ -85,11 +85,16 @@ public class PoseSubsystem extends SubsystemBase {
     return Math.toDegrees(Utils.getTargetRotation(getPose(), getTargetPose()).getY());
   }
 
+  public double getTargetDistance() {
+    return getPose().getTranslation().getDistance(getTargetPose().toPose2d().getTranslation()); 
+  }
+
   private void updateTelemetry() {
     SmartDashboard.putString("Robot/Pose", Utils.objectToJson(getPose()));
     SmartDashboard.putString("Robot/Pose/Target/Pose", Utils.objectToJson(getTargetPose()));
     SmartDashboard.putNumber("Robot/Pose/Target/Yaw", getTargetYaw());
     SmartDashboard.putNumber("Robot/Pose/Target/Pitch", getTargetPitch());
+    SmartDashboard.putNumber("Robot/Pose/Target/Distance", getTargetDistance());
   }
 
   @Override
