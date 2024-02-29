@@ -165,6 +165,8 @@ public class RobotContainer {
     // m_operatorController.leftY().whileTrue(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
     // m_operatorController.leftTrigger().whileTrue(Commands.none());
+    // TODO: amp launcher position left trigger - position/launch or just position
+
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
     m_operatorController.leftBumper().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
     m_operatorController.rightBumper().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
@@ -172,8 +174,9 @@ public class RobotContainer {
     // m_operatorController.rightStick().whileTrue(Commands.none());
     m_operatorController.povLeft().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionLongRange, true));
     m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true)); 
-    m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
-    m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionAmp, true));
+    m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
+    m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionShortRange, true));
+  
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand(true));
     // m_operatorController.b().whileTrue(Commands.none());
     // m_operatorController.y().whileTrue(Commands.none());
