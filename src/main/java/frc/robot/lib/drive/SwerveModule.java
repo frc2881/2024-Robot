@@ -1,18 +1,14 @@
 package frc.robot.lib.drive;
 
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkPIDController;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkBase;
-import com.revrobotics.CANSparkFlex;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkAbsoluteEncoder;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,14 +16,12 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Timer;
-import frc.robot.lib.common.Utils;
+
+import frc.robot.lib.logging.Logger;
 import frc.robot.lib.common.Enums.SwerveModuleLocation;
 import frc.robot.Constants;
 
 public class SwerveModule implements Sendable {
-  private static List<CANSparkBase> m_motorControllers = new ArrayList<CANSparkBase>();
-
   private final SwerveModuleLocation m_location;
 
   private final CANSparkFlex m_drivingMotor;
@@ -43,49 +37,52 @@ public class SwerveModule implements Sendable {
   public SwerveModule(SwerveModuleLocation location, int drivingMotorCanId, int turningMotorCanId, double turningOffset) {
     m_location = location;
 
-    String logPrefix = "SwerveModule:" + m_location.toString();
-
     m_drivingMotor = new CANSparkFlex(drivingMotorCanId, MotorType.kBrushless);
-    m_motorControllers.add(m_drivingMotor);
-    Utils.setConfiguration(m_drivingMotor.restoreFactoryDefaults(), logPrefix + ":m_drivingSparkFlex.restoreFactoryDefaults");
-    Timer.delay(0.05);
-    m_drivingMotor.setCANTimeout(50);
-    m_drivingEncoder = m_drivingMotor.getEncoder();
-    Utils.setConfiguration(m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionConversionFactor), logPrefix + ":m_drivingEncoder.setPositionConversionFactor");
-    Utils.setConfiguration(m_drivingEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderVelocityConversionFactor), logPrefix + ":m_drivingEncoder.setVelocityConversionFactor");
-    Utils.setConfiguration(m_drivingEncoder.setMeasurementPeriod(16), logPrefix + ":m_drivingEncoder.setMeasurementPeriod");
-    Utils.setConfiguration(m_drivingEncoder.setAverageDepth(2), logPrefix + ":m_drivingEncoder.setAverageDepth");
-    m_drivingPIDController = m_drivingMotor.getPIDController();
-    Utils.setConfiguration(m_drivingPIDController.setOutputRange(Constants.Drive.SwerveModule.kDrivingMotorMinOutput, Constants.Drive.SwerveModule.kDrivingMotorMaxOutput), logPrefix + ":m_drivingPIDController.setOutputRange");
-    Utils.setConfiguration(m_drivingPIDController.setP(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.P), logPrefix + ":m_drivingPIDController.setP");
-    Utils.setConfiguration(m_drivingPIDController.setI(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.I), logPrefix + ":m_drivingPIDController.setI");
-    Utils.setConfiguration(m_drivingPIDController.setD(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.D), logPrefix + ":m_drivingPIDController.setD");
-    Utils.setConfiguration(m_drivingPIDController.setFF(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.FF), logPrefix + ":m_drivingPIDController.setFF");
-    Utils.setConfiguration(m_drivingPIDController.setFeedbackDevice(m_drivingEncoder), logPrefix + ":m_drivingPIDController.setFeedbackDevice");
-    Utils.setConfiguration(m_drivingMotor.setIdleMode(Constants.Drive.SwerveModule.kDrivingMotorIdleMode), logPrefix + ":m_drivingSparkFlex.setIdleMode");
-    Utils.setConfiguration(m_drivingMotor.setSmartCurrentLimit(Constants.Drive.SwerveModule.kDrivingMotorCurrentLimit), logPrefix + ":m_drivingSparkFlex.setSmartCurrentLimit");
-
     m_turningMotor = new CANSparkMax(turningMotorCanId, MotorType.kBrushless);
-    m_motorControllers.add(m_turningMotor);
-    Utils.setConfiguration(m_turningMotor.restoreFactoryDefaults(), logPrefix + ":m_turningSparkMax.restoreFactoryDefaults");
-    Timer.delay(0.05);
-    m_turningMotor.setCANTimeout(50);
+
+    setParam(m_drivingMotor.restoreFactoryDefaults(), "m_drivingSparkFlex.restoreFactoryDefaults");
+    setParam(m_turningMotor.restoreFactoryDefaults(), "m_turningSparkMax.restoreFactoryDefaults");
+
+    m_drivingEncoder = m_drivingMotor.getEncoder();
     m_turningEncoder = m_turningMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
-    Utils.setConfiguration(m_turningEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderPositionConversionFactor), logPrefix + ":m_turningEncoder.setPositionConversionFactor");
-    Utils.setConfiguration(m_turningEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderVelocityConversionFactor), logPrefix + ":m_turningEncoder.setVelocityConversionFactor");
-    Utils.setConfiguration(m_turningEncoder.setInverted(Constants.Drive.SwerveModule.kTurningEncoderInverted), logPrefix + ":m_turningEncoder.setInverted");
+
+    m_drivingPIDController = m_drivingMotor.getPIDController();
     m_turningPIDController = m_turningMotor.getPIDController();
-    Utils.setConfiguration(m_turningPIDController.setOutputRange(Constants.Drive.SwerveModule.kTurningMotorMinOutput, Constants.Drive.SwerveModule.kTurningMotorMaxOutput), logPrefix + ":m_turningPIDController.setOutputRange");
-    Utils.setConfiguration(m_turningPIDController.setP(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.P), logPrefix + ":m_turningPIDController.setP");
-    Utils.setConfiguration(m_turningPIDController.setI(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.I), logPrefix + ":m_turningPIDController.setI");
-    Utils.setConfiguration(m_turningPIDController.setD(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.D), logPrefix + ":m_turningPIDController.setD");
-    Utils.setConfiguration(m_turningPIDController.setFF(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.FF), logPrefix + ":m_turningPIDController.setFF");
-    Utils.setConfiguration(m_turningPIDController.setPositionPIDWrappingEnabled(true), logPrefix + ":m_turningPIDController.setPositionPIDWrappingEnabled");
-    Utils.setConfiguration(m_turningPIDController.setPositionPIDWrappingMinInput(Constants.Drive.SwerveModule.kTurningEncoderPositionPIDMinInput), logPrefix + ":m_turningPIDController.setPositionPIDWrappingMinInput");
-    Utils.setConfiguration(m_turningPIDController.setPositionPIDWrappingMaxInput(Constants.Drive.SwerveModule.kTurningEncoderPositionPIDMaxInput), logPrefix + ":m_turningPIDController.setPositionPIDWrappingMaxInput");
-    Utils.setConfiguration(m_turningPIDController.setFeedbackDevice(m_turningEncoder), logPrefix + ":m_turningPIDController.setFeedbackDevice");
-    Utils.setConfiguration(m_turningMotor.setIdleMode(Constants.Drive.SwerveModule.kTurningMotorIdleMode), logPrefix + ":m_turningSparkMax.setIdleMode");
-    Utils.setConfiguration(m_turningMotor.setSmartCurrentLimit(Constants.Drive.SwerveModule.kTurningMotorCurrentLimit), logPrefix + ":m_turningSparkMax.setSmartCurrentLimit");
+
+    setParam(m_drivingPIDController.setFeedbackDevice(m_drivingEncoder), "m_drivingPIDController.setFeedbackDevice");
+    setParam(m_turningPIDController.setFeedbackDevice(m_turningEncoder), "m_turningPIDController.setFeedbackDevice");
+
+    setParam(m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionConversionFactor), "m_drivingEncoder.setPositionConversionFactor");
+    setParam(m_drivingEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderVelocityConversionFactor), "m_drivingEncoder.setVelocityConversionFactor");
+    setParam(m_turningEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderPositionConversionFactor), "m_turningEncoder.setPositionConversionFactor");
+    setParam(m_turningEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderVelocityConversionFactor), "m_turningEncoder.setVelocityConversionFactor");
+
+    setParam(m_turningEncoder.setInverted(Constants.Drive.SwerveModule.kTurningEncoderInverted), "m_turningEncoder.setInverted");
+
+    setParam(m_turningPIDController.setPositionPIDWrappingEnabled(true), "m_turningPIDController.setPositionPIDWrappingEnabled");
+    setParam(m_turningPIDController.setPositionPIDWrappingMinInput(Constants.Drive.SwerveModule.kTurningEncoderPositionPIDMinInput), "m_turningPIDController.setPositionPIDWrappingMinInput");
+    setParam(m_turningPIDController.setPositionPIDWrappingMaxInput(Constants.Drive.SwerveModule.kTurningEncoderPositionPIDMaxInput), "m_turningPIDController.setPositionPIDWrappingMaxInput");
+
+    setParam(m_drivingPIDController.setP(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.P), "m_drivingPIDController.setP");
+    setParam(m_drivingPIDController.setI(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.I), "m_drivingPIDController.setI");
+    setParam(m_drivingPIDController.setD(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.D), "m_drivingPIDController.setD");
+    setParam(m_drivingPIDController.setFF(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.FF), "m_drivingPIDController.setFF");
+    setParam(m_drivingPIDController.setOutputRange(Constants.Drive.SwerveModule.kDrivingMotorMinOutput, Constants.Drive.SwerveModule.kDrivingMotorMaxOutput), "m_drivingPIDController.setOutputRange");
+
+    setParam(m_turningPIDController.setP(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.P), "m_turningPIDController.setP");
+    setParam(m_turningPIDController.setI(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.I), "m_turningPIDController.setI");
+    setParam(m_turningPIDController.setD(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.D), "m_turningPIDController.setD");
+    setParam(m_turningPIDController.setFF(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.FF), "m_turningPIDController.setFF");
+    setParam(m_turningPIDController.setOutputRange(Constants.Drive.SwerveModule.kTurningMotorMinOutput, Constants.Drive.SwerveModule.kTurningMotorMaxOutput), "m_turningPIDController.setOutputRange");
+    
+    setParam(m_drivingMotor.setIdleMode(Constants.Drive.SwerveModule.kDrivingMotorIdleMode), "m_drivingSparkFlex.setIdleMode");
+    setParam(m_turningMotor.setIdleMode(Constants.Drive.SwerveModule.kTurningMotorIdleMode), "m_turningSparkMax.setIdleMode");
+
+    setParam(m_drivingMotor.setSmartCurrentLimit(Constants.Drive.SwerveModule.kDrivingMotorCurrentLimit), "m_drivingSparkFlex.setSmartCurrentLimit");
+    setParam(m_turningMotor.setSmartCurrentLimit(Constants.Drive.SwerveModule.kTurningMotorCurrentLimit), "m_turningSparkMax.setSmartCurrentLimit");
+
+    m_drivingMotor.burnFlash();
+    m_turningMotor.burnFlash();
 
     m_turningOffset = turningOffset;
 
@@ -118,13 +115,10 @@ public class SwerveModule implements Sendable {
     m_turningMotor.setIdleMode(idleMode);
   }
 
-  public static void burnFlashForAllMotorControllers() {
-    Timer.delay(0.5);
-    for (CANSparkBase motorController : m_motorControllers) {
-      motorController.burnFlash();
-      Timer.delay(0.05);
+  private void setParam(REVLibError error, String source) {
+    if (error != REVLibError.kOk) {
+      Logger.log("!!!!!!!!!! REVLibError Returned: " + error.toString() + " @ SwerveModule:" + m_location.toString() + ":" + source + " !!!!!!!!!!");
     }
-    Timer.delay(0.5);
   }
 
   @Override

@@ -67,7 +67,6 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.Drive.kRearRightTurningMotorCANId, 
         Constants.Drive.SwerveModule.kOffsetRearRight)
     };
-    SwerveModule.burnFlashForAllMotorControllers();
 
     m_driftCorrectionThetaController = new PIDController(Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.P, Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.I, Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.D);
     m_driftCorrectionThetaController.enableContinuousInput(-180.0, 180.0);
@@ -209,6 +208,12 @@ public class DriveSubsystem extends SubsystemBase {
     .withName("SetDriveLockedState");
   }
 
+  private void resetSwerveModuleEncoders() {
+    for (int i = 0; i < m_swerveModules.length; i++) {
+      m_swerveModules[i].resetEncoders();
+    }
+  }
+
   public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Supplier<Double> targetYaw) {
     return
     run(() -> {
@@ -243,6 +248,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void reset() {
     drive(0.0, 0.0, 0.0);
+    resetSwerveModuleEncoders();
   }
 
   private void updateTelemetry() {

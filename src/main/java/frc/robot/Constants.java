@@ -75,8 +75,8 @@ public final class Constants {
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
 
-    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.5, 0, 0); // TODO: update with testing
-    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.7, 0, 0); // TODO: update with testing
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.5, 0, 0);
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.7, 0, 0);
     public static final PathConstraints kPathFindingConstraints = new PathConstraints(3.0, 3.0, 540.00, 720.00);
 
     public static final class SwerveModule {
@@ -189,8 +189,6 @@ public final class Constants {
     public static final RollerSpeeds kWarmupLauncherSpeeds = new RollerSpeeds(0.65, 0.65);
     public static final RollerSpeeds kAmpLauncherSpeeds = new RollerSpeeds(0.35, 0.35);
     
-    public static final double kArmPositionFromTargetPitchConversionFactor = (12.0 - 11.25) / (55.3 - 52.2);
-
     public static final double kArmPositionIntake = 13.0;
     public static final double kArmPositionAmp = 11.4;
     public static final double kArmPositionSubwoofer = 13.10; // 1.35m
@@ -241,7 +239,7 @@ public final class Constants {
           "Rear",
           new Transform3d(
             new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15.00)),
-            new Rotation3d(Units.degreesToRadians(3.2), Units.degreesToRadians(-24.3), Units.degreesToRadians(180)) // TODO: recalibrate roll angle and apply to configuration
+            new Rotation3d(Units.degreesToRadians(3.2), Units.degreesToRadians(-24.3), Units.degreesToRadians(180))
           )
         ),
         entry(
@@ -305,7 +303,7 @@ public final class Constants {
       );
 
       public static final class Targets {
-        public static final double kSpeakerXDelta = 0.3; // TODO: update with testing (check if this affects auto alignment overshoot)
+        public static final double kSpeakerXDelta = 0.3;
         public static final double kSpeakerZDelta = 0.616675;
         public static final Pose3d kAprilTag7 = kAprilTagFieldLayout.getTagPose(7).orElse(new Pose3d());
         public static final Pose3d kBlueSpeaker = new Pose3d(kAprilTag7.getX() + kSpeakerXDelta, kAprilTag7.getY(), kAprilTag7.getZ() + kSpeakerZDelta, kAprilTag7.getRotation());

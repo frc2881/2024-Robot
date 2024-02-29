@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.revrobotics.CANSparkBase;
-import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
 import edu.wpi.first.math.MathUtil;
@@ -15,8 +14,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.wpilibj.Timer;
-import frc.robot.lib.logging.Logger;
 
 public final class Utils {
 
@@ -50,6 +47,20 @@ public final class Utils {
     return new Rotation3d(0.0, pitch, yaw);
   }
 
+  public static double squareInput(double input, double deadband) {
+    double deadbandInput = MathUtil.applyDeadband(input, deadband);
+    return (deadbandInput * deadbandInput) * Math.signum(input);
+  }
+
+  public static void enableSoftLimits(CANSparkBase controller, boolean isEnabled) {
+    controller.enableSoftLimit(SoftLimitDirection.kForward, isEnabled);
+    controller.enableSoftLimit(SoftLimitDirection.kReverse, isEnabled);
+  }
+
+  public static double voltsToPsi(double sensorVoltage, double supplyVoltage) {
+    return 250 * (sensorVoltage / supplyVoltage) - 25;
+  }
+
   public static double getLinearInterpolation(double[] xValues, double[] yValues, double x) {
     double[] dx = new double[xValues.length - 1];
     double[] dy = new double[xValues.length - 1];
@@ -76,26 +87,5 @@ public final class Utils {
       }
     }
     return y;
-  }
-
-  public static double squareInput(double input, double deadband) {
-    double deadbandInput = MathUtil.applyDeadband(input, deadband);
-    return (deadbandInput * deadbandInput) * Math.signum(input);
-  }
-
-  public static void enableSoftLimits(CANSparkBase controller, boolean isEnabled) {
-    controller.enableSoftLimit(SoftLimitDirection.kForward, isEnabled);
-    controller.enableSoftLimit(SoftLimitDirection.kReverse, isEnabled);
-  }
-
-  public static double voltsToPsi(double sensorVoltage, double supplyVoltage) {
-    return 250 * (sensorVoltage / supplyVoltage) - 25;
-  }
-
-  public static void setConfiguration(REVLibError error, String source) {
-    Timer.delay(0.005);
-    if (error != REVLibError.kOk) {
-      Logger.log("!!!!!!!!!! REVLibError Returned: " + source + ":" + error.toString() + " !!!!!!!!!!");
-    }
   }
 }
