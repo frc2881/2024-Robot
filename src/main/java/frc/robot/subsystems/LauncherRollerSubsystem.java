@@ -10,12 +10,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 
 public class LauncherRollerSubsystem extends SubsystemBase {
   private final CANSparkFlex m_topRollerMotor;
   private final CANSparkFlex m_bottomRollerMotor;
-
-  public record RollerSpeeds(double top, double bottom) {}
 
   public LauncherRollerSubsystem() {
     m_topRollerMotor = new CANSparkFlex(Constants.Launcher.kTopRollerMotorCANId, MotorType.kBrushless);
@@ -37,11 +36,11 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command runCommand(Supplier<RollerSpeeds> rollerSpeeds) {
+  public Command runCommand(Supplier<LauncherRollerSpeeds> rollerSpeeds) {
     return 
     startEnd(() -> {
-      m_topRollerMotor.set(rollerSpeeds.get().top * Constants.Launcher.kTopRollerMotorMaxOutput);
-      m_bottomRollerMotor.set(rollerSpeeds.get().bottom * Constants.Launcher.kBottomRollerMotorMaxOutput);
+      m_topRollerMotor.set(rollerSpeeds.get().top() * Constants.Launcher.kTopRollerMotorMaxOutput);
+      m_bottomRollerMotor.set(rollerSpeeds.get().bottom() * Constants.Launcher.kBottomRollerMotorMaxOutput);
     },
     () -> { 
       m_topRollerMotor.set(0.0);
@@ -50,13 +49,13 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     .withName("RunLauncherRollers");
   }
 
-  public RollerSpeeds getSpeedsForArmPosition(double armPosition) {
+  public LauncherRollerSpeeds getSpeedsForArmPosition(double armPosition) {
     // TODO: add more logic to handle different/variable speed combinations for amp vs. speaker short/mid/long range
     // TODO: move these RollerSpeed record values to be defined in constants
     if (armPosition >= Constants.Launcher.kArmPositionAmp) {
-      return new RollerSpeeds(0.6, 0.6);
+      return new LauncherRollerSpeeds(0.6, 0.6);
     } else {
-      return new RollerSpeeds(0.8, 0.8);
+      return new LauncherRollerSpeeds(0.8, 0.8);
     }
   }
 

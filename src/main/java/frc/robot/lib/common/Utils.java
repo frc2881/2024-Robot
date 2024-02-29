@@ -61,29 +61,29 @@ public final class Utils {
     return 250 * (sensorVoltage / supplyVoltage) - 25;
   }
 
-  public static double getLinearInterpolation(double[] xValues, double[] yValues, double x) {
-    double[] dx = new double[xValues.length - 1];
-    double[] dy = new double[xValues.length - 1];
-    double[] slope = new double[xValues.length - 1];
-    double[] intercept = new double[xValues.length - 1];
-    for (int i = 0; i < xValues.length - 1; i++) {
-      dx[i] = xValues[i + 1] - xValues[i];
-      dy[i] = yValues[i + 1] - yValues[i];
+  public static double getLinearInterpolation(double[] xs, double[] ys, double x) {
+    double[] dx = new double[xs.length - 1];
+    double[] dy = new double[xs.length - 1];
+    double[] slope = new double[xs.length - 1];
+    double[] intercept = new double[xs.length - 1];
+    for (int i = 0; i < xs.length - 1; i++) {
+      dx[i] = xs[i + 1] - xs[i];
+      dy[i] = ys[i + 1] - ys[i];
       slope[i] = dy[i] / dx[i];
-      intercept[i] = yValues[i] - xValues[i] * slope[i];
+      intercept[i] = ys[i] - xs[i] * slope[i];
     }
     double y;
-    if ((x > xValues[xValues.length - 1]) || (x < xValues[0])) {
+    if ((x > xs[xs.length - 1]) || (x < xs[0])) {
       y = Double.NaN;
     }
     else {
-      int loc = Arrays.binarySearch(xValues, x);
+      int loc = Arrays.binarySearch(xs, x);
       if (loc < -1) {
         loc = -loc - 2;
         y = slope[loc] * x + intercept[loc];
       }
       else {
-        y = yValues[loc];
+        y = ys[loc];
       }
     }
     return y;

@@ -43,8 +43,8 @@ public class ClimberSubsystem extends SubsystemBase {
     
     m_armPIDController = m_armMotor.getPIDController();
     m_armPIDController.setFeedbackDevice(m_armEncoder);
-    m_armPIDController.setP(Constants.Climber.kArmMotorPIDConstants.P);
-    m_armPIDController.setD(Constants.Climber.kArmMotorPIDConstants.D);
+    m_armPIDController.setP(Constants.Climber.kArmMotorPIDConstants.P());
+    m_armPIDController.setD(Constants.Climber.kArmMotorPIDConstants.D());
     m_armPIDController.setOutputRange(Constants.Climber.kArmMotorMinOutput, Constants.Climber.kArmMotorMaxOutput);
     m_armPIDController.setSmartMotionMaxVelocity(Constants.Climber.kArmMotorSmartMotionMaxVelocity, 0);
     m_armPIDController.setSmartMotionMaxAccel(Constants.Climber.kArmMotorSmartMotionMaxAccel, 0);

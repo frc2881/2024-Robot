@@ -33,9 +33,8 @@ public class FeederSubsystem extends SubsystemBase {
     m_armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Feeder.kArmMotorReverseSoftLimit);
     
     m_armPIDController = m_armMotor.getPIDController();
-    m_armPIDController.setP(Constants.Feeder.kArmMotorPIDConstants.P);
-    m_armPIDController.setI(Constants.Feeder.kArmMotorPIDConstants.I);
-    m_armPIDController.setD(Constants.Feeder.kArmMotorPIDConstants.D);
+    m_armPIDController.setP(Constants.Feeder.kArmMotorPIDConstants.P());
+    m_armPIDController.setD(Constants.Feeder.kArmMotorPIDConstants.D());
     m_armPIDController.setOutputRange(Constants.Feeder.kArmMotorMinOutput, Constants.Feeder.kArmMotorMaxOutput);
 
     m_armEncoder = m_armMotor.getEncoder();

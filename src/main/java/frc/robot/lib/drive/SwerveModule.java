@@ -63,16 +63,16 @@ public class SwerveModule implements Sendable {
     setParam(m_turningPIDController.setPositionPIDWrappingMinInput(Constants.Drive.SwerveModule.kTurningEncoderPositionPIDMinInput), "m_turningPIDController.setPositionPIDWrappingMinInput");
     setParam(m_turningPIDController.setPositionPIDWrappingMaxInput(Constants.Drive.SwerveModule.kTurningEncoderPositionPIDMaxInput), "m_turningPIDController.setPositionPIDWrappingMaxInput");
 
-    setParam(m_drivingPIDController.setP(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.P), "m_drivingPIDController.setP");
-    setParam(m_drivingPIDController.setI(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.I), "m_drivingPIDController.setI");
-    setParam(m_drivingPIDController.setD(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.D), "m_drivingPIDController.setD");
-    setParam(m_drivingPIDController.setFF(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.FF), "m_drivingPIDController.setFF");
+    setParam(m_drivingPIDController.setP(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.P()), "m_drivingPIDController.setP");
+    setParam(m_drivingPIDController.setI(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.I()), "m_drivingPIDController.setI");
+    setParam(m_drivingPIDController.setD(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.D()), "m_drivingPIDController.setD");
+    setParam(m_drivingPIDController.setFF(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.FF()), "m_drivingPIDController.setFF");
     setParam(m_drivingPIDController.setOutputRange(Constants.Drive.SwerveModule.kDrivingMotorMinOutput, Constants.Drive.SwerveModule.kDrivingMotorMaxOutput), "m_drivingPIDController.setOutputRange");
 
-    setParam(m_turningPIDController.setP(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.P), "m_turningPIDController.setP");
-    setParam(m_turningPIDController.setI(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.I), "m_turningPIDController.setI");
-    setParam(m_turningPIDController.setD(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.D), "m_turningPIDController.setD");
-    setParam(m_turningPIDController.setFF(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.FF), "m_turningPIDController.setFF");
+    setParam(m_turningPIDController.setP(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.P()), "m_turningPIDController.setP");
+    setParam(m_turningPIDController.setI(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.I()), "m_turningPIDController.setI");
+    setParam(m_turningPIDController.setD(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.D()), "m_turningPIDController.setD");
+    setParam(m_turningPIDController.setFF(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.FF()), "m_turningPIDController.setFF");
     setParam(m_turningPIDController.setOutputRange(Constants.Drive.SwerveModule.kTurningMotorMinOutput, Constants.Drive.SwerveModule.kTurningMotorMaxOutput), "m_turningPIDController.setOutputRange");
     
     setParam(m_drivingMotor.setIdleMode(Constants.Drive.SwerveModule.kDrivingMotorIdleMode), "m_drivingSparkFlex.setIdleMode");

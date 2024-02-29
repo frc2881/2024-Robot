@@ -16,13 +16,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AutoCommands;
-import frc.robot.commands.AutoCommands.NotePoses;
 import frc.robot.commands.GameCommands;
 import frc.robot.lib.common.Enums.DriveDriftCorrection;
 import frc.robot.lib.common.Enums.DriveOrientation;
 import frc.robot.lib.common.Enums.DriveSpeedMode;
 import frc.robot.lib.common.Enums.IntakeLocation;
 import frc.robot.lib.common.Enums.MotorDirection;
+import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
@@ -226,12 +226,12 @@ public class RobotContainer {
     );
 
     m_autoChooser.setDefaultOption("None", Commands.none());
-    m_autoChooser.addOption("BackupShoot1", m_autoCommands.runAuto(false, new NotePoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses })); // TODO: Make empty noteposes array
-    m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupShootPickup14());
-    m_autoChooser.addOption("ShootPickup1", m_autoCommands.shootPickup1());
-    m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupShootPickup1());
-    m_autoChooser.addOption("ShootPickup2", m_autoCommands.shootPickup2());
-    m_autoChooser.addOption("ShootPickup3", m_autoCommands.shootPickup3());
+    m_autoChooser.addOption("BackupShoot1", m_autoCommands.runAuto(false, new AutoPoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses })); // TODO: Make empty noteposes array
+    m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupScorePickup14());
+    m_autoChooser.addOption("ShootPickup1", m_autoCommands.scorePickup1());
+    m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupScorePickup1());
+    m_autoChooser.addOption("ShootPickup2", m_autoCommands.scorePickup2());
+    m_autoChooser.addOption("ShootPickup3", m_autoCommands.scorePickup3());
     
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }

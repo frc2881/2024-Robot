@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.lib.common.Enums.IntakeLocation;
+import frc.robot.lib.common.Records.LauncherRollerSpeeds;
+import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
 import frc.robot.lib.sensors.DistanceSensor;
@@ -22,7 +24,6 @@ import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
 import frc.robot.subsystems.LauncherRollerSubsystem;
-import frc.robot.subsystems.LauncherRollerSubsystem.RollerSpeeds;
 import frc.robot.subsystems.PoseSubsystem;
 
 public class AutoCommands {
@@ -41,8 +42,6 @@ public class AutoCommands {
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ClimberSubsystem m_climberSubsystem;
   private final LightsController m_lightsController;
-
-  public record NotePoses(Pose2d pickupPose, Pose2d scorePose) {}
 
   public AutoCommands(
     GameCommands gameCommands,
@@ -84,56 +83,57 @@ public class AutoCommands {
     .withName("ResetGyro"); 
   }
 
-  private Command pathFindToNote(Pose2d pickupPose) {
+  private Command pathFindToNotePickup(Pose2d notePickupPose) {
     return Commands.either(
-      AutoBuilder.pathfindToPose(pickupPose, Constants.Drive.kPathFindingConstraints),
-      AutoBuilder.pathfindToPoseFlipped(pickupPose, Constants.Drive.kPathFindingConstraints),
+      AutoBuilder.pathfindToPose(notePickupPose, Constants.Drive.kPathFindingConstraints),
+      AutoBuilder.pathfindToPoseFlipped(notePickupPose, Constants.Drive.kPathFindingConstraints),
       () -> Robot.getAlliance() == Alliance.Blue
     )
-    .withName("PathFindToNote");
+    .withName("PathFindToNotePickup");
   }
 
-  private Command pickupShootNote(NotePoses notePoses) {
+  private Command pickupAndScoreNote(AutoPoses autoPoses) {
     return Commands.sequence(
       Commands.parallel(
-      pathFindToNote(notePoses.pickupPose),
-      m_gameCommmands.runIntakeCommand(IntakeLocation.Front)
+        pathFindToNotePickup(autoPoses.notePickupPose()),
+        m_gameCommmands.runIntakeCommand(IntakeLocation.Front)
       )
-      .unless(() -> notePoses.pickupPose == new Pose2d()),
+      .unless(() -> autoPoses.notePickupPose() == new Pose2d()),
       Commands.sequence(
-        pathFindToNote(notePoses.scorePose)
+        pathFindToNotePickup(autoPoses.noteScorePose())
       )
-      .unless(() -> notePoses.scorePose == notePoses.pickupPose), 
+      .unless(() -> autoPoses.noteScorePose() == autoPoses.notePickupPose()), 
       Commands.parallel(
         m_gameCommmands.alignRobotToTargetCommand(),
         m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShortRange) // TODO: add command get launcher pos
       ),
       m_gameCommmands.runLauncherAutoCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
-    );
+    )
+    .withName("PickupAndScoreNote");
   }
 
-  private void runAutos(NotePoses[] notesPoses) {
-    if(notesPoses.length > 1){
-      for (int i = 1; i < notesPoses.length; i++) {
-        pickupShootNote(notesPoses[i]);
+  private void runAutos(AutoPoses[] autoPoses) {
+    if (autoPoses.length > 1) {
+      for (int i = 1; i < autoPoses.length; i++) {
+        pickupAndScoreNote(autoPoses[i]);
       }
     }
   }
 
-  public Command runAuto(boolean shootFromSubwoofer, NotePoses[] notesPoses) {
+  public Command runAuto(boolean isScoreAtSubwoofer, AutoPoses[] notesPoses) {
     return Commands.sequence(
       Commands.either(
         scoreSubwooferAuto(), 
-        pickupShootNote(notesPoses[0]), 
-        () -> shootFromSubwoofer),
+        pickupAndScoreNote(notesPoses[0]), 
+        () -> isScoreAtSubwoofer),
         Commands.runOnce(
           () -> runAutos(notesPoses)
         )
     );
   }
 
-  public Command shootPickup1() {
+  public Command scorePickup1() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup1");
     PathConstraints constraints = new PathConstraints(3, 3, 540.00, 720.00);
     return Commands
@@ -150,15 +150,12 @@ public class AutoCommands {
       ),
       m_gameCommmands.runLauncherCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
-      
-      //AutoBuilder.pathfindToPoseFlipped(new Pose2d(2.10, 7.00, Rotation2d.fromDegrees(0)), constraints)
-      //AutoBuilder.followPath(path1)
     )
     .beforeStarting(resetGyroCommand())
-    .withName("Test");
+    .withName("ScorePickup1");
   } 
 
-  public Command backupShootPickup1() {
+  public Command backupScorePickup1() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("BackupPickup1");
     PathConstraints constraints = new PathConstraints(3, 3, 540.00, 720.00);
     return Commands
@@ -187,15 +184,15 @@ public class AutoCommands {
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
     )
     .beforeStarting(resetGyroCommand())
-    .withName("Test");
+    .withName("BackupScorePickup1");
   } 
 
-  public Command backupShootPickup14() {
+  public Command backupScorePickup14() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("BackupPickup1");
     PathPlannerPath path2 = PathPlannerPath.fromPathFile("BackupPickup4");
     PathConstraints constraints = new PathConstraints(3, 3, 540.00, 720.00);
     return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new RollerSpeeds(0.8, 0.8)),
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
       Commands.sequence(
         Commands.parallel(
           Commands.either(
@@ -240,7 +237,7 @@ public class AutoCommands {
     .withName("BackupShootPickup14");
   } 
 
-  public Command shootPickup2() {
+  public Command scorePickup2() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup2");
     PathConstraints constraints = new PathConstraints(1.5, 1.5, 540.00, 720.00);
     return Commands
@@ -259,15 +256,12 @@ public class AutoCommands {
       .withTimeout(1.0),
       m_gameCommmands.runLauncherCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
-      
-      //AutoBuilder.pathfindToPoseFlipped(new Pose2d(2.10, 7.00, Rotation2d.fromDegrees(0)), constraints)
-      //AutoBuilder.followPath(path1)
     )
     .beforeStarting(resetGyroCommand())
-    .withName("Test");
+    .withName("ScorePickup2");
   } 
 
-  public Command shootPickup3() {
+  public Command scorePickup3() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup3");
     PathConstraints constraints = new PathConstraints(1.5, 1.5, 540.00, 720.00);
     return Commands
@@ -288,15 +282,15 @@ public class AutoCommands {
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
     )
     .beforeStarting(resetGyroCommand())
-    .withName("Test");
+    .withName("ScorePickup3");
   } 
 
   public Command scoreSubwooferAuto() {
     return m_gameCommmands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true)
-      .withTimeout(1.0)
+    .withTimeout(1.0)
     .andThen(
       m_gameCommmands.runLauncherCommand()
-        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
+      .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
     )
     .beforeStarting(resetGyroCommand())
     .withName("ScoreSubwooferAuto");

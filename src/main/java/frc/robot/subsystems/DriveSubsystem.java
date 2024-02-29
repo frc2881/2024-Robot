@@ -68,11 +68,11 @@ public class DriveSubsystem extends SubsystemBase {
         Constants.Drive.SwerveModule.kOffsetRearRight)
     };
 
-    m_driftCorrectionThetaController = new PIDController(Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.P, Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.I, Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.D);
+    m_driftCorrectionThetaController = new PIDController(Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.P(), Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.I(), Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.D());
     m_driftCorrectionThetaController.enableContinuousInput(-180.0, 180.0);
     m_driftCorrectionThetaController.setTolerance(Constants.Drive.kDriftCorrectionThetaControllerPositionTolerance, Constants.Drive.kDriftCorrectionThetaControllerVelocityTolerance);
 
-    m_targetAlignmentThetaController = new PIDController(Constants.Drive.kTargetAlignmentThetaControllerPIDConstants.P, Constants.Drive.kTargetAlignmentThetaControllerPIDConstants.I, Constants.Drive.kTargetAlignmentThetaControllerPIDConstants.D);
+    m_targetAlignmentThetaController = new PIDController(Constants.Drive.kTargetAlignmentThetaControllerPIDConstants.P(), Constants.Drive.kTargetAlignmentThetaControllerPIDConstants.I(), Constants.Drive.kTargetAlignmentThetaControllerPIDConstants.D());
     m_targetAlignmentThetaController.enableContinuousInput(-180.0, 180.0);
     m_targetAlignmentThetaController.setTolerance(Constants.Drive.kTargetAlignmentThetaControllerPositionTolerance, Constants.Drive.kTargetAlignmentThetaControllerVelocityTolerance);
 

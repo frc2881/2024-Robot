@@ -21,6 +21,8 @@ public class LauncherArmSubsystem extends SubsystemBase {
   private final RelativeEncoder m_armEncoder;
   private final SparkPIDController m_armPIDController;
 
+  private double[] m_distances;
+  private double[] m_positions;
   private boolean m_isAlignedToTarget = false;
 
   public LauncherArmSubsystem() {
@@ -40,11 +42,18 @@ public class LauncherArmSubsystem extends SubsystemBase {
     
     m_armPIDController = m_armMotor.getPIDController();
     m_armPIDController.setFeedbackDevice(m_armEncoder);
-    m_armPIDController.setP(Constants.Launcher.kArmMotorPIDConstants.P);
-    m_armPIDController.setD(Constants.Launcher.kArmMotorPIDConstants.D);
+    m_armPIDController.setP(Constants.Launcher.kArmMotorPIDConstants.P());
+    m_armPIDController.setD(Constants.Launcher.kArmMotorPIDConstants.D());
     m_armPIDController.setOutputRange(Constants.Launcher.kArmMotorMinOutput, Constants.Launcher.kArmMotorMaxOutput);
     m_armPIDController.setSmartMotionMaxVelocity(Constants.Launcher.kArmMotorSmartMotionMaxVelocity, 0);
     m_armPIDController.setSmartMotionMaxAccel(Constants.Launcher.kArmMotorSmartMotionMaxAccel, 0);
+
+    m_distances = new double[Constants.Launcher.kArmPositions.length];
+    m_positions = new double[Constants.Launcher.kArmPositions.length];
+    for (int i = 0; i < Constants.Launcher.kArmPositions.length; i++) {
+      m_distances[i] = Constants.Launcher.kArmPositions[i].distance();
+      m_positions[i] = Constants.Launcher.kArmPositions[i].position();
+    }   
   }
 
   @Override
@@ -80,12 +89,12 @@ public class LauncherArmSubsystem extends SubsystemBase {
     .withName("AlignLauncherArmToTarget");
   }
 
-  private double calculateArmPosition(double distance) {
-    double position = Utils.getLinearInterpolation(Constants.Launcher.kDistances, Constants.Launcher.kPositions, distance);
+  public double calculateArmPosition(double distance) {
+    double position = Utils.getLinearInterpolation(m_distances, m_positions, distance);
     return 
     Utils.isValueBetween(position, Constants.Launcher.kArmMotorReverseSoftLimit, Constants.Launcher.kArmMotorForwardSoftLimit) 
       ? position 
-      : Constants.Launcher.kArmPositionIntake;
+      : Constants.Launcher.kArmPositionSubwoofer;
   }
 
   public double getArmPosition() {

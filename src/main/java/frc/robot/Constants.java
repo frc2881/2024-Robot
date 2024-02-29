@@ -28,9 +28,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.CalibrationTime;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.SPI;
-import frc.robot.commands.AutoCommands.NotePoses;
-import frc.robot.lib.common.PIDConstants;
-import frc.robot.subsystems.LauncherRollerSubsystem.RollerSpeeds;
+import frc.robot.lib.common.Records.LauncherRollerSpeeds;
+import frc.robot.lib.common.Records.PIDConstants;
+import frc.robot.lib.common.Records.AutoPoses;
+import frc.robot.lib.common.Records.LauncherArmPosition;
 
 public final class Constants {
 
@@ -64,11 +65,11 @@ public final class Constants {
       new Translation2d(-Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2)
     );
 
-    public static final PIDConstants kDriftCorrectionThetaControllerPIDConstants = new PIDConstants(0.01, 0, 0);
+    public static final PIDConstants kDriftCorrectionThetaControllerPIDConstants = new PIDConstants(0.01, 0, 0, 0);
     public static final double kDriftCorrectionThetaControllerPositionTolerance = 0.5;
     public static final double kDriftCorrectionThetaControllerVelocityTolerance = 0.5;
 
-    public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01);
+    public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01, 0);
     public static final double kTargetAlignmentThetaControllerPositionTolerance = 0.5;
     public static final double kTargetAlignmentThetaControllerVelocityTolerance = 0.5;
 
@@ -123,7 +124,7 @@ public final class Constants {
     public static final double kArmMotorMinOutput = -0.5;
     public static final double kArmMotorMaxOutput = 0.5;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.05, 0, 0);
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.05, 0, 0, 0);
     public static final double kArmMotorForwardSoftLimit = 19.0; // TODO: recalibrate
     public static final double kArmMotorReverseSoftLimit = 1.0; // TODO: recalibrate
     public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0;
@@ -184,10 +185,8 @@ public final class Constants {
     public static final double kBottomRollerMotorMaxOutput = 1.0;
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
-    // TODO: move speeds and positions for game play to game constants
-
-    public static final RollerSpeeds kWarmupLauncherSpeeds = new RollerSpeeds(0.65, 0.65);
-    public static final RollerSpeeds kAmpLauncherSpeeds = new RollerSpeeds(0.35, 0.35);
+    public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.65, 0.65);
+    public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.35, 0.35);
     
     public static final double kArmPositionIntake = 13.0;
     public static final double kArmPositionAmp = 11.4;
@@ -196,8 +195,12 @@ public final class Constants {
     public static final double kArmPositionMidRange = 7.0; // 2.78m
     public static final double kArmPositionLongRange = 4.20; // 5.37m
 
-    public static final double[] kDistances = new double[] { 1.35, 1.84, 2.78, 5.37 };
-    public static final double[] kPositions = new double[] { 13.10, 9.0, 7.0, 4.20 };
+    public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
+      new LauncherArmPosition(1.35, 13.10),
+      new LauncherArmPosition(1.84, 9.0),
+      new LauncherArmPosition(2.78, 7.0),
+      new LauncherArmPosition(5.37, 4.20)
+    };
   }
 
   public static final class Climber {
@@ -320,39 +323,39 @@ public final class Constants {
       }
 
       public static final class AutoWaypoints {
-        public static final NotePoses kNotePreload1Poses = new NotePoses(new Pose2d(), new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(0)));
+        public static final AutoPoses kNotePreload1Poses = new AutoPoses(new Pose2d(), new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(0)));
         public static final Pose2d kScoreNotePreload2 = new Pose2d(1.84, 5.38, Rotation2d.fromDegrees(0));
         public static final Pose2d kScoreNotePreload3 = new Pose2d(1.84, 4.00, Rotation2d.fromDegrees(0));
 
-        public static final NotePoses kNote1Poses = new NotePoses(
+        public static final AutoPoses kNote1Poses = new AutoPoses(
           new Pose2d(2.78, 6.90, Rotation2d.fromDegrees(0)), 
           new Pose2d(2.78, 6.90, Rotation2d.fromDegrees(0)));
 
-        public static final NotePoses kNote2Poses = new NotePoses(
+        public static final AutoPoses kNote2Poses = new AutoPoses(
           new Pose2d(2.78, 5.38, Rotation2d.fromDegrees(0)), 
           new Pose2d(2.78, 5.38, Rotation2d.fromDegrees(0)));
 
-        public static final NotePoses kNote3Poses = new NotePoses(
+        public static final AutoPoses kNote3Poses = new AutoPoses(
           new Pose2d(2.52, 4.05, Rotation2d.fromDegrees(0)), 
           new Pose2d(2.52, 4.05, Rotation2d.fromDegrees(0)));
 
-        public static final NotePoses kNote4Poses = new NotePoses(
+        public static final AutoPoses kNote4Poses = new AutoPoses(
           new Pose2d(7.87, 7.03, Rotation2d.fromDegrees(0)), 
           new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
 
-        public static final NotePoses kNote5Poses = new NotePoses(
+        public static final AutoPoses kNote5Poses = new AutoPoses(
           new Pose2d(7.87, 5.37, Rotation2d.fromDegrees(0)), 
           new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
 
-        public static final NotePoses kNote6Poses = new NotePoses(
+        public static final AutoPoses kNote6Poses = new AutoPoses(
           new Pose2d(7.87, 3.70, Rotation2d.fromDegrees(0)), 
           new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
 
-        public static final NotePoses kNote7Poses = new NotePoses(
+        public static final AutoPoses kNote7Poses = new AutoPoses(
           new Pose2d(7.87, 2.03, Rotation2d.fromDegrees(0)), 
           new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)));
 
-        public static final NotePoses kNote8Poses = new NotePoses(
+        public static final AutoPoses kNote8Poses = new AutoPoses(
           new Pose2d(7.87, 7.03, Rotation2d.fromDegrees(0)), 
           new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)));
 
