@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.lib.common.Enums.IntakeLocation;
+import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
 import frc.robot.lib.sensors.DistanceSensor;
@@ -30,6 +31,8 @@ public class GameCommands {
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ClimberSubsystem m_climberSubsystem;
+  private final GameController m_driverController;
+  private final GameController m_operatorControlller;
   private final LightsController m_lightsController;
 
   public GameCommands(
@@ -46,6 +49,8 @@ public class GameCommands {
     LauncherArmSubsystem launcherArmSubsystem,
     LauncherRollerSubsystem launcherRollerSubsystem,
     ClimberSubsystem climberSubsystem,
+    GameController driverController,
+    GameController operatorControlller,
     LightsController lightsController
   ) {
     m_gyroSensor = gyroSensor;
@@ -61,6 +66,8 @@ public class GameCommands {
     m_launcherArmSubsystem = launcherArmSubsystem;
     m_launcherRollerSubsystem = launcherRollerSubsystem;
     m_climberSubsystem = climberSubsystem;
+    m_driverController = driverController;
+    m_operatorControlller = operatorControlller;
     m_lightsController = lightsController;
   }
 
@@ -96,12 +103,13 @@ public class GameCommands {
     }
   }
 
+  // TODO: add rumble command to operator controller when driver aligns robot to target
   public Command alignRobotToTargetCommand() {
     return
     m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, m_poseSubsystem::getTargetYaw)
     .withName("AlignRobotToTarget");
   }
-
+  
   public Command alignLauncherToTargetCommand(boolean isRollersEnabled) {
     return
     m_launcherArmSubsystem.alignToTargetCommand(m_poseSubsystem::getTargetDistance)

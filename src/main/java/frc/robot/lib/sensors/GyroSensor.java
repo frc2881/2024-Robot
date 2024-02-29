@@ -31,16 +31,16 @@ public class GyroSensor extends ADIS16470_IMU {
 
   public Command resetCommand() {
     return Commands.runOnce(
-      () -> reset(0))
-      .ignoringDisable(true)
-      .withName("ResetGyroToZero");
+    () -> reset(0))
+    .ignoringDisable(true)
+    .withName("ResetGyroToZero");
   }
 
   public Command resetCommand(double value) {
     return Commands.runOnce(
-      () -> reset(value))
-      .ignoringDisable(true)
-      .withName("ResetGyroToAngle");
+    () -> reset(value))
+    .ignoringDisable(true)
+    .withName("ResetGyroToAngle");
   }
 
   public double getRoll() {

@@ -130,8 +130,43 @@ public class RobotContainer {
     m_lightsController = new LightsController();
 
     // COMMANDS ========================================
-    m_gameCommands = new GameCommands(m_gyroSensor, m_intakeBeamBreakSensor, m_launcherBottomBeamBreakSensor, m_launcherTopBeamBreakSensor, m_intakeDistanceSensor, m_launcherDistanceSensor, m_driveSubsystem, m_poseSubsystem, m_feederSubsystem, m_intakeSubsystem, m_launcherArmSubsystem, m_launcherRollerSubsystem, m_climberSubsystem, m_lightsController);
-    m_autoCommands = new AutoCommands(m_gameCommands, m_gyroSensor, m_intakeBeamBreakSensor, m_launcherBottomBeamBreakSensor, m_launcherTopBeamBreakSensor, m_intakeDistanceSensor, m_launcherDistanceSensor, m_driveSubsystem, m_poseSubsystem, m_feederSubsystem, m_intakeSubsystem, m_launcherArmSubsystem, m_launcherRollerSubsystem, m_climberSubsystem, m_lightsController);
+    m_gameCommands = new GameCommands(
+      m_gyroSensor, 
+      m_intakeBeamBreakSensor, 
+      m_launcherBottomBeamBreakSensor, 
+      m_launcherTopBeamBreakSensor, 
+      m_intakeDistanceSensor, 
+      m_launcherDistanceSensor, 
+      m_driveSubsystem, 
+      m_poseSubsystem, 
+      m_feederSubsystem, 
+      m_intakeSubsystem, 
+      m_launcherArmSubsystem, 
+      m_launcherRollerSubsystem, 
+      m_climberSubsystem, 
+      m_driverController, 
+      m_operatorController, 
+      m_lightsController
+    );
+
+    m_autoCommands = new AutoCommands(
+      m_gameCommands, 
+      m_gyroSensor, 
+      m_intakeBeamBreakSensor, 
+      m_launcherBottomBeamBreakSensor, 
+      m_launcherTopBeamBreakSensor, 
+      m_intakeDistanceSensor, 
+      m_launcherDistanceSensor, 
+      m_driveSubsystem, 
+      m_poseSubsystem, 
+      m_feederSubsystem, 
+      m_intakeSubsystem, 
+      m_launcherArmSubsystem, 
+      m_launcherRollerSubsystem, 
+      m_climberSubsystem, 
+      m_lightsController
+    );
+    
     m_autoChooser = new SendableChooser<Command>();
 
     configureBindings();
@@ -180,7 +215,6 @@ public class RobotContainer {
     m_operatorController.x().onTrue(m_feederSubsystem.runCommand()).onFalse(m_feederSubsystem.stopCommand());
     m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
-
 
     // DASHBOARD ========================================
     SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();

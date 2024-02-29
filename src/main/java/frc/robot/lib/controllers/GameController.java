@@ -1,5 +1,8 @@
 package frc.robot.lib.controllers;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
@@ -47,5 +50,11 @@ public class GameController extends CommandXboxController {
     return new Trigger(() -> Math.abs(super.getRightY()) > Constants.Controllers.kInputDeadband);
   }
 
-  // TODO: implement any desired rumble pattern commands as extensions
+  public Command rumbleShort() {
+    return 
+    Commands.runOnce(() -> super.getHID().setRumble(RumbleType.kBothRumble, 1))
+    .andThen(Commands.waitSeconds(0.5))
+    .andThen(Commands.runOnce(() -> super.getHID().setRumble(RumbleType.kBothRumble, 0)))
+    .withName("ResetGyroToZero");
+  }
 }
