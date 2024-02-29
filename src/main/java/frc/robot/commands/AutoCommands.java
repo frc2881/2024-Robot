@@ -78,9 +78,6 @@ public class AutoCommands {
     m_lightsController = lightsController;
   }
 
-  // TODO: update local path constraints instances to use constant 
-  // TODO: update local defined auto waypoint poses to use waypoints in constants
-
   private Command resetGyroCommand() { 
     return Commands
     .runOnce(() -> m_gyroSensor.reset(m_poseSubsystem.getPose().getRotation().getDegrees()))

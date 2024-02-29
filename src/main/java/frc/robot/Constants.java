@@ -186,11 +186,12 @@ public final class Constants {
 
     // TODO: move speeds and positions for game play to game constants
 
-    public static final RollerSpeeds kWarmupLauncherSpeeds = new RollerSpeeds(0.65, 0.65); // TODO: test/update ... lowest speed that can be used to score in speaker from subwoofer
+    public static final RollerSpeeds kWarmupLauncherSpeeds = new RollerSpeeds(0.65, 0.65);
+    public static final RollerSpeeds kAmpLauncherSpeeds = new RollerSpeeds(0.35, 0.35);
     
     public static final double kArmPositionFromTargetPitchConversionFactor = (12.0 - 11.25) / (55.3 - 52.2);
 
-    public static final double kArmPositionIntake = 14.0;
+    public static final double kArmPositionIntake = 13.0;
     public static final double kArmPositionAmp = 11.4;
     public static final double kArmPositionSubwoofer = 13.10; // 1.35m
     public static final double kArmPositionShortRange = 9.0; // 1.84m

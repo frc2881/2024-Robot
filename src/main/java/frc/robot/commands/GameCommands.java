@@ -122,6 +122,16 @@ public class GameCommands {
     .withName("AlignLauncherToPosition");
   }
 
+  public Command alignLauncherToAmpCommand(boolean isRollersEnabled) {
+    return
+    m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionAmp)
+    .alongWith(
+      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kAmpLauncherSpeeds)
+      .onlyIf(() -> isRollersEnabled)
+    )
+    .withName("AlignLauncherToAmp");
+  }
+
   public Command alignLauncherToPositionAutoCommand(double position) {
     return
     m_launcherArmSubsystem.alignToPositionCommand(position)
@@ -132,6 +142,17 @@ public class GameCommands {
   public Command runLauncherCommand() {
     return 
     m_launcherRollerSubsystem.runCommand(() -> m_launcherRollerSubsystem.getSpeedsForArmPosition(m_launcherArmSubsystem.getArmPosition()))
+    .alongWith(
+      Commands.waitSeconds(1.5) // TODO: validate if shorter timeout is OK if rollers are already being warmed up by the launcher arm alignment by the operator
+      .andThen(m_intakeSubsystem.runLaunchCommand())
+    )
+    .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
+    .withName("RunLauncher");
+  }
+
+  public Command runLauncherAmpCommand() {
+    return 
+    m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kAmpLauncherSpeeds)
     .alongWith(
       Commands.waitSeconds(1.5) // TODO: validate if shorter timeout is OK if rollers are already being warmed up by the launcher arm alignment by the operator
       .andThen(m_intakeSubsystem.runLaunchCommand())
