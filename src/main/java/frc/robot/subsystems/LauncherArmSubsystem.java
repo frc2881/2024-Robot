@@ -67,13 +67,25 @@ public class LauncherArmSubsystem extends SubsystemBase {
     run(() -> {
       m_armMotor.set(speed.get() * 0.5);
     })
-    .finallyDo(() -> m_armMotor.set(0.0))
+    .beforeStarting(() -> m_isAlignedToTarget = false)
+    .finallyDo(() -> { 
+      m_armMotor.set(0.0); 
+      m_isAlignedToTarget = false;
+    })
     .withName("AlignLauncherArmManual");
   }
 
   public Command alignToPositionCommand(Double position) {
     return 
-    run(() -> m_armPIDController.setReference(position, ControlType.kSmartMotion))
+    run(() -> { 
+      m_armPIDController.setReference(position, ControlType.kSmartMotion); 
+      m_isAlignedToTarget = true;
+    })
+    .beforeStarting(() -> m_isAlignedToTarget = false)
+    .finallyDo(() -> { 
+      m_armMotor.set(0.0); 
+      m_isAlignedToTarget = false;
+    })
     .withName("AlignLauncherArmToPosition");
   }
 
@@ -86,7 +98,10 @@ public class LauncherArmSubsystem extends SubsystemBase {
     })
     .beforeStarting(() -> m_isAlignedToTarget = false)
     .until(() -> m_isAlignedToTarget)
-    .finallyDo(() -> m_armMotor.set(0.0))
+    .finallyDo(() -> { 
+      m_armMotor.set(0.0); 
+      m_isAlignedToTarget = false;
+    })
     .withName("AlignLauncherArmToTarget");
   }
 
@@ -129,6 +144,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
 
   private void updateTelemetry() {
     SmartDashboard.putNumber("Robot/Launcher/Arm/Position", m_armEncoder.getPosition());
+    SmartDashboard.putBoolean("Robot/Launcher/Arm/IsAlignedToTarget", m_isAlignedToTarget);
   }
 
   @Override
