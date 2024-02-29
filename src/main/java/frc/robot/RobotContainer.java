@@ -258,7 +258,14 @@ public class RobotContainer {
     m_intakeDistanceSensor.updateTelemetry();
     m_launcherDistanceSensor.updateTelemetry();
     m_objectSensor.updateTelemetry();
-    
+
     SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
+
+    SmartDashboard.putBoolean(
+      "Robot/HasInitialReset", 
+      m_launcherArmSubsystem.hasInitialReset() &&
+      m_feederSubsystem.hasInitialReset() &&
+      m_climberSubsystem.hasInitialReset()
+    );
   }
 }

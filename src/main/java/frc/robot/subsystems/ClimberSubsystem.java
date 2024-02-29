@@ -25,6 +25,7 @@ public class ClimberSubsystem extends SubsystemBase {
   private final CANSparkMax m_rollerMotor;
 
   private boolean m_isArmAlignedToPosition = false;
+  private boolean m_hasInitialReset = false;
   
   public ClimberSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Climber.kArmMotorCANId, MotorType.kBrushless);
@@ -105,8 +106,13 @@ public class ClimberSubsystem extends SubsystemBase {
       m_armEncoder.setPosition(0);
       m_armMotor.set(0.0);
       Utils.enableSoftLimits(m_armMotor, true);
+      m_hasInitialReset = true;
     })
     .withName("ResetClimberArm");
+  }
+
+  public boolean hasInitialReset() {
+    return m_hasInitialReset;
   }
 
   public void reset() {

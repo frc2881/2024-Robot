@@ -21,6 +21,8 @@ public class FeederSubsystem extends SubsystemBase {
   private final SparkPIDController m_armPIDController;
   private final CANSparkMax m_rollerMotor;
 
+  private boolean m_hasInitialReset = false;
+
   public FeederSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Feeder.kArmMotorCANId, MotorType.kBrushless);
     m_armMotor.restoreFactoryDefaults();
@@ -96,8 +98,13 @@ public class FeederSubsystem extends SubsystemBase {
       m_armEncoder.setPosition(0);
       m_armMotor.set(0.0);
       Utils.enableSoftLimits(m_armMotor, true);
+      m_hasInitialReset = true;
     })
     .withName("ResetFeeder");
+  }
+
+  public boolean hasInitialReset() {
+    return m_hasInitialReset;
   }
 
   public void reset() {
