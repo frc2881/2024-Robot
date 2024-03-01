@@ -47,27 +47,27 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_swerveModuleFrontLeft = new SwerveModule(
       SwerveModuleLocation.FrontLeft,
-      Constants.Drive.kFrontLeftDrivingMotorCANId,
-      Constants.Drive.kFrontLeftTurningMotorCANId,
-      Constants.Drive.SwerveModule.kOffsetFrontLeft);
+      Constants.Drive.kSwerveModuleFrontLeftDrivingMotorCANId,
+      Constants.Drive.kSwerveModuleFrontLeftTurningMotorCANId,
+      Constants.Drive.kSwerveModuleFrontLeftOffset);
 
     m_swerveModuleFrontRight = new SwerveModule(
       SwerveModuleLocation.FrontRight,
-      Constants.Drive.kFrontRightDrivingMotorCANId,
-      Constants.Drive.kFrontRightTurningMotorCANId,
-      Constants.Drive.SwerveModule.kOffsetFrontRight);
+      Constants.Drive.kSwerveModuleFrontRightDrivingMotorCANId,
+      Constants.Drive.kSwerveModuleFrontRightTurningMotorCANId,
+      Constants.Drive.kSwerveModuleFrontRightOffset);
 
     m_swerveModuleRearLeft = new SwerveModule(
       SwerveModuleLocation.RearLeft,
-      Constants.Drive.kRearLeftDrivingMotorCANId,
-      Constants.Drive.kRearLeftTurningMotorCANId,
-      Constants.Drive.SwerveModule.kOffsetRearLeft);
+      Constants.Drive.kSwerveModuleRearLeftDrivingMotorCANId,
+      Constants.Drive.kSwerveModuleRearLeftTurningMotorCANId,
+      Constants.Drive.kSwerveModuleRearLeftOffset);
 
     m_swerveModuleRearRight = new SwerveModule(
       SwerveModuleLocation.RearRight,
-      Constants.Drive.kRearRightDrivingMotorCANId,
-      Constants.Drive.kRearRightTurningMotorCANId, 
-      Constants.Drive.SwerveModule.kOffsetRearRight);
+      Constants.Drive.kSwerveModuleRearRightDrivingMotorCANId,
+      Constants.Drive.kSwerveModuleRearRightTurningMotorCANId, 
+      Constants.Drive.kSwerveModuleRearRightOffset);
 
     m_driftCorrectionThetaController = new PIDController(Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.P(), Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.I(), Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.D());
     m_driftCorrectionThetaController.enableContinuousInput(-180.0, 180.0);

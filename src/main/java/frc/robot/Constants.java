@@ -42,14 +42,14 @@ public final class Constants {
   }
 
   public static final class Drive {
-    public static final int kFrontLeftDrivingMotorCANId = 3;
-    public static final int kFrontLeftTurningMotorCANId = 4;
-    public static final int kRearLeftDrivingMotorCANId = 5;
-    public static final int kRearLeftTurningMotorCANId = 6;
-    public static final int kFrontRightDrivingMotorCANId = 7;
-    public static final int kFrontRightTurningMotorCANId = 8;
-    public static final int kRearRightDrivingMotorCANId = 9;
-    public static final int kRearRightTurningMotorCANId = 10;
+    public static final int kSwerveModuleFrontLeftDrivingMotorCANId = 3;
+    public static final int kSwerveModuleFrontLeftTurningMotorCANId = 4;
+    public static final int kSwerveModuleFrontRightDrivingMotorCANId = 7;
+    public static final int kSwerveModuleFrontRightTurningMotorCANId = 8;
+    public static final int kSwerveModuleRearLeftDrivingMotorCANId = 5;
+    public static final int kSwerveModuleRearLeftTurningMotorCANId = 6;
+    public static final int kSwerveModuleRearRightDrivingMotorCANId = 9;
+    public static final int kSwerveModuleRearRightTurningMotorCANId = 10;
 
     public static final double kTrackWidth = Units.inchesToMeters(24.5);
     public static final double kWheelBase = Units.inchesToMeters(21.5);
@@ -58,11 +58,21 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond = 5.7424;
     public static final double kMaxAngularSpeed = 2 * Math.PI;
 
+    public static final double kSwerveModuleFrontLeftOffset = -Math.PI / 2;
+    public static final double kSwerveModuleFrontRightOffset = 0;
+    public static final double kSwerveModuleRearLeftOffset = Math.PI;
+    public static final double kSwerveModuleRearRightOffset = Math.PI / 2;
+
+    public static final Translation2d kSwerveModuleFrontLeftTranslation = new Translation2d(Constants.Drive.kWheelBase / 2, Constants.Drive.kTrackWidth / 2);
+    public static final Translation2d kSwerveModuleFrontRightTranslation = new Translation2d(Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2);
+    public static final Translation2d kSwerveModuleRearLeftTranslation = new Translation2d(-Constants.Drive.kWheelBase / 2, Constants.Drive.kTrackWidth / 2);
+    public static final Translation2d kSwerveModuleRearRightTranslation = new Translation2d(-Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2);
+
     public static final SwerveDriveKinematics kSwerveDriveKinematics = new SwerveDriveKinematics(
-      new Translation2d(Constants.Drive.kWheelBase / 2, Constants.Drive.kTrackWidth / 2),
-      new Translation2d(Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2),
-      new Translation2d(-Constants.Drive.kWheelBase / 2, Constants.Drive.kTrackWidth / 2),
-      new Translation2d(-Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2)
+      kSwerveModuleFrontLeftTranslation, 
+      kSwerveModuleFrontRightTranslation, 
+      kSwerveModuleRearLeftTranslation, 
+      kSwerveModuleRearRightTranslation
     );
 
     public static final PIDConstants kDriftCorrectionThetaControllerPIDConstants = new PIDConstants(0.01, 0, 0, 0);
@@ -81,11 +91,6 @@ public final class Constants {
     public static final PathConstraints kPathFindingConstraints = new PathConstraints(3.0, 3.0, 540.00, 720.00);
 
     public static final class SwerveModule {
-      public static final double kOffsetFrontLeft = -Math.PI / 2;
-      public static final double kOffsetFrontRight = 0;
-      public static final double kOffsetRearLeft = Math.PI;
-      public static final double kOffsetRearRight = Math.PI / 2;
-
       public static final int kDrivingMotorPinionTeeth = 14;
       public static final double kFreeSpeedRpm = 6238.73054766; //5676
       public static final double kWheelDiameterMeters = Units.inchesToMeters(3.0);
