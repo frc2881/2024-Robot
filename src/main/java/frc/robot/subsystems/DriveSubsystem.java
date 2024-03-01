@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
-import com.revrobotics.CANSparkBase.IdleMode;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -27,7 +25,10 @@ import frc.robot.lib.drive.SwerveModule;
 
 public class DriveSubsystem extends SubsystemBase {
   private Supplier<Double> m_gyroHeading;
-  private final SwerveModule[] m_swerveModules;
+  private final SwerveModule m_swerveModuleFrontLeft;
+  private final SwerveModule m_swerveModuleFrontRight;
+  private final SwerveModule m_swerveModuleRearLeft;
+  private final SwerveModule m_swerveModuleRearRight;
   private final PIDController m_driftCorrectionThetaController;
   private final PIDController m_targetAlignmentThetaController;
   private final SlewRateLimiter m_driveInputXFilter;
@@ -37,7 +38,6 @@ public class DriveSubsystem extends SubsystemBase {
   private DriveOrientation m_orientation = DriveOrientation.Field;
   private DriveSpeedMode m_speedMode = DriveSpeedMode.Competition;
   private DriveLockState m_lockState = DriveLockState.Unlocked;
-  private IdleMode m_idleMode = IdleMode.kBrake;
   private DriveDriftCorrection m_driftCorrection = DriveDriftCorrection.Enabled;
   private boolean m_isRotationLocked = false;
   private boolean m_isAlignedToTarget = false;
@@ -45,28 +45,29 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem(Supplier<Double> gyroHeading) {
     m_gyroHeading = gyroHeading;
 
-    m_swerveModules = new SwerveModule[] {
-      new SwerveModule(
-        SwerveModuleLocation.FrontLeft,
-        Constants.Drive.kFrontLeftDrivingMotorCANId,
-        Constants.Drive.kFrontLeftTurningMotorCANId,
-        Constants.Drive.SwerveModule.kOffsetFrontLeft),
-      new SwerveModule(
-        SwerveModuleLocation.FrontRight,
-        Constants.Drive.kFrontRightDrivingMotorCANId,
-        Constants.Drive.kFrontRightTurningMotorCANId,
-        Constants.Drive.SwerveModule.kOffsetFrontRight),
-      new SwerveModule(
-        SwerveModuleLocation.RearLeft,
-        Constants.Drive.kRearLeftDrivingMotorCANId,
-        Constants.Drive.kRearLeftTurningMotorCANId,
-        Constants.Drive.SwerveModule.kOffsetRearLeft),
-      new SwerveModule(
-        SwerveModuleLocation.RearRight,
-        Constants.Drive.kRearRightDrivingMotorCANId,
-        Constants.Drive.kRearRightTurningMotorCANId, 
-        Constants.Drive.SwerveModule.kOffsetRearRight)
-    };
+    m_swerveModuleFrontLeft = new SwerveModule(
+      SwerveModuleLocation.FrontLeft,
+      Constants.Drive.kFrontLeftDrivingMotorCANId,
+      Constants.Drive.kFrontLeftTurningMotorCANId,
+      Constants.Drive.SwerveModule.kOffsetFrontLeft);
+
+    m_swerveModuleFrontRight = new SwerveModule(
+      SwerveModuleLocation.FrontRight,
+      Constants.Drive.kFrontRightDrivingMotorCANId,
+      Constants.Drive.kFrontRightTurningMotorCANId,
+      Constants.Drive.SwerveModule.kOffsetFrontRight);
+
+    m_swerveModuleRearLeft = new SwerveModule(
+      SwerveModuleLocation.RearLeft,
+      Constants.Drive.kRearLeftDrivingMotorCANId,
+      Constants.Drive.kRearLeftTurningMotorCANId,
+      Constants.Drive.SwerveModule.kOffsetRearLeft);
+
+    m_swerveModuleRearRight = new SwerveModule(
+      SwerveModuleLocation.RearRight,
+      Constants.Drive.kRearRightDrivingMotorCANId,
+      Constants.Drive.kRearRightTurningMotorCANId, 
+      Constants.Drive.SwerveModule.kOffsetRearRight);
 
     m_driftCorrectionThetaController = new PIDController(Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.P(), Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.I(), Constants.Drive.kDriftCorrectionThetaControllerPIDConstants.D());
     m_driftCorrectionThetaController.enableContinuousInput(-180.0, 180.0);
@@ -155,26 +156,29 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public SwerveModulePosition[] getSwerveModulePositions() {
-    SwerveModulePosition[] positions = new SwerveModulePosition[m_swerveModules.length];
-    for (int i = 0; i < m_swerveModules.length; i++) {
-      positions[i] = m_swerveModules[i].getPosition();
-    }
-    return positions;
+    return new SwerveModulePosition[] {
+      m_swerveModuleFrontLeft.getPosition(),
+      m_swerveModuleFrontRight.getPosition(),
+      m_swerveModuleRearLeft.getPosition(),
+      m_swerveModuleRearRight.getPosition()
+    };
   }
 
   public SwerveModuleState[] getSwerveModuleStates() {
-    SwerveModuleState[] states = new SwerveModuleState[m_swerveModules.length];
-    for (int i = 0; i < m_swerveModules.length; i++) {
-      states[i] = m_swerveModules[i].getState();
-    }
-    return states;
+    return new SwerveModuleState[] {
+      m_swerveModuleFrontLeft.getState(),
+      m_swerveModuleFrontRight.getState(),
+      m_swerveModuleRearLeft.getState(),
+      m_swerveModuleRearRight.getState()
+    };
   }
 
   public void setSwerveModuleStates(SwerveModuleState[] swerveModuleStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Drive.kMaxSpeedMetersPerSecond);
-    for (int i = 0; i < m_swerveModules.length; i++) {
-      m_swerveModules[i].setTargetState(swerveModuleStates[i]);
-    }
+    m_swerveModuleFrontLeft.setTargetState(swerveModuleStates[0]);
+    m_swerveModuleFrontRight.setTargetState(swerveModuleStates[1]);
+    m_swerveModuleRearLeft.setTargetState(swerveModuleStates[2]);
+    m_swerveModuleRearRight.setTargetState(swerveModuleStates[3]);
   }
 
   public SwerveModuleState[] convertToSwerveModuleStates(double speedX, double speedY, double speedRotation) {
@@ -184,11 +188,10 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private void setSwerveModuleStatesToLocked() {
-    for (int i = 0; i < m_swerveModules.length; i++) {
-      m_swerveModules[i].setTargetState(
-        new SwerveModuleState(0, Rotation2d.fromDegrees(( i == 0 || i == 3) ? 45 : -45))
-      );
-    }
+    m_swerveModuleFrontLeft.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    m_swerveModuleFrontRight.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    m_swerveModuleRearLeft.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+    m_swerveModuleRearRight.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
   public void setLockState(DriveLockState lockState) {
@@ -206,12 +209,6 @@ public class DriveSubsystem extends SubsystemBase {
     )
     .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
     .withName("SetDriveLockedState");
-  }
-
-  private void resetSwerveModuleEncoders() {
-    for (int i = 0; i < m_swerveModules.length; i++) {
-      m_swerveModules[i].resetEncoders();
-    }
   }
 
   public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Supplier<Double> targetYaw) {
@@ -239,28 +236,24 @@ public class DriveSubsystem extends SubsystemBase {
     .withName("AlignDriveRotationToTarget");
   }
 
-  public void setIdleMode(IdleMode idleMode) {
-    m_idleMode = idleMode;
-    for (int i = 0; i < m_swerveModules.length; i++) {
-      m_swerveModules[i].setIdleMode(m_idleMode);
-    }
-  }
-
   public void reset() {
     drive(0.0, 0.0, 0.0);
-    resetSwerveModuleEncoders();
   }
 
   private void updateTelemetry() {
     SmartDashboard.putString("Robot/Drive/LockState", m_lockState.toString());
-    SmartDashboard.putString("Robot/Drive/IdleMode", m_idleMode.toString().substring(1));
+    m_swerveModuleFrontLeft.updateTelemetry();
+    m_swerveModuleFrontRight.updateTelemetry();
+    m_swerveModuleRearLeft.updateTelemetry();
+    m_swerveModuleRearRight.updateTelemetry();
   }
 
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder); 
-    for (int i = 0; i < m_swerveModules.length; i++) {
-      m_swerveModules[i].initSendable(builder);
-    }
+    m_swerveModuleFrontLeft.initSendable(builder);
+    m_swerveModuleFrontRight.initSendable(builder);
+    m_swerveModuleRearLeft.initSendable(builder);
+    m_swerveModuleRearRight.initSendable(builder);
   }
 }

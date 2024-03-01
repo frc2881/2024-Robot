@@ -37,11 +37,9 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Climber.kArmMotorForwardSoftLimit); 
     m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     m_armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Climber.kArmMotorReverseSoftLimit);
-
     m_armEncoder = m_armMotor.getEncoder();
     m_armEncoder.setPositionConversionFactor(Constants.Climber.kArmMotorPositionConversionFactor);
     m_armEncoder.setVelocityConversionFactor(Constants.Climber.kArmMotorVelocityConversionFactor);
-    
     m_armPIDController = m_armMotor.getPIDController();
     m_armPIDController.setFeedbackDevice(m_armEncoder);
     m_armPIDController.setP(Constants.Climber.kArmMotorPIDConstants.P());
@@ -50,11 +48,14 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armPIDController.setSmartMotionMaxVelocity(Constants.Climber.kArmMotorSmartMotionMaxVelocity, 0);
     m_armPIDController.setSmartMotionMaxAccel(Constants.Climber.kArmMotorSmartMotionMaxAccel, 0);
 
+    m_armMotor.burnFlash();
+
     m_rollerMotor = new CANSparkMax(Constants.Climber.kRollerMotorCANId, MotorType.kBrushed);
     // m_rollerMotor.restoreFactoryDefaults();
     // m_rollerMotor.setIdleMode(Constants.Arm.kRollerMotorIdleMode); 
     // m_rollerMotor.setSmartCurrentLimit(Constants.Arm.kRollerMotorCurrentLimit);
     // m_rollerMotor.setSecondaryCurrentLimit(Constants.Arm.kRollerMotorCurrentLimit);
+    // m_rollerMotor.burnFlash();
   }
 
   @Override

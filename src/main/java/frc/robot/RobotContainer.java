@@ -6,7 +6,6 @@ import java.util.List;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -70,6 +69,9 @@ public class RobotContainer {
     m_driverController = new GameController(Constants.Controllers.kDriverControllerPort);
     m_operatorController = new GameController(Constants.Controllers.kOperatorControllerPort);
 
+    // OUTPUT CONTROLLERS ========================================
+    m_lightsController = new LightsController();
+
     // SENSORS ========================================
     m_gyroSensor = new GyroSensor(
       Constants.Sensors.Gyro.kIMUAxisYaw, 
@@ -116,19 +118,16 @@ public class RobotContainer {
       Constants.Sensors.Object.kCameraName,
       Constants.Sensors.Object.kObjectName
     );
-    
+
     // SUBSYSTEMS ========================================
-    m_driveSubsystem = new DriveSubsystem(m_gyroSensor::getHeading);
-    m_poseSubsystem = new PoseSubsystem(m_poseSensors, m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
     m_feederSubsystem = new FeederSubsystem();
+    m_climberSubsystem = new ClimberSubsystem();
     m_intakeSubsystem = new IntakeSubsystem();
     m_launcherArmSubsystem = new LauncherArmSubsystem();
     m_launcherRollerSubsystem = new LauncherRollerSubsystem();
-    m_climberSubsystem = new ClimberSubsystem();
-
-    // OUTPUT CONTROLLERS ========================================
-    m_lightsController = new LightsController();
-
+    m_driveSubsystem = new DriveSubsystem(m_gyroSensor::getHeading);
+    m_poseSubsystem = new PoseSubsystem(m_poseSensors, m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
+    
     // COMMANDS ========================================
     m_gameCommands = new GameCommands(
       m_gyroSensor, 
@@ -234,12 +233,6 @@ public class RobotContainer {
     driveDriftCorrectionChooser.addOption(DriveDriftCorrection.Disabled.toString(), DriveDriftCorrection.Disabled);
     driveDriftCorrectionChooser.onChange(driftCorrection -> m_driveSubsystem.setDriftCorrection(driftCorrection));
     SmartDashboard.putData("Robot/Drive/DriftCorrection", driveDriftCorrectionChooser);
-
-    SendableChooser<IdleMode> driveIdleModeChooser = new SendableChooser<IdleMode>();
-    driveIdleModeChooser.setDefaultOption(IdleMode.kBrake.toString().substring(1), IdleMode.kBrake);
-    driveIdleModeChooser.addOption(IdleMode.kCoast.toString().substring(1), IdleMode.kCoast);
-    driveIdleModeChooser.onChange(idleMode -> m_driveSubsystem.setIdleMode(idleMode));
-    SmartDashboard.putData("Robot/Drive/IdleMode", driveIdleModeChooser);
   }
 
   private void configureAutos() {

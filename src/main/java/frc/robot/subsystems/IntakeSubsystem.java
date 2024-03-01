@@ -24,18 +24,21 @@ public class IntakeSubsystem extends SubsystemBase {
     m_topBeltMotor.setIdleMode(Constants.Intake.kTopBeltMotorIdleMode); 
     m_topBeltMotor.setSmartCurrentLimit(Constants.Intake.kTopBeltMotorCurrentLimit);
     m_topBeltMotor.setSecondaryCurrentLimit(Constants.Intake.kTopBeltMotorCurrentLimit);
+    m_topBeltMotor.burnFlash();
 
     m_bottomBeltMotor = new CANSparkMax(Constants.Intake.kBottomBeltMotorCANId, MotorType.kBrushless);
     m_bottomBeltMotor.restoreFactoryDefaults();
     m_bottomBeltMotor.setIdleMode(Constants.Intake.kBottomBeltMotorIdleMode); 
     m_bottomBeltMotor.setSmartCurrentLimit(Constants.Intake.kBottomBeltMotorCurrentLimit);
     m_bottomBeltMotor.setSecondaryCurrentLimit(Constants.Intake.kBottomBeltMotorCurrentLimit);
+    m_bottomBeltMotor.burnFlash();
 
     m_rollerMotor = new CANSparkMax(Constants.Intake.kRollerMotorCANId, MotorType.kBrushless);
     m_rollerMotor.restoreFactoryDefaults();
     m_rollerMotor.setIdleMode(Constants.Intake.kRollerMotorIdleMode); 
     m_rollerMotor.setSmartCurrentLimit(Constants.Intake.kRollerMotorCurrentLimit);
     m_rollerMotor.setSecondaryCurrentLimit(Constants.Intake.kRollerMotorCurrentLimit);
+    m_rollerMotor.burnFlash();
   }
 
   @Override

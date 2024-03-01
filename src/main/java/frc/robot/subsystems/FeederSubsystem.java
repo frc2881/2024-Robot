@@ -33,19 +33,19 @@ public class FeederSubsystem extends SubsystemBase {
     m_armMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Feeder.kArmMotorForwardSoftLimit); 
     m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     m_armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Feeder.kArmMotorReverseSoftLimit);
-    
     m_armPIDController = m_armMotor.getPIDController();
     m_armPIDController.setP(Constants.Feeder.kArmMotorPIDConstants.P());
     m_armPIDController.setD(Constants.Feeder.kArmMotorPIDConstants.D());
     m_armPIDController.setOutputRange(Constants.Feeder.kArmMotorMinOutput, Constants.Feeder.kArmMotorMaxOutput);
-
     m_armEncoder = m_armMotor.getEncoder();
+    m_armMotor.burnFlash();
 
     m_rollerMotor = new CANSparkMax(Constants.Feeder.kRollerMotorCANId, MotorType.kBrushless);
     m_rollerMotor.restoreFactoryDefaults();
     m_rollerMotor.setIdleMode(Constants.Feeder.kArmMotorIdleMode); 
     m_rollerMotor.setSmartCurrentLimit(Constants.Feeder.kRollerMotorCurrentLimit);
     m_rollerMotor.setSecondaryCurrentLimit(Constants.Feeder.kRollerMotorCurrentLimit);
+    m_rollerMotor.burnFlash();
   }
 
   @Override

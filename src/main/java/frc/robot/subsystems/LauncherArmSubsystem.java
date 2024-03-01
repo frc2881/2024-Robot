@@ -36,11 +36,9 @@ public class LauncherArmSubsystem extends SubsystemBase {
     m_armMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Launcher.kArmMotorForwardSoftLimit); 
     m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
     m_armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Launcher.kArmMotorReverseSoftLimit);
-
     m_armEncoder = m_armMotor.getEncoder();
     m_armEncoder.setPositionConversionFactor(Constants.Launcher.kArmMotorPositionConversionFactor);
     m_armEncoder.setVelocityConversionFactor(Constants.Launcher.kArmMotorVelocityConversionFactor);
-    
     m_armPIDController = m_armMotor.getPIDController();
     m_armPIDController.setFeedbackDevice(m_armEncoder);
     m_armPIDController.setP(Constants.Launcher.kArmMotorPIDConstants.P());
@@ -48,6 +46,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
     m_armPIDController.setOutputRange(Constants.Launcher.kArmMotorMinOutput, Constants.Launcher.kArmMotorMaxOutput);
     m_armPIDController.setSmartMotionMaxVelocity(Constants.Launcher.kArmMotorSmartMotionMaxVelocity, 0);
     m_armPIDController.setSmartMotionMaxAccel(Constants.Launcher.kArmMotorSmartMotionMaxAccel, 0);
+    m_armMotor.burnFlash();
 
     m_distances = new double[Constants.Launcher.kArmPositions.length];
     m_positions = new double[Constants.Launcher.kArmPositions.length];

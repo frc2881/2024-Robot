@@ -23,12 +23,14 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     m_topRollerMotor.setSmartCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
     m_topRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
     m_topRollerMotor.setInverted(true);
+    m_topRollerMotor.burnFlash();
 
     m_bottomRollerMotor = new CANSparkFlex(Constants.Launcher.kBottomRollerMotorCANId, MotorType.kBrushless);
     m_bottomRollerMotor.restoreFactoryDefaults();
     m_bottomRollerMotor.setIdleMode(Constants.Launcher.kBottomRollerMotorIdleMode); 
     m_bottomRollerMotor.setSmartCurrentLimit(Constants.Launcher.kBottomRollerMotorCurrentLimit);
     m_bottomRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kBottomRollerMotorCurrentLimit);
+    m_bottomRollerMotor.burnFlash();
   }
 
   @Override
