@@ -2,6 +2,7 @@ package frc.robot.lib.drive;
 
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
@@ -14,8 +15,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.lib.common.Enums.SwerveModuleLocation;
+import frc.robot.lib.logging.Logger;
 import frc.robot.Constants;
 
 public class SwerveModule implements Sendable {
@@ -39,6 +42,27 @@ public class SwerveModule implements Sendable {
     m_turningEncoder = m_turningMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     m_turningPIDController = m_turningMotor.getPIDController();
     m_turningPIDController.setFeedbackDevice(m_turningEncoder);
+
+    setTurningMotorParams();
+
+    m_turningMotor.burnFlash();
+
+    m_turningOffset = turningOffset;
+
+    m_drivingMotor = new CANSparkFlex(drivingMotorCanId, MotorType.kBrushless);
+    m_drivingMotor.restoreFactoryDefaults();
+    m_drivingEncoder = m_drivingMotor.getEncoder();
+    m_drivingPIDController = m_drivingMotor.getPIDController();
+    m_drivingPIDController.setFeedbackDevice(m_drivingEncoder);
+
+    setDrivingMotorParams();
+
+    m_drivingMotor.burnFlash();
+
+    m_drivingEncoder.setPosition(0);
+  }
+
+  private void setTurningMotorParams() {
     m_turningEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderPositionConversionFactor);
     m_turningEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderVelocityConversionFactor);
     m_turningEncoder.setInverted(Constants.Drive.SwerveModule.kTurningEncoderInverted);
@@ -52,16 +76,25 @@ public class SwerveModule implements Sendable {
     m_turningPIDController.setOutputRange(Constants.Drive.SwerveModule.kTurningMotorMinOutput, Constants.Drive.SwerveModule.kTurningMotorMaxOutput);
     m_turningMotor.setIdleMode(Constants.Drive.SwerveModule.kTurningMotorIdleMode);
     m_turningMotor.setSmartCurrentLimit(Constants.Drive.SwerveModule.kTurningMotorCurrentLimit);
-    m_turningMotor.burnFlash();
-    m_turningOffset = turningOffset;
+  }
 
-    m_drivingMotor = new CANSparkFlex(drivingMotorCanId, MotorType.kBrushless);
-    m_drivingMotor.restoreFactoryDefaults();
-    m_drivingEncoder = m_drivingMotor.getEncoder();
-    m_drivingPIDController = m_drivingMotor.getPIDController();
-    m_drivingPIDController.setFeedbackDevice(m_drivingEncoder);
-    m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionConversionFactor);
-    m_drivingEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderVelocityConversionFactor);
+  private void setDrivingMotorParams() {
+    for (int i = 0; i < 10; i++) {
+      m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionConversionFactor);
+      if (m_drivingEncoder.getPositionConversionFactor() == Constants.Drive.SwerveModule.kDrivingEncoderPositionConversionFactor) {
+        Logger.debug("SwerveModule " + m_location + " setPositionConversionFactor validated");
+        break;
+      }
+      Timer.delay(0.005);
+    }
+    for (int i = 0; i < 10; i++) {
+      m_drivingEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderVelocityConversionFactor);
+      if (m_drivingEncoder.getVelocityConversionFactor() == Constants.Drive.SwerveModule.kDrivingEncoderVelocityConversionFactor) {
+        Logger.debug("SwerveModule " + m_location + " setVelocityConversionFactor validated");
+        break;
+      }
+      Timer.delay(0.005);
+    }
     m_drivingPIDController.setP(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.P());
     m_drivingPIDController.setI(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.I());
     m_drivingPIDController.setD(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.D());
@@ -69,8 +102,6 @@ public class SwerveModule implements Sendable {
     m_drivingPIDController.setOutputRange(Constants.Drive.SwerveModule.kDrivingMotorMinOutput, Constants.Drive.SwerveModule.kDrivingMotorMaxOutput);
     m_drivingMotor.setIdleMode(Constants.Drive.SwerveModule.kDrivingMotorIdleMode);
     m_drivingMotor.setSmartCurrentLimit(Constants.Drive.SwerveModule.kDrivingMotorCurrentLimit);
-    m_drivingMotor.burnFlash();
-    m_drivingEncoder.setPosition(0);
   }
 
   public void setTargetState(SwerveModuleState targetState) {
