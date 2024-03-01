@@ -198,9 +198,9 @@ public class RobotContainer {
     // TODO: if/when launcher auto angle alignment is working, make alignLauncherToTargetCommand the default command
     // m_operatorController.leftY().whileTrue(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
-    m_operatorController.leftTrigger().whileTrue(m_gameCommands.alignLauncherToAmpCommand(true)); // TODO: amp launcher position left trigger - position/launch or just position
+    m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(true)); // TODO: amp launcher position left trigger - position/launch or just position
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
-    m_operatorController.leftBumper().whileTrue(m_gameCommands.runLauncherAmpCommand());
+    m_operatorController.leftTrigger().whileTrue(m_gameCommands.runLauncherAmpCommand());
     //m_operatorController.rightBumper().whileTrue();
     // m_operatorController.leftStick().whileTrue(Commands.none());
     // m_operatorController.rightStick().whileTrue(Commands.none());
@@ -209,8 +209,8 @@ public class RobotContainer {
     m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionShortRange, true));
     m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand(true));
-    m_operatorController.b().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
-    m_operatorController.y().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
+    m_operatorController.y().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
+    m_operatorController.b().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
     m_operatorController.x().onTrue(m_feederSubsystem.runCommand()).onFalse(m_feederSubsystem.stopCommand());
     m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
@@ -253,10 +253,10 @@ public class RobotContainer {
     );
 
     m_autoChooser.setDefaultOption("None", Commands.none());
-    m_autoChooser.addOption("BackupShoot1", m_autoCommands.runAuto(false, new AutoPoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses })); // TODO: Make empty noteposes array
-    m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupScorePickup14());
+    //m_autoChooser.addOption("BackupShoot1", m_autoCommands.runAuto(false, new AutoPoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses })); // TODO: Make empty noteposes array
     m_autoChooser.addOption("ShootPickup1", m_autoCommands.scorePickup1());
     m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupScorePickup1());
+    m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupScorePickup14());
     m_autoChooser.addOption("ShootPickup2", m_autoCommands.scorePickup2());
     m_autoChooser.addOption("ShootPickup3", m_autoCommands.scorePickup3());
     
