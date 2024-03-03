@@ -59,7 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
     )
     .andThen(
       startEnd(() -> {
-        runTopBelts(MotorDirection.Forward, 0.4);
+        runTopBelts(MotorDirection.Forward, 0.4); // KEEP AT 0.4 OR SLOWER, ONLY EDIT ADJUSTMENT COMMAND
         runBottomBelts(MotorDirection.Reverse, 0.4);
         runRollers(MotorDirection.Forward);
       }, () -> {})

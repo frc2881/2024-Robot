@@ -21,7 +21,6 @@ import frc.robot.lib.common.Enums.DriveOrientation;
 import frc.robot.lib.common.Enums.DriveSpeedMode;
 import frc.robot.lib.common.Enums.IntakeLocation;
 import frc.robot.lib.common.Enums.MotorDirection;
-import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
@@ -31,7 +30,6 @@ import frc.robot.lib.sensors.ObjectSensor;
 import frc.robot.lib.sensors.PoseSensor;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
 import frc.robot.subsystems.LauncherRollerSubsystem;
@@ -51,7 +49,6 @@ public class RobotContainer {
   private final ObjectSensor m_objectSensor;
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
-  private final FeederSubsystem m_feederSubsystem;
   private final IntakeSubsystem m_intakeSubsystem;
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
@@ -120,7 +117,6 @@ public class RobotContainer {
     );
 
     // SUBSYSTEMS ========================================
-    m_feederSubsystem = new FeederSubsystem();
     m_climberSubsystem = new ClimberSubsystem();
     m_intakeSubsystem = new IntakeSubsystem();
     m_launcherArmSubsystem = new LauncherArmSubsystem();
@@ -138,7 +134,6 @@ public class RobotContainer {
       m_launcherDistanceSensor, 
       m_driveSubsystem, 
       m_poseSubsystem, 
-      m_feederSubsystem, 
       m_intakeSubsystem, 
       m_launcherArmSubsystem, 
       m_launcherRollerSubsystem, 
@@ -157,8 +152,7 @@ public class RobotContainer {
       m_intakeDistanceSensor, 
       m_launcherDistanceSensor, 
       m_driveSubsystem, 
-      m_poseSubsystem, 
-      m_feederSubsystem, 
+      m_poseSubsystem,  
       m_intakeSubsystem, 
       m_launcherArmSubsystem, 
       m_launcherRollerSubsystem, 
@@ -194,7 +188,6 @@ public class RobotContainer {
 
     // OPERATOR ========================================
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
-    m_feederSubsystem.setDefaultCommand(m_feederSubsystem.moveArmInCommand());
     // TODO: if/when launcher auto angle alignment is working, make alignLauncherToTargetCommand the default command
     // m_operatorController.leftY().whileTrue(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
@@ -211,7 +204,7 @@ public class RobotContainer {
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand(true));
     m_operatorController.y().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
     m_operatorController.b().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
-    m_operatorController.x().onTrue(m_feederSubsystem.runCommand()).onFalse(m_feederSubsystem.stopCommand());
+    //m_operatorController.x().whileTrue(Commands.none());
     m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
 
@@ -233,6 +226,15 @@ public class RobotContainer {
     driveDriftCorrectionChooser.addOption(DriveDriftCorrection.Disabled.toString(), DriveDriftCorrection.Disabled);
     driveDriftCorrectionChooser.onChange(driftCorrection -> m_driveSubsystem.setDriftCorrection(driftCorrection));
     SmartDashboard.putData("Robot/Drive/DriftCorrection", driveDriftCorrectionChooser);
+
+    SendableChooser<Double> intakePositionChooser = new SendableChooser<Double>();
+    intakePositionChooser.setDefaultOption("" + Constants.Launcher.kArmPositionIntake, Constants.Launcher.kArmPositionIntake);
+    intakePositionChooser.addOption("13.5", 13.5);
+    intakePositionChooser.addOption("13.0", 13.0);
+    intakePositionChooser.addOption("12.5", 12.5);
+    intakePositionChooser.addOption("12.0", 12.0);
+    intakePositionChooser.onChange(intakePosition -> m_launcherArmSubsystem.setIntakePosition(intakePosition));
+    SmartDashboard.putData("Robot/Launcher/Arm/IntakePosition", intakePositionChooser);
   }
 
   private void configureAutos() {
@@ -255,10 +257,11 @@ public class RobotContainer {
     m_autoChooser.setDefaultOption("None", Commands.none());
     //m_autoChooser.addOption("BackupShoot1", m_autoCommands.runAuto(false, new AutoPoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses })); // TODO: Make empty noteposes array
     m_autoChooser.addOption("ShootPickup1", m_autoCommands.scorePickup1());
-    m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupScorePickup1());
-    m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupScorePickup14());
     m_autoChooser.addOption("ShootPickup2", m_autoCommands.scorePickup2());
     m_autoChooser.addOption("ShootPickup3", m_autoCommands.scorePickup3());
+    m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupScorePickup1());
+    m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupScorePickup14());
+    m_autoChooser.addOption("ScorePreload", m_autoCommands.scoreSubwooferAuto());
     
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }
@@ -270,7 +273,6 @@ public class RobotContainer {
   public void resetRobot() {
     m_driveSubsystem.reset();
     m_intakeSubsystem.reset();
-    m_feederSubsystem.reset();
     m_launcherRollerSubsystem.reset();
     m_launcherArmSubsystem.reset();
     m_climberSubsystem.reset();
@@ -291,7 +293,6 @@ public class RobotContainer {
     SmartDashboard.putBoolean(
       "Robot/HasInitialReset", 
       m_launcherArmSubsystem.hasInitialReset() &&
-      m_feederSubsystem.hasInitialReset() &&
       m_climberSubsystem.hasInitialReset()
     );
   }

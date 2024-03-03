@@ -20,7 +20,6 @@ import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.FeederSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
 import frc.robot.subsystems.LauncherRollerSubsystem;
@@ -36,7 +35,6 @@ public class AutoCommands {
   private final DistanceSensor m_launcherDistanceSensor;
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
-  private final FeederSubsystem m_feederSubsystem;
   private final IntakeSubsystem m_intakeSubsystem;
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
@@ -53,7 +51,6 @@ public class AutoCommands {
     DistanceSensor launcherDistanceSensor,
     DriveSubsystem driveSubsystem, 
     PoseSubsystem poseSubsystem,
-    FeederSubsystem feederSubsystem,
     IntakeSubsystem intakeSubsystem,
     LauncherArmSubsystem launcherArmSubsystem,
     LauncherRollerSubsystem launcherRollerSubsystem,
@@ -69,7 +66,6 @@ public class AutoCommands {
     m_launcherDistanceSensor = launcherDistanceSensor;
     m_driveSubsystem = driveSubsystem;
     m_poseSubsystem = poseSubsystem;
-    m_feederSubsystem = feederSubsystem;
     m_intakeSubsystem = intakeSubsystem;
     m_launcherArmSubsystem = launcherArmSubsystem;
     m_launcherRollerSubsystem = launcherRollerSubsystem;
@@ -140,12 +136,12 @@ public class AutoCommands {
     .sequence(
       scoreSubwooferAuto(),
       Commands.parallel(
-        AutoBuilder.pathfindThenFollowPath(path1, constraints),
+        AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints),
         m_gameCommmands.runIntakeCommand(IntakeLocation.Front)
       ),
       // TODO: Make it so if it doesn't have a note in launcher, eject
       Commands.parallel(
-        m_gameCommmands.alignRobotToTargetCommand(),
+        m_gameCommmands.alignRobotToTargetCommand().withTimeout(2.0),
         m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionMidRange)
       ),
       m_gameCommmands.runLauncherCommand()
@@ -158,30 +154,32 @@ public class AutoCommands {
   public Command backupScorePickup1() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("BackupPickup1");
     PathConstraints constraints = new PathConstraints(3, 3, 540.00, 720.00);
-    return Commands
-    .sequence(
-      Commands.parallel(
-        Commands.either(
-          AutoBuilder.pathfindToPose(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), constraints),
-          AutoBuilder.pathfindToPoseFlipped(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), constraints),
-          () -> Robot.getAlliance() == Alliance.Blue
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        Commands.parallel(
+          Commands.either(
+            AutoBuilder.pathfindToPose(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), constraints),
+            AutoBuilder.pathfindToPoseFlipped(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), constraints),
+            () -> Robot.getAlliance() == Alliance.Blue
+          ),
+          m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShortRange)
         ),
-        m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShortRange)
-      ),
-      m_gameCommmands.alignRobotToTargetCommand(),
-      m_gameCommmands.runLauncherAutoCommand()
-      .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
-      Commands.parallel(
-        AutoBuilder.pathfindThenFollowPath(path1, constraints),
-        m_gameCommmands.runIntakeCommand(IntakeLocation.Front)
-      ),
-      // TODO: Make it so if it doesn't have a note in launcher, eject
-      Commands.parallel(
-        m_gameCommmands.alignRobotToTargetCommand(),
-        m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionMidRange)
-      ),
-      m_gameCommmands.runLauncherAutoCommand()
-      .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
+        m_gameCommmands.alignRobotToTargetCommand().withTimeout(2.0),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
+        Commands.parallel(
+          AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints),
+          m_gameCommmands.runIntakeCommand(IntakeLocation.Front)
+        ),
+        // TODO: Make it so if it doesn't have a note in launcher, eject
+        Commands.parallel(
+          m_gameCommmands.alignRobotToTargetCommand(),
+          m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionMidRange)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
+      )
     )
     .beforeStarting(resetGyroCommand())
     .withName("BackupScorePickup1");
@@ -244,13 +242,13 @@ public class AutoCommands {
     .sequence(
       scoreSubwooferAuto(),
       Commands.parallel(
-        AutoBuilder.pathfindThenFollowPath(path1, constraints),
+        AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints),
         m_gameCommmands.runIntakeCommand(IntakeLocation.Front)
       )
       .withTimeout(5.0), // TODO: make it so it ends when intake is done (race???)
       // TODO: Make it so if it doesn't have a note in launcher, eject
       Commands.parallel(
-        m_gameCommmands.alignRobotToTargetCommand(), // TODO: Make it so it ends when at position, not when timeouts over
+        m_gameCommmands.alignRobotToTargetCommand().withTimeout(2.0), // TODO: Make it so it ends when at position, not when timeouts over
         m_gameCommmands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true)
       )
       .withTimeout(1.0),
@@ -268,13 +266,13 @@ public class AutoCommands {
     .sequence(
       scoreSubwooferAuto(),
       Commands.parallel(
-        AutoBuilder.pathfindThenFollowPath(path1, constraints),
+        AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints),
         m_gameCommmands.runIntakeCommand(IntakeLocation.Front)
       )
       .withTimeout(5.0), // TODO: make it so it ends when intake is done (race???)
       // TODO: Make it so if it doesn't have a note in launcher, eject
       Commands.parallel(
-        m_gameCommmands.alignRobotToTargetCommand(), // TODO: Make it so it ends when at position, not when timeouts over
+        m_gameCommmands.alignRobotToTargetCommand().withTimeout(2.0), // TODO: Make it so it ends when at position, not when timeouts over
         m_gameCommmands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true)
       )
       .withTimeout(1.0),

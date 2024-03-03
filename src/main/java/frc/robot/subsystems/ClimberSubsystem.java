@@ -66,7 +66,7 @@ public class ClimberSubsystem extends SubsystemBase {
   public Command moveArmManualCommand(Supplier<Double> speed) {
     return 
     run(() -> {
-      m_armMotor.set(speed.get() * 0.5);
+      m_armMotor.set(speed.get());
     })
     .finallyDo(() -> m_armMotor.set(0.0))
     .withName("MoveClimberArmManual");

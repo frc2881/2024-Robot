@@ -23,6 +23,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
 
   private double[] m_distances;
   private double[] m_positions;
+  private double m_intakePosition = Constants.Launcher.kArmPositionIntake;
   private boolean m_isAlignedToTarget = false;
   private boolean m_hasInitialReset = false;
 
@@ -86,6 +87,24 @@ public class LauncherArmSubsystem extends SubsystemBase {
       m_isAlignedToTarget = false;
     })
     .withName("AlignLauncherArmToPosition");
+  }
+
+  public Command alignToIntakePositionCommand() {
+    return 
+    run(() -> { 
+      m_armPIDController.setReference(m_intakePosition, ControlType.kSmartMotion); 
+      m_isAlignedToTarget = true;
+    })
+    .beforeStarting(() -> m_isAlignedToTarget = false)
+    .finallyDo(() -> { 
+      m_armMotor.set(0.0); 
+      m_isAlignedToTarget = false;
+    })
+    .withName("AlignLauncherArmToIntakePosition");
+  }
+
+  public void setIntakePosition(double position) {
+    m_intakePosition = position;
   }
 
   public Command alignToTargetCommand(Supplier<Double> targetDistance) {

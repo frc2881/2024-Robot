@@ -55,7 +55,7 @@ public final class Constants {
     public static final double kWheelBase = Units.inchesToMeters(21.5);
     public static final double kDriveBaseRadius = new Translation2d().getDistance(new Translation2d(kWheelBase / 2, kTrackWidth / 2));
 
-    public static final double kMaxSpeedMetersPerSecond = 5.7424;
+    public static final double kMaxSpeedMetersPerSecond = 6.32;
     public static final double kMaxAngularSpeed = 2 * Math.PI;
 
     public static final double kSwerveModuleFrontLeftOffset = -Math.PI / 2;
@@ -80,8 +80,8 @@ public final class Constants {
     public static final double kDriftCorrectionThetaControllerVelocityTolerance = 0.5;
 
     public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01, 0);
-    public static final double kTargetAlignmentThetaControllerPositionTolerance = 0.5;
-    public static final double kTargetAlignmentThetaControllerVelocityTolerance = 0.5;
+    public static final double kTargetAlignmentThetaControllerPositionTolerance = 1;
+    public static final double kTargetAlignmentThetaControllerVelocityTolerance = 1;
 
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
@@ -173,7 +173,7 @@ public final class Constants {
     public static final double kArmMotorMaxOutput = 1.0;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
-    public static final double kArmMotorForwardSoftLimit = 15;
+    public static final double kArmMotorForwardSoftLimit = 14.5;
     public static final double kArmMotorReverseSoftLimit = 1;
     public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0;
     public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
@@ -193,11 +193,11 @@ public final class Constants {
     public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.65, 0.65);
     public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.35, 0.35);
     
-    public static final double kArmPositionIntake = 13.0;
+    public static final double kArmPositionIntake = 14.0;
     public static final double kArmPositionAmp = 11.4;
     public static final double kArmPositionSubwoofer = 13.10; // 1.35m
     public static final double kArmPositionShortRange = 9.0; // 1.84m
-    public static final double kArmPositionMidRange = 7.0; // 2.78m
+    public static final double kArmPositionMidRange = 6.5; // 2.78m
     public static final double kArmPositionLongRange = 4.20; // 5.37m
 
     public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
@@ -213,8 +213,8 @@ public final class Constants {
     public static final int kRollerMotorCANId = 17;
 
     public static final int kArmMotorCurrentLimit = 60;
-    public static final double kArmMotorMinOutput = -0.8; // TODO: update with testing
-    public static final double kArmMotorMaxOutput = 0.8; // TODO: update with testing
+    public static final double kArmMotorMinOutput = -1.0; // TODO: update with testing
+    public static final double kArmMotorMaxOutput = 1.0; // TODO: update with testing
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
     public static final double kArmMotorForwardSoftLimit = 38.7;
@@ -238,7 +238,7 @@ public final class Constants {
       public static final IMUAxis kIMUAxisRoll = IMUAxis.kY;
       public static final IMUAxis kIMUAxisPitch = IMUAxis.kX;
       public static final SPI.Port kSPIPort = SPI.Port.kOnboardCS0;
-      public static final CalibrationTime kCalibrationTime = CalibrationTime._8s;
+      public static final CalibrationTime kCalibrationTime = CalibrationTime._16s;
     }
 
     public static final class Pose {
@@ -253,8 +253,8 @@ public final class Constants {
         entry(
           "Side",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-12), Units.inchesToMeters(23.75)),
-            new Rotation3d(0, Units.degreesToRadians(-24.1), Units.degreesToRadians(-87))
+            new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-12), Units.inchesToMeters(23.0)),
+            new Rotation3d(0, Units.degreesToRadians(-22.7), Units.degreesToRadians(-87))
           )
         )
       );
