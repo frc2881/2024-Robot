@@ -1,5 +1,6 @@
 package frc.robot.lib.sensors;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
@@ -55,12 +56,12 @@ public class GyroSensor extends ADIS16470_IMU {
     return getAngle(getYawAxis());
   }
 
-  public Rotation2d getRotation2d() {
-    return Rotation2d.fromDegrees(getYaw());
+  public double getHeading() {
+    return MathUtil.inputModulus(getYaw(), -180, 180);
   }
 
-  public double getHeading() {
-    return getRotation2d().getDegrees();
+  public Rotation2d getRotation2d() {
+    return Rotation2d.fromDegrees(getHeading());
   }
 
   public double getTurnRate() {

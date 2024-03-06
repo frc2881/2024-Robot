@@ -73,6 +73,7 @@ public class AutoCommands {
     m_lightsController = lightsController;
   }
 
+  // TODO: run gyro reset at the END of auto commands instead of at start
   private Command resetGyroCommand() { 
     return Commands
     .runOnce(() -> m_gyroSensor.reset(m_poseSubsystem.getPose().getRotation().getDegrees()))

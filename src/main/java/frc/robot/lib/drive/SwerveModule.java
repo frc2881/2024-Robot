@@ -107,6 +107,7 @@ public class SwerveModule implements Sendable {
   public void setTargetState(SwerveModuleState targetState) {
     targetState.angle = targetState.angle.plus(Rotation2d.fromRadians(m_turningOffset));
     targetState = SwerveModuleState.optimize(targetState, new Rotation2d(m_turningEncoder.getPosition()));
+    // TODO: check smoothing effect on angular speed
     targetState.speedMetersPerSecond *= targetState.angle.minus(new Rotation2d(m_turningEncoder.getPosition())).getCos();
     m_drivingPIDController.setReference(targetState.speedMetersPerSecond, ControlType.kVelocity);
     m_turningPIDController.setReference(targetState.angle.getRadians(), ControlType.kPosition);

@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 import frc.robot.lib.common.Utils;
 
 public class PoseSensor {
@@ -35,11 +36,11 @@ public class PoseSensor {
     Matrix<N3, N1> multiTagStandardDeviations, 
     AprilTagFieldLayout aprilTagFieldLayout
   ) {
-    m_singleTagStandardDeviations = singleTagStandardDeviations;
-    m_multiTagStandardDeviations = multiTagStandardDeviations; 
     m_photonCamera = new PhotonCamera(cameraName);
     m_photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, poseStrategy, m_photonCamera, cameraTransform);
     m_photonPoseEstimator.setMultiTagFallbackStrategy(fallbackPoseStrategy);
+    m_singleTagStandardDeviations = singleTagStandardDeviations;
+    m_multiTagStandardDeviations = multiTagStandardDeviations; 
   }
 
   private PhotonPipelineResult getLatestResult() {
@@ -51,12 +52,12 @@ public class PoseSensor {
   }
 
   public Matrix<N3, N1> getEstimatedStandardDeviations(Pose2d estimatedPose) {
-    Matrix<N3, N1> estimatedStandardDeviations = m_singleTagStandardDeviations;
+    Matrix<N3, N1> estimatedStandardDeviations = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
     List<PhotonTrackedTarget> targets = getLatestResult().getTargets();
     int tagCount = 0;
     double averageDistance = 0;
     for (var target : targets) {
-      if (Utils.isValueBetween(target.getPoseAmbiguity(), 0, 0.2)) {
+      if (Utils.isValueBetween(target.getPoseAmbiguity(), 0, Constants.Sensors.Pose.kMaxTargetPoseAmbiguity)) {
         var tagPose = m_photonPoseEstimator.getFieldTags().getTagPose(target.getFiducialId());
         if (tagPose.isPresent()) {
           tagCount++;
@@ -65,13 +66,11 @@ public class PoseSensor {
       }
     }
     if (tagCount > 0) {
+      estimatedStandardDeviations = tagCount > 1 ? m_multiTagStandardDeviations : m_singleTagStandardDeviations;
       averageDistance /= tagCount;
-      if (tagCount > 1) {
-        estimatedStandardDeviations = m_multiTagStandardDeviations;
+      if (averageDistance <= Constants.Sensors.Pose.kMaxTargetsAverageDistance) {
+        estimatedStandardDeviations = estimatedStandardDeviations.times(1 + (averageDistance * averageDistance / 30));
       }
-      estimatedStandardDeviations = (tagCount == 1 && averageDistance > 4)
-        ? estimatedStandardDeviations = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE)
-        : estimatedStandardDeviations.times(1 + (averageDistance * averageDistance / 30));
     }
     return estimatedStandardDeviations;
   }

@@ -20,22 +20,24 @@ import frc.robot.lib.sensors.PoseSensor;
 public class PoseSubsystem extends SubsystemBase {
   private final List<PoseSensor> m_poseSensors;
   private final Supplier<Rotation2d> m_gyroRotation;
-  private final Supplier<SwerveModulePosition[]> m_swerveModulePosition;
+  private final Supplier<SwerveModulePosition[]> m_swerveModulePositions;
   private final SwerveDrivePoseEstimator m_poseEstimator;
 
   public PoseSubsystem(
     List<PoseSensor> poseSensors,
     Supplier<Rotation2d> gyroRotation,
-    Supplier<SwerveModulePosition[]> swerveModulePosition
+    Supplier<SwerveModulePosition[]> swerveModulePositions
   ) {
     m_poseSensors = poseSensors;
     m_gyroRotation = gyroRotation;
-    m_swerveModulePosition = swerveModulePosition;
+    m_swerveModulePositions = swerveModulePositions;
     m_poseEstimator = new SwerveDrivePoseEstimator(
-      Constants.Drive.kSwerveDriveKinematics, 
+      Constants.Drive.kSwerveDriveKinematics,
       m_gyroRotation.get(),
-      m_swerveModulePosition.get(), 
-      new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+      m_swerveModulePositions.get(),
+      new Pose2d(),
+      Constants.Sensors.Pose.kStateStandardDeviations,
+      Constants.Sensors.Pose.kVisionStandardDeviations);
   }
 
   @Override
@@ -49,7 +51,7 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public void updatePose() {
-    m_poseEstimator.update(m_gyroRotation.get(), m_swerveModulePosition.get());
+    m_poseEstimator.update(m_gyroRotation.get(), m_swerveModulePositions.get());
     m_poseSensors.forEach(poseSensor -> {
       poseSensor.getEstimatedGlobalPose().ifPresent(globalPose -> {
         Pose2d pose = globalPose.estimatedPose.toPose2d();
@@ -75,6 +77,7 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public double getTargetYaw() {
+    // TOOD: use PhotonUtils?
     double targetYaw = Math.toDegrees(Utils.getTargetRotation(getPose(), getTargetPose()).getZ());
     targetYaw -= Math.copySign(Constants.Sensors.Pose.kTargetAlignmentYawCorrection, targetYaw);
     if (Robot.getAlliance() == Alliance.Red) { targetYaw += 180; }
@@ -82,15 +85,19 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public double getTargetPitch() {
+    // TOOD: use PhotonUtils?
     return Math.toDegrees(Utils.getTargetRotation(getPose(), getTargetPose()).getY());
   }
 
   public double getTargetDistance() {
+    // TOOD: use PhotonUtils?
     return getPose().getTranslation().getDistance(getTargetPose().toPose2d().getTranslation()); 
   }
 
   private void updateTelemetry() {
-    SmartDashboard.putString("Robot/Pose", Utils.objectToJson(getPose()));
+    Pose2d robotPose = getPose();
+    SmartDashboard.putNumberArray("Robot/Pose/Raw", new double[] { robotPose.getX(), robotPose.getY(), robotPose.getRotation().getRadians() });
+    SmartDashboard.putString("Robot/Pose", Utils.objectToJson(robotPose));
     SmartDashboard.putString("Robot/Pose/Target/Pose", Utils.objectToJson(getTargetPose()));
     SmartDashboard.putNumber("Robot/Pose/Target/Yaw", getTargetYaw());
     SmartDashboard.putNumber("Robot/Pose/Target/Pitch", getTargetPitch());

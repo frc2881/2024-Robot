@@ -44,10 +44,10 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     Logger.log(RobotMode.Auto);
     m_autoCommand = m_robotContainer.getSelectedAutoCommand();
+    m_robotContainer.autonomousInit();
     if (m_autoCommand != null) {
       m_autoCommand.schedule();
     }
-    m_robotContainer.resetRobot();
   }
 
   @Override
@@ -62,7 +62,7 @@ public class Robot extends TimedRobot {
     if (m_autoCommand != null) {
       m_autoCommand.cancel();
     }
-    m_robotContainer.resetRobot();
+    m_robotContainer.teleopInit();
   }
 
   @Override
@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
   public void testInit() {
     Logger.log(RobotMode.Test);
     CommandScheduler.getInstance().cancelAll();
-    m_robotContainer.resetRobot();
+    m_robotContainer.testInit();
   }
 
   @Override
@@ -87,6 +87,7 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationInit() {
     Logger.log(RobotMode.Sim);
+    m_robotContainer.simulationInit();
   }
 
   @Override

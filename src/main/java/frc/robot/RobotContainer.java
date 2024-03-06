@@ -278,6 +278,23 @@ public class RobotContainer {
     m_climberSubsystem.reset();
   }
 
+  public void autonomousInit() {
+    resetRobot();
+    m_gyroSensor.calibrate();
+  }
+
+  public void teleopInit() {
+    resetRobot();
+  }
+
+  public void testInit() {
+    resetRobot();
+  }
+
+  public void simulationInit() {
+    resetRobot();
+  }
+
   public void updateTelemetry() {
     m_gyroSensor.updateTelemetry();
     m_poseSensors.forEach(poseSensor -> poseSensor.updateTelemetry());
