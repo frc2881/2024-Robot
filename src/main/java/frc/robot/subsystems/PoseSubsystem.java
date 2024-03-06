@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.photonvision.PhotonUtils;
+
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -77,21 +79,15 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public double getTargetYaw() {
-    // TOOD: use PhotonUtils?
-    double targetYaw = Math.toDegrees(Utils.getTargetRotation(getPose(), getTargetPose()).getZ());
-    targetYaw -= Math.copySign(Constants.Sensors.Pose.kTargetAlignmentYawCorrection, targetYaw);
-    if (Robot.getAlliance() == Alliance.Red) { targetYaw += 180; }
-    return targetYaw;
+    return PhotonUtils.getYawToPose(getPose(), getTargetPose().toPose2d()).getDegrees();
   }
 
   public double getTargetPitch() {
-    // TOOD: use PhotonUtils?
-    return Math.toDegrees(Utils.getTargetRotation(getPose(), getTargetPose()).getY());
+    return Utils.getPitchToPose(getPose(), getTargetPose());
   }
 
   public double getTargetDistance() {
-    // TOOD: use PhotonUtils?
-    return getPose().getTranslation().getDistance(getTargetPose().toPose2d().getTranslation()); 
+    return PhotonUtils.getDistanceToPose(getPose(), getTargetPose().toPose2d());
   }
 
   private void updateTelemetry() {

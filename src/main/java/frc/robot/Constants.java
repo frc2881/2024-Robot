@@ -266,8 +266,6 @@ public final class Constants {
       public static final Matrix<N3, N1> kVisionStandardDeviations = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10));
       public static final Matrix<N3, N1> kSingleTagStandardDeviations = VecBuilder.fill(1, 1, 2);
       public static final Matrix<N3, N1> kMultiTagStandardDeviations = VecBuilder.fill(0.5, 0.5, 1);
-
-      public static final double kTargetAlignmentYawCorrection = 3.0;
     }
 
     public static final class BeamBreak {
@@ -309,26 +307,11 @@ public final class Constants {
     public static final class Field {
       public static final AprilTagFieldLayout kAprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
 
-      public static final Pair<Pose2d, Pose2d> kBoundaries = Pair.of(
-        new Pose2d(0, 0, null), 
-        new Pose2d(kAprilTagFieldLayout.getFieldLength(), kAprilTagFieldLayout.getFieldWidth(), null)
-      );
-
       public static final class Targets {
-        public static final double kSpeakerXDelta = 0.3;
-        public static final double kSpeakerZDelta = 0.616675;
-        public static final Pose3d kAprilTag7 = kAprilTagFieldLayout.getTagPose(7).orElse(new Pose3d());
-        public static final Pose3d kBlueSpeaker = new Pose3d(kAprilTag7.getX() + kSpeakerXDelta, kAprilTag7.getY(), kAprilTag7.getZ() + kSpeakerZDelta, kAprilTag7.getRotation());
-        public static final Pose3d kAprilTag4 = kAprilTagFieldLayout.getTagPose(4).orElse(new Pose3d());
-        public static final Pose3d kRedSpeaker = new Pose3d(kAprilTag4.getX() - kSpeakerXDelta, kAprilTag4.getY(), kAprilTag4.getZ() + kSpeakerZDelta, kAprilTag4.getRotation());
-
-        public static final double kAmpZDelta = -0.4572;
-        public static final Pose3d kAprilTag5 = kAprilTagFieldLayout.getTagPose(5).orElse(new Pose3d());
-        public static final Pose3d kBlueAmp = new Pose3d(kAprilTag5.getX(), kAprilTag5.getY(), kAprilTag5.getZ() + kAmpZDelta, kAprilTag5.getRotation());
-        public static final Pose3d kAprilTag6 = kAprilTagFieldLayout.getTagPose(6).orElse(new Pose3d());
-        public static final Pose3d kRedAmp = new Pose3d(kAprilTag6.getX(), kAprilTag6.getY(), kAprilTag6.getZ() + kAmpZDelta, kAprilTag6.getRotation());
-
-        public static final double kSourceZ = 0.93;
+        public static final Pose3d kBlueSpeaker = kAprilTagFieldLayout.getTagPose(7).orElse(new Pose3d());
+        public static final Pose3d kRedSpeaker = kAprilTagFieldLayout.getTagPose(4).orElse(new Pose3d());
+        public static final Pose3d kBlueAmp = kAprilTagFieldLayout.getTagPose(5).orElse(new Pose3d());
+        public static final Pose3d kRedAmp = kAprilTagFieldLayout.getTagPose(6).orElse(new Pose3d());
       }
 
       public static final class AutoWaypoints {
@@ -367,8 +350,6 @@ public final class Constants {
         public static final AutoPoses kNote8Poses = new AutoPoses(
           new Pose2d(7.87, 7.03, Rotation2d.fromDegrees(0)), 
           new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)));
-
-        // TODO: validate - same as note 4 scoring position
       }
     }
   }

@@ -36,15 +36,11 @@ public final class Utils {
     return isValueBetween(robotPose.getX(), minPose.getX(), maxPose.getX()) && isValueBetween(robotPose.getY(), minPose.getY(), maxPose.getY());
   }
 
-  public static Rotation3d getTargetRotation(Pose2d robotPose, Pose3d targetPose) {
-    Transform2d transform = robotPose.minus(targetPose.toPose2d());
-    double yaw = new Rotation2d(transform.getX(), transform.getY()).getRadians();
-
+  public static double getPitchToPose(Pose2d robotPose, Pose3d targetPose) {
     double height = targetPose.minus(new Pose3d(robotPose)).getZ();
     double distance = robotPose.getTranslation().getDistance(targetPose.toPose2d().getTranslation()); 
     double pitch = Math.atan2(height, distance);
-
-    return new Rotation3d(0.0, pitch, yaw);
+    return pitch;
   }
 
   public static double squareInput(double input, double deadband) {
