@@ -56,7 +56,7 @@ public final class Constants {
     public static final double kDriveBaseRadius = new Translation2d().getDistance(new Translation2d(kWheelBase / 2, kTrackWidth / 2));
 
     public static final double kMaxSpeedMetersPerSecond = 6.32;
-    public static final double kMaxAngularSpeed = 2 * Math.PI;
+    public static final double kMaxAngularSpeed = 4 * Math.PI;
 
     public static final double kSwerveModuleFrontLeftOffset = -Math.PI / 2;
     public static final double kSwerveModuleFrontRightOffset = 0;
@@ -246,15 +246,15 @@ public final class Constants {
         entry(
           "Rear",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-11), Units.inchesToMeters(15.00)),
-            new Rotation3d(Units.degreesToRadians(3.2), Units.degreesToRadians(-24.3), Units.degreesToRadians(180))
+            new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-11), Units.inchesToMeters(15.00)),
+            new Rotation3d(Units.degreesToRadians(4.0), Units.degreesToRadians(-24.7), Units.degreesToRadians(183))
           )
         ),
         entry(
           "Side",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-12), Units.inchesToMeters(23.0)),
-            new Rotation3d(0, Units.degreesToRadians(-22.7), Units.degreesToRadians(-87))
+            new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-12), Units.inchesToMeters(17.5)),
+            new Rotation3d(0, Units.degreesToRadians(-23.8), Units.degreesToRadians(-87))
           )
         )
       );
