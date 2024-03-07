@@ -12,7 +12,6 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -56,7 +55,7 @@ public final class Constants {
     public static final double kDriveBaseRadius = new Translation2d().getDistance(new Translation2d(kWheelBase / 2, kTrackWidth / 2));
 
     public static final double kMaxSpeedMetersPerSecond = 6.32;
-    public static final double kMaxAngularSpeed = 4 * Math.PI;
+    public static final double kMaxAngularSpeed = 3 * Math.PI;
 
     public static final double kSwerveModuleFrontLeftOffset = -Math.PI / 2;
     public static final double kSwerveModuleFrontRightOffset = 0;

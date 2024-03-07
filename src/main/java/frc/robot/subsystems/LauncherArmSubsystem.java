@@ -110,7 +110,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
   public Command alignToTargetCommand(Supplier<Double> targetDistance) {
     return
     run(() -> {
-      double position = calculateArmPosition(targetDistance.get()); 
+      double position = calculatePositionForTarget(targetDistance.get()); 
       m_armPIDController.setReference(position, ControlType.kSmartMotion);
       m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < 0.1;
     })
@@ -123,7 +123,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
     .withName("AlignLauncherArmToTarget");
   }
 
-  public double calculateArmPosition(double distance) {
+  private double calculatePositionForTarget(double distance) {
     double position = Utils.getLinearInterpolation(m_distances, m_positions, distance);
     return 
     Utils.isValueBetween(position, Constants.Launcher.kArmMotorReverseSoftLimit, Constants.Launcher.kArmMotorForwardSoftLimit) 

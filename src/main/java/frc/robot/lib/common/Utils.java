@@ -12,8 +12,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public final class Utils {
 
@@ -32,29 +31,34 @@ public final class Utils {
     return value >= minValue && value <= maxValue;
   }
 
-  public static boolean isRobotInBounds(Pose2d robotPose, Pose2d minPose, Pose2d maxPose) {
-    return isValueBetween(robotPose.getX(), minPose.getX(), maxPose.getX()) && isValueBetween(robotPose.getY(), minPose.getY(), maxPose.getY());
-  }
-
-  public static double getPitchToPose(Pose2d robotPose, Pose3d targetPose) {
-    double height = targetPose.minus(new Pose3d(robotPose)).getZ();
-    double distance = robotPose.getTranslation().getDistance(targetPose.toPose2d().getTranslation()); 
-    double pitch = Math.atan2(height, distance);
-    return pitch;
-  }
-
   public static double squareInput(double input, double deadband) {
     double deadbandInput = MathUtil.applyDeadband(input, deadband);
     return (deadbandInput * deadbandInput) * Math.signum(input);
   }
 
-  public static void enableSoftLimits(CANSparkBase controller, boolean isEnabled) {
-    controller.enableSoftLimit(SoftLimitDirection.kForward, isEnabled);
-    controller.enableSoftLimit(SoftLimitDirection.kReverse, isEnabled);
-  }
-
   public static double voltsToPsi(double sensorVoltage, double supplyVoltage) {
     return 250 * (sensorVoltage / supplyVoltage) - 25;
+  }
+
+  public static double wrapAngle(double angle) {
+    return MathUtil.inputModulus(angle, -180, 180);
+  }
+
+  public static double getYawToPose(Pose2d robotPose, Pose2d targetPose) {
+    Translation2d translation = targetPose.relativeTo(robotPose).getTranslation();
+    return wrapAngle(new Rotation2d(translation.getX(), translation.getY()).getDegrees());
+  }
+
+  public static double getPitchToPose(Pose3d robotPose, Pose3d targetPose) {
+    return Math.toDegrees(Math.atan2(targetPose.minus(robotPose).getZ(), getDistanceToPose(robotPose.toPose2d(), targetPose.toPose2d())));
+  }
+
+  public static double getDistanceToPose(Pose2d robotPose, Pose2d targetPose) {
+    return robotPose.getTranslation().getDistance(targetPose.getTranslation());
+  }
+
+  public static boolean isPoseInBounds(Pose2d robotPose, Pose2d minPose, Pose2d maxPose) {
+    return isValueBetween(robotPose.getX(), minPose.getX(), maxPose.getX()) && isValueBetween(robotPose.getY(), minPose.getY(), maxPose.getY());
   }
 
   public static double getLinearInterpolation(double[] xs, double[] ys, double x) {
@@ -83,5 +87,10 @@ public final class Utils {
       }
     }
     return y;
+  }
+
+  public static void enableSoftLimits(CANSparkBase controller, boolean isEnabled) {
+    controller.enableSoftLimit(SoftLimitDirection.kForward, isEnabled);
+    controller.enableSoftLimit(SoftLimitDirection.kReverse, isEnabled);
   }
 }
