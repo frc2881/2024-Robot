@@ -12,8 +12,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.lib.common.Enums.IntakeLocation;
-import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.common.Records.AutoPoses;
+import frc.robot.lib.common.Records.LauncherRollerSpeeds;
+import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
 import frc.robot.lib.sensors.DistanceSensor;
@@ -101,7 +102,7 @@ public class AutoCommands {
       )
       .unless(() -> autoPoses.noteScorePose() == autoPoses.notePickupPose()), 
       Commands.parallel(
-        m_gameCommmands.alignRobotToTargetCommand(),
+        m_gameCommmands.alignRobotToTargetCommand( ),
         m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShortRange) // TODO: add command get launcher pos
       ),
       m_gameCommmands.runLauncherAutoCommand()
@@ -142,13 +143,12 @@ public class AutoCommands {
       ),
       // TODO: Make it so if it doesn't have a note in launcher, eject
       Commands.parallel(
-        m_gameCommmands.alignRobotToTargetCommand().withTimeout(2.0),
+        m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0),
         m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionMidRange)
       ),
       m_gameCommmands.runLauncherCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
     )
-    .beforeStarting(resetGyroCommand())
     .withName("ScorePickup1");
   } 
 
@@ -166,7 +166,7 @@ public class AutoCommands {
           ),
           m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShortRange)
         ),
-        m_gameCommmands.alignRobotToTargetCommand().withTimeout(2.0),
+        m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0),
         m_gameCommmands.runLauncherAutoCommand()
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
         Commands.parallel(
@@ -175,14 +175,14 @@ public class AutoCommands {
         ),
         // TODO: Make it so if it doesn't have a note in launcher, eject
         Commands.parallel(
-          m_gameCommmands.alignRobotToTargetCommand(),
+          m_gameCommmands.alignRobotToTargetCommand( ),
           m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionMidRange)
         ),
         m_gameCommmands.runLauncherAutoCommand()
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
       )
     )
-    .beforeStarting(resetGyroCommand())
+ 
     .withName("BackupScorePickup1");
   } 
 
@@ -201,7 +201,7 @@ public class AutoCommands {
           ),
           m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShortRange) // move arm to blue line position
         ),
-        m_gameCommmands.alignRobotToTargetCommand(), // Align robot
+        m_gameCommmands.alignRobotToTargetCommand( ), // Align robot
         m_gameCommmands.runLauncherAutoCommand() // SHOOT FIRST NOTE
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
         Commands.parallel(
@@ -209,7 +209,7 @@ public class AutoCommands {
           m_gameCommmands.runIntakeCommand(IntakeLocation.Front) // grab next note
         ),
         Commands.parallel(
-          m_gameCommmands.alignRobotToTargetCommand(), // align to speaker
+          m_gameCommmands.alignRobotToTargetCommand( ), // align to speaker
           m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionMidRange) // align launcher to speaker
         ),
         m_gameCommmands.runLauncherAutoCommand() // SHOOT SECOND NOTE
@@ -227,12 +227,11 @@ public class AutoCommands {
           ),
           m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionLongRange)
         ),
-        m_gameCommmands.alignRobotToTargetCommand(),
+        m_gameCommmands.alignRobotToTargetCommand( ),
         m_gameCommmands.runLauncherAutoCommand() // SHOOT THIRD NOTE
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
       )
     )
-    .beforeStarting(resetGyroCommand())
     .withName("BackupShootPickup14");
   } 
 
@@ -249,14 +248,14 @@ public class AutoCommands {
       .withTimeout(5.0), // TODO: make it so it ends when intake is done (race???)
       // TODO: Make it so if it doesn't have a note in launcher, eject
       Commands.parallel(
-        m_gameCommmands.alignRobotToTargetCommand().withTimeout(2.0), // TODO: Make it so it ends when at position, not when timeouts over
+        m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0), // TODO: Make it so it ends when at position, not when timeouts over
         m_gameCommmands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true)
       )
       .withTimeout(1.0),
       m_gameCommmands.runLauncherCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
     )
-    .beforeStarting(resetGyroCommand())
+ 
     .withName("ScorePickup2");
   } 
 
@@ -273,14 +272,13 @@ public class AutoCommands {
       .withTimeout(5.0), // TODO: make it so it ends when intake is done (race???)
       // TODO: Make it so if it doesn't have a note in launcher, eject
       Commands.parallel(
-        m_gameCommmands.alignRobotToTargetCommand().withTimeout(2.0), // TODO: Make it so it ends when at position, not when timeouts over
+        m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0), // TODO: Make it so it ends when at position, not when timeouts over
         m_gameCommmands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true)
       )
       .withTimeout(1.0),
       m_gameCommmands.runLauncherCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
     )
-    .beforeStarting(resetGyroCommand())
     .withName("ScorePickup3");
   } 
 
@@ -291,7 +289,7 @@ public class AutoCommands {
       m_gameCommmands.runLauncherCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
     )
-    .beforeStarting(resetGyroCommand())
+ 
     .withName("ScoreSubwooferAuto");
   }
 
@@ -301,7 +299,6 @@ public class AutoCommands {
     .sequence(
       AutoBuilder.followPath(path1)
     )
-    .beforeStarting(resetGyroCommand())
     .withName("Pos1To3NotePath");
   }
 
@@ -311,7 +308,6 @@ public class AutoCommands {
     .sequence(
       AutoBuilder.followPath(path1)
     )
-    .beforeStarting(resetGyroCommand())
     .withName("Pos1To3NotePath");
   }
 
@@ -321,7 +317,6 @@ public class AutoCommands {
     .sequence(
       AutoBuilder.followPath(path1)
     )
-    .beforeStarting(resetGyroCommand())
     .withName("Pos1To3NotePath");
   }
 

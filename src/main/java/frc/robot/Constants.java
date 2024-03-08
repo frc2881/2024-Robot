@@ -54,7 +54,7 @@ public final class Constants {
     public static final double kWheelBase = Units.inchesToMeters(21.5);
     public static final double kDriveBaseRadius = new Translation2d().getDistance(new Translation2d(kWheelBase / 2, kTrackWidth / 2));
 
-    public static final double kMaxSpeedMetersPerSecond = 6.32;
+    public static final double kMaxSpeedMetersPerSecond = 5.28;
     public static final double kMaxAngularSpeed = 3 * Math.PI;
 
     public static final double kSwerveModuleFrontLeftOffset = -Math.PI / 2;
@@ -91,7 +91,7 @@ public final class Constants {
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;
-      public static final double kFreeSpeedRpm = 6238.73054766; //5676
+      public static final double kFreeSpeedRpm = 5676;
       public static final double kWheelDiameterMeters = Units.inchesToMeters(3.0);
       public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
       public static final double kDrivingMotorReduction = (45.0 * 20) / (kDrivingMotorPinionTeeth * 15);
@@ -315,8 +315,8 @@ public final class Constants {
 
       public static final class AutoWaypoints {
         public static final AutoPoses kNotePreload1Poses = new AutoPoses(new Pose2d(), new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(0)));
-        public static final Pose2d kScoreNotePreload2 = new Pose2d(1.84, 5.38, Rotation2d.fromDegrees(0));
-        public static final Pose2d kScoreNotePreload3 = new Pose2d(1.84, 4.00, Rotation2d.fromDegrees(0));
+        public static final AutoPoses kScoreNotePreload2 = new AutoPoses(new Pose2d(), new Pose2d(1.84, 5.38, Rotation2d.fromDegrees(0)));
+        public static final AutoPoses kScoreNotePreload3 = new AutoPoses(new Pose2d(), new Pose2d(1.84, 4.00, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote1Poses = new AutoPoses(
           new Pose2d(2.78, 6.90, Rotation2d.fromDegrees(0)), 

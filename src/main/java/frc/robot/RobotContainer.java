@@ -10,6 +10,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -179,7 +180,9 @@ public class RobotContainer {
     // m_driverController.povUp().whileTrue(Commands.none()); 
     // m_driverController.povRight().whileTrue(Commands.none());
     // m_driverController.povDown().whileTrue(Commands.none());
-    m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
+    m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand()
+      .andThen(Commands.runOnce(() -> m_gameCommands.rumbleControllers(new GameController[] {m_driverController})) // TODO: TEST
+      ));
     m_driverController.b().whileTrue(m_gameCommands.moveToClimbCommand());
     m_driverController.y().whileTrue(m_gameCommands.climbCommand());
     // m_driverController.x().whileTrue(Commands.none());
@@ -198,10 +201,10 @@ public class RobotContainer {
     // m_operatorController.leftStick().whileTrue(Commands.none());
     // m_operatorController.rightStick().whileTrue(Commands.none());
     m_operatorController.povLeft().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionLongRange, true));
-    m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true)); 
-    m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionShortRange, true));
+    m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true));  
+    m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionShortRange, true));  
     m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
-    m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand(true));
+    m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand(true)); 
     m_operatorController.y().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
     m_operatorController.b().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
     //m_operatorController.x().whileTrue(Commands.none());

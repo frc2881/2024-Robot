@@ -24,7 +24,7 @@ import frc.robot.Constants;
 public class SwerveModule implements Sendable {
   private final SwerveModuleLocation m_location;
 
-  private final CANSparkFlex m_drivingMotor;
+  private final CANSparkMax m_drivingMotor;
   private final CANSparkMax m_turningMotor;
   private final RelativeEncoder m_drivingEncoder;
   private final AbsoluteEncoder m_turningEncoder;
@@ -49,7 +49,7 @@ public class SwerveModule implements Sendable {
 
     m_turningOffset = turningOffset;
 
-    m_drivingMotor = new CANSparkFlex(drivingMotorCanId, MotorType.kBrushless);
+    m_drivingMotor = new CANSparkMax(drivingMotorCanId, MotorType.kBrushless);
     m_drivingMotor.restoreFactoryDefaults();
     m_drivingEncoder = m_drivingMotor.getEncoder();
     m_drivingPIDController = m_drivingMotor.getPIDController();
