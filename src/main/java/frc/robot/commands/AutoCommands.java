@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.lib.common.Utils;
 import frc.robot.lib.common.Enums.IntakeLocation;
 import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
-import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
 import frc.robot.lib.sensors.DistanceSensor;
@@ -74,10 +74,12 @@ public class AutoCommands {
     m_lightsController = lightsController;
   }
 
+  // TODO: update all autos to use path finding constraints from constants vs. inline
+
   // TODO: run gyro reset at the END of auto commands instead of at start
-  private Command resetGyroCommand() { 
+  public Command resetGyroCommand() { 
     return Commands
-    .runOnce(() -> m_gyroSensor.reset(m_poseSubsystem.getPose().getRotation().getDegrees()))
+    .runOnce(() -> m_gyroSensor.reset(Utils.wrapAngle(m_poseSubsystem.getPose().getRotation().getDegrees())))
     .withName("ResetGyro"); 
   }
 
