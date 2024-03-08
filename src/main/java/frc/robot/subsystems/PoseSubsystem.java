@@ -7,13 +7,14 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.sensors.PoseSensor;
 
@@ -70,27 +71,59 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public Pose3d getTargetPose() {
-    return 
-    Robot.getAlliance() == Alliance.Blue 
-    ? Constants.Game.Field.Targets.kBlueSpeaker 
-    : Constants.Game.Field.Targets.kRedSpeaker;
+    return Utils.getValueForAlliance(
+      Constants.Game.Field.Targets.kBlueSpeaker, 
+      Constants.Game.Field.Targets.kRedSpeaker);
   }
 
   public double getTargetYaw() {
-    return Utils.getYawToPose(getPose(), getTargetPose().toPose2d());
+    return Utils.wrapAngle(
+      Utils.getYawToPose(
+        getPose(),
+        getTargetPose().toPose2d().transformBy(
+          new Transform2d(
+            Utils.getValueForAlliance(
+              Constants.Game.Field.Targets.kSpeakerTargetYawTransformX, 
+              -Constants.Game.Field.Targets.kSpeakerTargetYawTransformX
+            ), 
+            0.0, Rotation2d.fromDegrees(0.0)
+          )
+        )
+      ) + Utils.getValueForAlliance(180.0, 0.0)
+    );
   }
 
   public double getTargetPitch() {
-    return Utils.getPitchToPose(new Pose3d(getPose()), getTargetPose());
+    return Utils.getPitchToPose(
+      new Pose3d(getPose()),
+      getTargetPose().transformBy(
+        new Transform3d(
+          0.0, 0.0, 
+          Constants.Game.Field.Targets.kSpeakerTargetPitchTransformZ,
+          new Rotation3d()
+        )
+      )
+    );
   }
 
   public double getTargetDistance() {
-    return Utils.getDistanceToPose(getPose(), getTargetPose().toPose2d());
+    return Utils.getDistanceToPose(
+      getPose(),
+      getTargetPose().toPose2d().transformBy(
+        new Transform2d(
+          Utils.getValueForAlliance(
+            -Constants.Game.Field.Targets.kSpeakerTargetDistanceTransformX, 
+            Constants.Game.Field.Targets.kSpeakerTargetDistanceTransformX
+          ), 
+          0.0, Rotation2d.fromDegrees(0.0)
+        )
+      )
+    );
   }
 
   private void updateTelemetry() {
     Pose2d robotPose = getPose();
-    SmartDashboard.putNumberArray("Robot/Pose/Raw", new double[] { robotPose.getX(), robotPose.getY(), robotPose.getRotation().getRadians() });
+    SmartDashboard.putNumberArray("Robot/Pose/Values", new double[] { robotPose.getX(), robotPose.getY(), robotPose.getRotation().getRadians() });
     SmartDashboard.putString("Robot/Pose", Utils.objectToJson(robotPose));
     SmartDashboard.putString("Robot/Pose/Target/Pose", Utils.objectToJson(getTargetPose()));
     SmartDashboard.putNumber("Robot/Pose/Target/Yaw", getTargetYaw());

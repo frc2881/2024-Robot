@@ -13,6 +13,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
+import frc.robot.Robot;
 
 public final class Utils {
 
@@ -92,5 +95,9 @@ public final class Utils {
   public static void enableSoftLimits(CANSparkBase controller, boolean isEnabled) {
     controller.enableSoftLimit(SoftLimitDirection.kForward, isEnabled);
     controller.enableSoftLimit(SoftLimitDirection.kReverse, isEnabled);
+  }
+
+  public static <T> T getValueForAlliance(T blueValue, T redValue) {
+    return Robot.getAlliance() == Alliance.Blue ? blueValue : redValue;
   }
 }

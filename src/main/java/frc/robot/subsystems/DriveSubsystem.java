@@ -224,15 +224,11 @@ public class DriveSubsystem extends SubsystemBase {
         speedRotation = 0.0;
         m_isAlignedToTarget = true;
       }
-      setSwerveModuleStates(convertToSwerveModuleStates(
-        0.0,
-        0.0,
-        speedRotation));
+      setSwerveModuleStates(convertToSwerveModuleStates(0.0, 0.0, speedRotation));
     })
     .beforeStarting(() -> {
       m_isAlignedToTarget = false;
-      double invertedTargetYaw = Utils.wrapAngle(targetYaw.get() + (Robot.getAlliance() == Alliance.Blue ? 180 : 0));
-      m_targetAlignmentThetaController.setSetpoint(invertedTargetYaw);
+      m_targetAlignmentThetaController.setSetpoint(targetYaw.get());
       m_targetAlignmentThetaController.reset();
     })
     .onlyIf(() -> m_lockState != DriveLockState.Locked)

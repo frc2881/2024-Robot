@@ -79,8 +79,8 @@ public final class Constants {
     public static final double kDriftCorrectionThetaControllerVelocityTolerance = 0.5;
 
     public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01, 0);
-    public static final double kTargetAlignmentThetaControllerPositionTolerance = 1;
-    public static final double kTargetAlignmentThetaControllerVelocityTolerance = 1;
+    public static final double kTargetAlignmentThetaControllerPositionTolerance = 0.5;
+    public static final double kTargetAlignmentThetaControllerVelocityTolerance = 0.5;
 
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
@@ -311,6 +311,10 @@ public final class Constants {
         public static final Pose3d kRedSpeaker = kAprilTagFieldLayout.getTagPose(4).orElse(new Pose3d());
         public static final Pose3d kBlueAmp = kAprilTagFieldLayout.getTagPose(5).orElse(new Pose3d());
         public static final Pose3d kRedAmp = kAprilTagFieldLayout.getTagPose(6).orElse(new Pose3d());
+
+        public static final double kSpeakerTargetYawTransformX = Units.inchesToMeters(12);
+        public static final double kSpeakerTargetPitchTransformZ = Units.inchesToMeters(24);
+        public static final double kSpeakerTargetDistanceTransformX = Units.inchesToMeters(0);
       }
 
       public static final class AutoWaypoints {
