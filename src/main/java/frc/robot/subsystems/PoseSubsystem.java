@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -77,20 +78,22 @@ public class PoseSubsystem extends SubsystemBase {
   }
 
   public double getTargetYaw() {
-    return Utils.wrapAngle(
-      Utils.getYawToPose(
-        getPose(),
-        getTargetPose().toPose2d().transformBy(
-          new Transform2d(
-            Utils.getValueForAlliance(
-              Constants.Game.Field.Targets.kSpeakerTargetYawTransformX, 
-              -Constants.Game.Field.Targets.kSpeakerTargetYawTransformX
-            ), 
-            0.0, Rotation2d.fromDegrees(0.0)
-          )
-        )
-      ) + Utils.getValueForAlliance(180.0, 0.0)
+    Pose2d robotPose = getPose();
+    Pose2d targetPose = getTargetPose().toPose2d().transformBy(
+      new Transform2d(
+        Utils.getValueForAlliance(
+          Constants.Game.Field.Targets.kSpeakerTargetYawTransformX, 
+          -Constants.Game.Field.Targets.kSpeakerTargetYawTransformX
+        ), 
+        0.0, Rotation2d.fromDegrees(0.0)
+      )
     );
+    Translation2d targetTranslation = targetPose.relativeTo(robotPose).getTranslation();
+    Rotation2d targetRotation = new Rotation2d(targetTranslation.getX(), targetTranslation.getY());
+    targetRotation = targetRotation
+      .rotateBy(Rotation2d.fromDegrees(Utils.getValueForAlliance(180.0, 0.0)))
+      .rotateBy(robotPose.getRotation());
+    return Utils.wrapAngle(targetRotation.getDegrees());
   }
 
   public double getTargetPitch() {
