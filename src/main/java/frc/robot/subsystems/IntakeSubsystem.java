@@ -59,13 +59,13 @@ public class IntakeSubsystem extends SubsystemBase {
     )
     .andThen(
       startEnd(() -> {
-        runTopBelts(MotorDirection.Forward, 0.4); // KEEP AT 0.4 OR SLOWER, ONLY EDIT ADJUSTMENT COMMAND
+        runTopBelts(MotorDirection.Forward, 0.4); 
         runBottomBelts(MotorDirection.Reverse, 0.4);
         runRollers(MotorDirection.Forward);
       }, () -> {})
       .onlyWhile(() -> !launcherBottomHasTarget.get())
       .andThen(
-        Commands.waitSeconds(0.06)
+        Commands.waitSeconds(0.2)
       )
     )
     .andThen(
@@ -104,7 +104,7 @@ public class IntakeSubsystem extends SubsystemBase {
       }, () -> {})
       .onlyWhile(() -> !launcherBottomHasTarget.get())
       .andThen(
-        Commands.waitSeconds(0.06)
+        Commands.waitSeconds(0.2)
       )
     )
     .andThen(

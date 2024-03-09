@@ -235,6 +235,10 @@ public class RobotContainer {
     intakePositionChooser.addOption("13.0", 13.0);
     intakePositionChooser.addOption("12.5", 12.5);
     intakePositionChooser.addOption("12.0", 12.0);
+    intakePositionChooser.addOption("10.0", 10.0);
+    intakePositionChooser.addOption("9.0", 9.0);
+    intakePositionChooser.addOption("8.0", 8.0);
+    intakePositionChooser.addOption("7.0", 7.0);
     intakePositionChooser.onChange(intakePosition -> m_launcherArmSubsystem.setIntakePosition(intakePosition));
     SmartDashboard.putData("Robot/Launcher/Arm/IntakePosition", intakePositionChooser);
   }

@@ -122,14 +122,17 @@ public class AutoCommands {
   }
 
   public Command runAuto(boolean isScoreAtSubwoofer, AutoPoses[] notesPoses) {
-    return Commands.sequence(
-      Commands.either(
-        scoreSubwooferAuto(), 
-        pickupAndScoreNote(notesPoses[0]), 
-        () -> isScoreAtSubwoofer),
-        Commands.runOnce(
-          () -> runAutos(notesPoses)
-        )
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        Commands.either(
+          scoreSubwooferAuto(), 
+          pickupAndScoreNote(notesPoses[0]), 
+          () -> isScoreAtSubwoofer),
+          Commands.runOnce(
+            () -> runAutos(notesPoses)
+          )
+      )
     );
   }
 
