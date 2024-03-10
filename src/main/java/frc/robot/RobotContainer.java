@@ -146,9 +146,11 @@ public class RobotContainer {
   private void configureBindings() {
     // DRIVER ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
-    //m_driverController.leftTrigger().whileTrue(Commands.none());
-    m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand());
-    //m_driverController.leftBumper().whileTrue(Commands.none());
+    m_driverController.leftTrigger().whileTrue(m_gameCommands.shuttleCommand());
+    m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand()
+      .alongWith(m_gameCommands.rumbleControllers(true, true)
+      ));
+    //m_driverController.leftBumper().whileTrue();
     m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     // m_driverController.rightStick().whileTrue(Commands.none());
@@ -157,7 +159,7 @@ public class RobotContainer {
     // m_driverController.povRight().whileTrue(Commands.none());
     // m_driverController.povDown().whileTrue(Commands.none());
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand()
-      .andThen(Commands.runOnce(() -> m_gameCommands.rumbleControllers(new GameController[] {m_driverController})) // TODO: TEST
+      .alongWith(m_gameCommands.rumbleControllers(true, true)
       ));
     m_driverController.b().whileTrue(m_gameCommands.moveToClimbCommand());
     m_driverController.y().whileTrue(m_gameCommands.climbCommand());

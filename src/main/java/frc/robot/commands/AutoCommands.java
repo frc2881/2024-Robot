@@ -38,6 +38,8 @@ public class AutoCommands {
   private final ClimberSubsystem m_climberSubsystem;
   private final LightsController m_lightsController;
 
+  private int m_i;
+
   public AutoCommands(
     GameCommands gameCommands,
     GyroSensor gyroSensor, 
@@ -104,34 +106,35 @@ public class AutoCommands {
     .withName("PickupAndScoreNote");
   }
 
-  // private Command runAutos(AutoPoses[] autoPoses) {
-  //   return Commands.repeatingSequence(
-  //     pickupAndScoreNote(autoPoses[i])
-  //   ).beforeStarting(
-  //     m_i = 1;
-  //   )
+  private Command runAutos(AutoPoses[] autoPoses) {
+    return Commands.repeatingSequence(
+      pickupAndScoreNote(autoPoses[m_i]),
+      Commands.runOnce(
+        () -> {
+          m_i = m_i + 1;
+        }
+      )
+    )
+    .until(() -> m_i >= autoPoses.length)
+    .beforeStarting(
+      () -> {
+        m_i = 1;
+      }
+    );
+  }
 
-  //   if (autoPoses.length > 1) {
-  //     for (int i = 1; i < autoPoses.length; i++) {
-        
-  //     }
-  //   }
-  // } // TODO: Rework to be command
-
-  // public Command runAuto(boolean isScoreAtSubwoofer, AutoPoses[] notesPoses) {
-  //   return Commands.parallel(
-  //     //m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-  //     Commands.sequence(
-  //       Commands.either(
-  //         scoreSubwooferAuto(), 
-  //         pickupAndScoreNote(notesPoses[0]), 
-  //         () -> isScoreAtSubwoofer),
-  //       Commands.runOnce(
-  //         () -> runAutos(notesPoses)
-  //       )
-  //     )
-  //   ); // TODO: figure out whats wrong with adding reset gyro
-  // }
+  public Command runAuto(boolean isScoreAtSubwoofer, AutoPoses[] notesPoses) {
+    return Commands.parallel(
+      //m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        Commands.either(
+          scoreSubwooferAuto(), 
+          pickupAndScoreNote(notesPoses[0]), 
+          () -> isScoreAtSubwoofer),
+        runAutos(notesPoses)
+      )
+    );
+  }
 
   public Command scorePickup1() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup1");

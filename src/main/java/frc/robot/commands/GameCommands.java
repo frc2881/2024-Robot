@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
+import frc.robot.lib.common.Records.AutoPoses;
+import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
@@ -29,6 +31,8 @@ public class GameCommands {
   private final GameController m_driverController;
   private final GameController m_operatorControlller;
   private final LightsController m_lightsController;
+  
+  private int m_controllerI;
 
   public GameCommands(
     GyroSensor gyroSensor, 
@@ -166,6 +170,18 @@ public class GameCommands {
     .withName("RunLauncherAuto");
   }
 
+  public Command shuttleCommand() {
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.60, 0.60)),
+      Commands.sequence(
+        alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShuttle),
+        new WaitCommand(1.0),
+        runLauncherAutoCommand()
+      )
+    )
+    .withName("shuttleNote");
+  }
+
   public Command moveToClimbCommand() {
     return 
     // m_launcherArmSubsystem.alignToPositionCommand(1.0)
@@ -179,11 +195,14 @@ public class GameCommands {
     .withName("Climb");
   }
 
-  public void rumbleControllers(GameController[] controllers) {
-    for(int i = 0; i < controllers.length; i++){
-      controllers[i].rumbleShort();
-    }
+  public Command rumbleControllers(boolean rumbleDriver, boolean rumbleOperator) {
+    return Commands.parallel(
+      m_driverController.rumbleShort().onlyIf(() -> rumbleDriver),
+      m_operatorControlller.rumbleShort().onlyIf(() -> rumbleOperator)
+    )
+    .withName("RumbleControllers");
   }
+
 
   public Command resetSubsystems() {
     return 

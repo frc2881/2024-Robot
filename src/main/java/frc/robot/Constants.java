@@ -178,8 +178,10 @@ public final class Constants {
     public static final double kArmPositionShortRange = 10.35; // 1.84m
     public static final double kArmPositionMidRange = 7.3; // 2.78m
     public static final double kArmPositionLongRange = 4.4; // 5.37m
+    public static final double kArmPositionShuttle = 12.0; // 1.35m
 
     public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
+      new LauncherArmPosition(1.00, 13),
       new LauncherArmPosition(1.35, 12.7),
       new LauncherArmPosition(2.3, 8.55),
       new LauncherArmPosition(3.65, 6.25),
@@ -188,7 +190,8 @@ public final class Constants {
     };
 
     public static final LauncherRollerSpeedForPosition[] kRollerSpeeds = new LauncherRollerSpeedForPosition[] {
-      new LauncherRollerSpeedForPosition(1.35, 0.6),
+      new LauncherRollerSpeedForPosition(1.00, 0.5),
+      new LauncherRollerSpeedForPosition(1.35, 0.55),
       new LauncherRollerSpeedForPosition(3.65, 0.75),
       new LauncherRollerSpeedForPosition(6.2, 0.8)
     };

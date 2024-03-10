@@ -66,7 +66,7 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     double speed = Utils.getLinearInterpolation(m_distances, m_speeds, distance.get());
     SmartDashboard.putNumber("CalculatedLauncherSpeed", speed);
 
-    double result = Utils.isValueBetween(speed, 0.6, Constants.Launcher.kArmMotorMaxOutput) 
+    double result = Utils.isValueBetween(speed, 0.0, Constants.Launcher.kArmMotorMaxOutput) 
     ? speed 
     : 0.8;
     return new LauncherRollerSpeeds(result, result);
