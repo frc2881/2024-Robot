@@ -27,10 +27,11 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.CalibrationTime;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.SPI;
-import frc.robot.lib.common.Records.LauncherRollerSpeeds;
-import frc.robot.lib.common.Records.PIDConstants;
 import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.common.Records.LauncherArmPosition;
+import frc.robot.lib.common.Records.LauncherRollerSpeedForPosition;
+import frc.robot.lib.common.Records.LauncherRollerSpeeds;
+import frc.robot.lib.common.Records.PIDConstants;
 
 public final class Constants {
 
@@ -87,7 +88,7 @@ public final class Constants {
 
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.5, 0, 0);
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.7, 0, 0);
-    public static final PathConstraints kPathFindingConstraints = new PathConstraints(3.0, 3.0, 540.00, 720.00);
+    public static final PathConstraints kPathFindingConstraints = new PathConstraints(1.0, 1.0, 540.00, 720.00);
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;
@@ -118,27 +119,6 @@ public final class Constants {
       public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
       public static final PIDConstants kTurningMotorPIDConstants = new PIDConstants(1, 0, 0, 0);
     }
-  }
-
-  public static final class Feeder {
-    public static final int kArmMotorCANId = 15;
-    public static final int kRollerMotorCANId = 14;
-
-    public static final int kArmMotorCurrentLimit = 60;
-    public static final double kArmMotorMinOutput = -0.5;
-    public static final double kArmMotorMaxOutput = 0.5;
-    public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.05, 0, 0, 0);
-    public static final double kArmMotorForwardSoftLimit = 19.0; // TODO: recalibrate
-    public static final double kArmMotorReverseSoftLimit = 1.0; // TODO: recalibrate
-    public static final double kArmMotorPositionConversionFactor = 1.0 / 3.0;
-    public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
-    public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
-    public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
-    
-    public static final int kRollerMotorCurrentLimit = 60;
-    public static final double kRollerMotorMaxOutput = 0.75;
-    public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
   }
 
   public static final class Intake {
@@ -189,21 +169,28 @@ public final class Constants {
     public static final double kBottomRollerMotorMaxOutput = 1.0;
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
-    public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.65, 0.65);
+    public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.60, 0.60);
     public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.35, 0.35);
     
-    public static final double kArmPositionIntake = 14.0;
+    public static final double kArmPositionIntake = 7.0;
     public static final double kArmPositionAmp = 11.4;
-    public static final double kArmPositionSubwoofer = 13.10; // 1.35m
-    public static final double kArmPositionShortRange = 9.0; // 1.84m
-    public static final double kArmPositionMidRange = 6.5; // 2.78m
-    public static final double kArmPositionLongRange = 4.20; // 5.37m
+    public static final double kArmPositionSubwoofer = 12.9; // 1.35m
+    public static final double kArmPositionShortRange = 10.35; // 1.84m
+    public static final double kArmPositionMidRange = 7.3; // 2.78m
+    public static final double kArmPositionLongRange = 4.4; // 5.37m
 
     public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
-      new LauncherArmPosition(1.35, 13.10),
-      new LauncherArmPosition(1.84, 9.0),
-      new LauncherArmPosition(2.78, 7.0),
-      new LauncherArmPosition(5.37, 4.20)
+      new LauncherArmPosition(1.35, 12.7),
+      new LauncherArmPosition(2.3, 8.55),
+      new LauncherArmPosition(3.65, 6.25),
+      new LauncherArmPosition(5.0, 4.5),
+      new LauncherArmPosition(6.2, 4.1)
+    };
+
+    public static final LauncherRollerSpeedForPosition[] kRollerSpeeds = new LauncherRollerSpeedForPosition[] {
+      new LauncherRollerSpeedForPosition(1.35, 0.6),
+      new LauncherRollerSpeedForPosition(3.65, 0.75),
+      new LauncherRollerSpeedForPosition(6.2, 0.8)
     };
   }
 
@@ -212,8 +199,8 @@ public final class Constants {
     public static final int kRollerMotorCANId = 17;
 
     public static final int kArmMotorCurrentLimit = 60;
-    public static final double kArmMotorMinOutput = -1.0; // TODO: update with testing
-    public static final double kArmMotorMaxOutput = 1.0; // TODO: update with testing
+    public static final double kArmMotorMinOutput = -1.0;
+    public static final double kArmMotorMaxOutput = 1.0;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
     public static final double kArmMotorForwardSoftLimit = 38.7;
@@ -224,8 +211,8 @@ public final class Constants {
     public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
 
     public static final int kRollerMotorCurrentLimit = 60;
-    public static final double kRollerMotorMinOutput = -1.0; // TODO: update with testing
-    public static final double kRollerMotorMaxOutput = 1.0; // TODO: update with testing
+    public static final double kRollerMotorMinOutput = -1.0;
+    public static final double kRollerMotorMaxOutput = 1.0;
     public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
 
     //37.7 is position for arm to lock
@@ -312,7 +299,7 @@ public final class Constants {
         public static final Pose3d kBlueAmp = kAprilTagFieldLayout.getTagPose(5).orElse(new Pose3d());
         public static final Pose3d kRedAmp = kAprilTagFieldLayout.getTagPose(6).orElse(new Pose3d());
 
-        public static final double kSpeakerTargetYawTransformX = Units.inchesToMeters(12);
+        public static final double kSpeakerTargetYawTransformX = Units.inchesToMeters(6);
         public static final double kSpeakerTargetPitchTransformZ = Units.inchesToMeters(24);
         public static final double kSpeakerTargetDistanceTransformX = Units.inchesToMeters(0);
       }

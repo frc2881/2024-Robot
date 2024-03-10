@@ -9,5 +9,4 @@ public class Enums {
   public static enum DriveLockState { Unlocked, Locked; }
   public static enum DriveDriftCorrection { Enabled, Disabled; }
   public static enum SwerveModuleLocation { FrontLeft, FrontRight, RearLeft, RearRight; }
-  public static enum IntakeLocation { Front, Rear; }
 }

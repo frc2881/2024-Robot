@@ -26,4 +26,9 @@ public class Records {
     double position
   ){}
 
+  public record LauncherRollerSpeedForPosition(
+    double distance,
+    double speed
+  ){}
+
 }

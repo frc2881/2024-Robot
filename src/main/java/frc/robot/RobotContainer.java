@@ -19,8 +19,8 @@ import frc.robot.commands.GameCommands;
 import frc.robot.lib.common.Enums.DriveDriftCorrection;
 import frc.robot.lib.common.Enums.DriveOrientation;
 import frc.robot.lib.common.Enums.DriveSpeedMode;
-import frc.robot.lib.common.Enums.IntakeLocation;
 import frc.robot.lib.common.Enums.MotorDirection;
+import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
@@ -41,11 +41,8 @@ public class RobotContainer {
   private final GameController m_operatorController;
   private final GyroSensor m_gyroSensor;
   private final List<PoseSensor> m_poseSensors;
-  private final BeamBreakSensor m_intakeBeamBreakSensor;
   private final BeamBreakSensor m_launcherBottomBeamBreakSensor;
   private final BeamBreakSensor m_launcherTopBeamBreakSensor;
-  private final DistanceSensor m_intakeDistanceSensor;
-  private final DistanceSensor m_launcherDistanceSensor;
   private final ObjectSensor m_objectSensor;
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
@@ -89,10 +86,6 @@ public class RobotContainer {
         Constants.Game.Field.kAprilTagFieldLayout
       ));
     });
-    m_intakeBeamBreakSensor = new BeamBreakSensor(
-      Constants.Sensors.BeamBreak.Intake.kSensorName,
-      Constants.Sensors.BeamBreak.Intake.kChannel
-    );
     m_launcherBottomBeamBreakSensor = new BeamBreakSensor(
       Constants.Sensors.BeamBreak.LauncherBottom.kSensorName,
       Constants.Sensors.BeamBreak.LauncherBottom.kChannel
@@ -100,16 +93,6 @@ public class RobotContainer {
     m_launcherTopBeamBreakSensor = new BeamBreakSensor(
       Constants.Sensors.BeamBreak.LauncherTop.kSensorName,
       Constants.Sensors.BeamBreak.LauncherTop.kChannel
-    );
-    m_intakeDistanceSensor = new DistanceSensor(
-      Constants.Sensors.Distance.Intake.kSensorName,
-      Constants.Sensors.Distance.Intake.kMinTargetDistance,
-      Constants.Sensors.Distance.Intake.kMaxTargetDistance
-    );
-    m_launcherDistanceSensor = new DistanceSensor(
-      Constants.Sensors.Distance.Launcher.kSensorName,
-      Constants.Sensors.Distance.Launcher.kMinTargetDistance,
-      Constants.Sensors.Distance.Launcher.kMaxTargetDistance
     );
     m_objectSensor = new ObjectSensor(
       Constants.Sensors.Object.kCameraName,
@@ -127,11 +110,8 @@ public class RobotContainer {
     // COMMANDS ========================================
     m_gameCommands = new GameCommands(
       m_gyroSensor, 
-      m_intakeBeamBreakSensor, 
       m_launcherBottomBeamBreakSensor, 
-      m_launcherTopBeamBreakSensor, 
-      m_intakeDistanceSensor, 
-      m_launcherDistanceSensor, 
+      m_launcherTopBeamBreakSensor,  
       m_driveSubsystem, 
       m_poseSubsystem, 
       m_intakeSubsystem, 
@@ -146,11 +126,8 @@ public class RobotContainer {
     m_autoCommands = new AutoCommands(
       m_gameCommands, 
       m_gyroSensor, 
-      m_intakeBeamBreakSensor, 
       m_launcherBottomBeamBreakSensor, 
       m_launcherTopBeamBreakSensor, 
-      m_intakeDistanceSensor, 
-      m_launcherDistanceSensor, 
       m_driveSubsystem, 
       m_poseSubsystem,  
       m_intakeSubsystem, 
@@ -169,10 +146,10 @@ public class RobotContainer {
   private void configureBindings() {
     // DRIVER ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
-    m_driverController.leftTrigger().whileTrue(m_gameCommands.runIntakeCommand(IntakeLocation.Rear));
-    m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand(IntakeLocation.Front));
-    m_driverController.leftBumper().whileTrue(m_gameCommands.runEjectCommand(IntakeLocation.Rear));
-    m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand(IntakeLocation.Front));
+    //m_driverController.leftTrigger().whileTrue(Commands.none());
+    m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand());
+    //m_driverController.leftBumper().whileTrue(Commands.none());
+    m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     // m_driverController.rightStick().whileTrue(Commands.none());
     // m_driverController.povLeft().whileTrue(Commands.none());
@@ -268,6 +245,8 @@ public class RobotContainer {
     m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupScorePickup1());
     m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupScorePickup14());
     m_autoChooser.addOption("ScorePreload", m_autoCommands.scoreSubwooferAuto());
+    // m_autoChooser.addOption("TEST - DynamicPreload1Grab1", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote1Poses}));
+    // m_autoChooser.addOption("TEST - DynamicPreload1Grab6", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote6Poses}));
     
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }
@@ -304,11 +283,8 @@ public class RobotContainer {
   public void updateTelemetry() {
     m_gyroSensor.updateTelemetry();
     m_poseSensors.forEach(poseSensor -> poseSensor.updateTelemetry());
-    m_intakeBeamBreakSensor.updateTelemetry();
     m_launcherBottomBeamBreakSensor.updateTelemetry();
     m_launcherTopBeamBreakSensor.updateTelemetry();
-    m_intakeDistanceSensor.updateTelemetry();
-    m_launcherDistanceSensor.updateTelemetry();
     m_objectSensor.updateTelemetry();
 
     SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());

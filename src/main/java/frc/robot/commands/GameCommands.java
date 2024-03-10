@@ -2,8 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.lib.common.Enums.IntakeLocation;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
@@ -18,11 +18,8 @@ import frc.robot.subsystems.PoseSubsystem;
 
 public class GameCommands {
   private final GyroSensor m_gyroSensor;   
-  private final BeamBreakSensor m_intakeBeamBreakSensor;
   private final BeamBreakSensor m_launcherBottomBeamBreakSensor;
   private final BeamBreakSensor m_launcherTopBeamBreakSensor; 
-  private final DistanceSensor m_intakeDistanceSensor;
-  private final DistanceSensor m_launcherDistanceSensor;
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
   private final IntakeSubsystem m_intakeSubsystem;
@@ -35,11 +32,8 @@ public class GameCommands {
 
   public GameCommands(
     GyroSensor gyroSensor, 
-    BeamBreakSensor intakeBeamBreakSensor,
     BeamBreakSensor launcherBottomBeamBreakSensor,
     BeamBreakSensor launcherTopBeamBreakSensor,
-    DistanceSensor intakeDistanceSensor,
-    DistanceSensor launcherDistanceSensor,
     DriveSubsystem driveSubsystem, 
     PoseSubsystem poseSubsystem,
     IntakeSubsystem intakeSubsystem,
@@ -51,11 +45,8 @@ public class GameCommands {
     LightsController lightsController
   ) {
     m_gyroSensor = gyroSensor;
-    m_intakeBeamBreakSensor = intakeBeamBreakSensor;
     m_launcherBottomBeamBreakSensor = launcherBottomBeamBreakSensor;
     m_launcherTopBeamBreakSensor = launcherTopBeamBreakSensor;
-    m_intakeDistanceSensor = intakeDistanceSensor;
-    m_launcherDistanceSensor = launcherDistanceSensor;
     m_driveSubsystem = driveSubsystem;
     m_poseSubsystem = poseSubsystem;
     m_intakeSubsystem = intakeSubsystem;
@@ -67,36 +58,33 @@ public class GameCommands {
     m_lightsController = lightsController;
   }
 
-  public Command runIntakeCommand(IntakeLocation intakeDirection) {
-    switch (intakeDirection) {
-      case Front:
-        return 
-        m_intakeSubsystem.runIntakeFrontCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-        .raceWith(m_launcherArmSubsystem.alignToIntakePositionCommand())
-        .withName("RunIntakeFront");
-      case Rear:
-        return
-        m_intakeSubsystem.runIntakeRearCommand(m_intakeBeamBreakSensor::hasTarget, m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-        .raceWith(m_launcherArmSubsystem.alignToIntakePositionCommand())
-        .withName("RunIntakeRear");
-      default:
-        return Commands.none();
-    }
+  // TODO: take out intake direction
+  public Command runIntakeCommand() {
+      return 
+      m_intakeSubsystem.runIntakeFrontCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+      .raceWith(m_launcherArmSubsystem.alignToIntakePositionCommand())
+      .andThen(
+        new WaitCommand(0.05),
+        m_intakeSubsystem.adjustNotePositionCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+      )
+      .withName("RunIntakeFront");
   }
 
-  public Command runEjectCommand(IntakeLocation intakeDirection) {
-    switch (intakeDirection) {
-      case Front:
-        return
-        m_intakeSubsystem.runEjectFrontCommand()
-        .withName("RunEjectFront");
-      case Rear:
-        return
-        m_intakeSubsystem.runEjectRearCommand()
-        .withName("RunEjectRear");
-      default:
-        return Commands.none();
-    }
+  public Command runIntakeAutoCommand() {
+    return 
+    m_intakeSubsystem.runIntakeFrontAutoCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+    .raceWith(m_launcherArmSubsystem.alignToIntakePositionCommand())
+    .andThen(
+      new WaitCommand(0.05),
+      m_intakeSubsystem.adjustNotePositionCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+    )
+    .withName("RunIntakeFront");
+}
+
+  public Command runEjectCommand() {
+      return
+      m_intakeSubsystem.runEjectFrontCommand()
+      .withName("RunEjectFront");
   }
 
   // TODO: add rumble command to operator controller when driver aligns robot to target
@@ -113,6 +101,12 @@ public class GameCommands {
       m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kWarmupLauncherSpeeds)
       .onlyIf(() -> isRollersEnabled)
     )
+    .withName("AlignLauncherToTarget");
+  }
+
+  public Command alignLauncherToTargetAutoCommand() {
+    return
+    m_launcherArmSubsystem.alignToTargetAutoCommand(m_poseSubsystem::getTargetDistance)
     .withName("AlignLauncherToTarget");
   }
 
@@ -145,9 +139,9 @@ public class GameCommands {
 
   public Command runLauncherCommand() {
     return 
-    m_launcherRollerSubsystem.runCommand(() -> m_launcherRollerSubsystem.getSpeedsForArmPosition(m_launcherArmSubsystem.getArmPosition()))
+    m_launcherRollerSubsystem.runCommand(() -> m_launcherRollerSubsystem.getSpeedsForArmPosition(m_poseSubsystem::getTargetDistance))
     .alongWith(
-      Commands.waitSeconds(0.5) // TODO: validate if shorter timeout is OK if rollers are already being warmed up by the launcher arm alignment by the operator
+      Commands.waitSeconds(2.0) // TODO: validate if shorter timeout is OK if rollers are already being warmed up by the launcher arm alignment by the operator
       .andThen(m_intakeSubsystem.runLaunchCommand())
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())

@@ -91,7 +91,7 @@ public class PoseSubsystem extends SubsystemBase {
     Translation2d targetTranslation = targetPose.relativeTo(robotPose).getTranslation();
     Rotation2d targetRotation = new Rotation2d(targetTranslation.getX(), targetTranslation.getY());
     targetRotation = targetRotation
-      .rotateBy(Rotation2d.fromDegrees(Utils.getValueForAlliance(180.0, 0.0)))
+      .rotateBy(Rotation2d.fromDegrees(180.0))
       .rotateBy(robotPose.getRotation());
     return Utils.wrapAngle(targetRotation.getDegrees());
   }
