@@ -17,7 +17,6 @@ import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
-import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -38,8 +37,6 @@ public class AutoCommands {
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ClimberSubsystem m_climberSubsystem;
   private final LightsController m_lightsController;
-
-  private int m_i;
 
   public AutoCommands(
     GameCommands gameCommands,
@@ -138,7 +135,6 @@ public class AutoCommands {
 
   public Command scorePickup1() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup1");
-    PathConstraints constraints = new PathConstraints(3, 3, 540.00, 720.00);
     return Commands
     .sequence(
       scoreSubwooferAuto(),
@@ -159,14 +155,13 @@ public class AutoCommands {
 
   public Command backupScorePickup1() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("BackupPickup1");
-    PathConstraints constraints = new PathConstraints(3, 3, 540.00, 720.00);
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
       Commands.sequence(
         Commands.parallel(
           Commands.either(
-            AutoBuilder.pathfindToPose(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), constraints),
-            AutoBuilder.pathfindToPoseFlipped(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), constraints),
+            AutoBuilder.pathfindToPose(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), Constants.Drive.kPathFindingConstraints),
+            AutoBuilder.pathfindToPoseFlipped(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), Constants.Drive.kPathFindingConstraints),
             () -> Robot.getAlliance() == Alliance.Blue
           ),
           m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
@@ -194,14 +189,13 @@ public class AutoCommands {
   public Command backupScorePickup14() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("BackupPickup1");
     PathPlannerPath path2 = PathPlannerPath.fromPathFile("BackupPickup4");
-    PathConstraints constraints = new PathConstraints(3, 3, 540.00, 720.00);
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.7, 0.7)),
       Commands.sequence(
         Commands.parallel(
           Commands.either(
-            AutoBuilder.pathfindToPose(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), constraints),
-            AutoBuilder.pathfindToPoseFlipped(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), constraints), // Go to first position
+            AutoBuilder.pathfindToPose(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), Constants.Drive.kPathFindingConstraints),
+            AutoBuilder.pathfindToPoseFlipped(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), Constants.Drive.kPathFindingConstraints), // Go to first position
             () -> Robot.getAlliance() == Alliance.Blue
           ),
           m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0) // move arm to blue line position
@@ -210,7 +204,7 @@ public class AutoCommands {
         m_gameCommmands.runLauncherAutoCommand() // SHOOT FIRST NOTE
         .until(() -> !m_launcherTopBeamBreakSensor.hasTarget()),
         Commands.parallel(
-          AutoBuilder.pathfindThenFollowPath(path1, constraints), // grab next note
+          AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints), // grab next note
           m_gameCommmands.runIntakeAutoCommand() // grab next note
         ),
         Commands.parallel(
@@ -221,16 +215,16 @@ public class AutoCommands {
         .until(() -> !m_launcherTopBeamBreakSensor.hasTarget()), // TODO: Create run launcher command that stops when note shot
         Commands.parallel(
           Commands.either(
-            AutoBuilder.pathfindToPose(new Pose2d(8.6, 7.16, Rotation2d.fromDegrees(0)), constraints),
-            AutoBuilder.pathfindToPoseFlipped(new Pose2d(8.6, 7.16, Rotation2d.fromDegrees(0)), constraints),
+            AutoBuilder.pathfindToPose(new Pose2d(8.6, 7.16, Rotation2d.fromDegrees(0)), Constants.Drive.kPathFindingConstraints),
+            AutoBuilder.pathfindToPoseFlipped(new Pose2d(8.6, 7.16, Rotation2d.fromDegrees(0)), Constants.Drive.kPathFindingConstraints),
             () -> Robot.getAlliance() == Alliance.Blue
           ), // grab next note
           m_gameCommmands.runIntakeAutoCommand() // grab next note
         ),
         Commands.parallel(
           Commands.either(
-            AutoBuilder.pathfindToPose(new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)), constraints),
-            AutoBuilder.pathfindToPoseFlipped(new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)), constraints),
+            AutoBuilder.pathfindToPose(new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)), Constants.Drive.kPathFindingConstraints),
+            AutoBuilder.pathfindToPoseFlipped(new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)), Constants.Drive.kPathFindingConstraints),
             () -> Robot.getAlliance() == Alliance.Blue
           ),
           m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
@@ -245,7 +239,6 @@ public class AutoCommands {
 
   public Command scorePickup2() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup2");
-    PathConstraints constraints = new PathConstraints(1.5, 1.5, 540.00, 720.00);
     return Commands
     .sequence(
       scoreSubwooferAuto(),
@@ -269,7 +262,6 @@ public class AutoCommands {
 
   public Command scorePickup3() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup3");
-    PathConstraints constraints = new PathConstraints(1.5, 1.5, 540.00, 720.00);
     return Commands
     .sequence(
       scoreSubwooferAuto(),
@@ -300,32 +292,4 @@ public class AutoCommands {
  
     .withName("ScoreSubwooferAuto");
   }
-
-  public Command Pos1Note1Path() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Position1Grab");
-    return Commands
-    .sequence(
-      AutoBuilder.followPath(path1)
-    )
-    .withName("Pos1To3NotePath");
-  }
-
-  public Command Pos2Note1Path() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Position2Grab");
-    return Commands
-    .sequence(
-      AutoBuilder.followPath(path1)
-    )
-    .withName("Pos1To3NotePath");
-  }
-
-  public Command Pos3Note1Path() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Position3Grab");
-    return Commands
-    .sequence(
-      AutoBuilder.followPath(path1)
-    )
-    .withName("Pos1To3NotePath");
-  }
-
 }

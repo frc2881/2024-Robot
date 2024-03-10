@@ -127,6 +127,7 @@ public class DriveSubsystem extends SubsystemBase {
           }
         }
       }
+      m_isAlignedToTarget = false;
       drive(speedX, speedY, speedRotation);
     })
     .onlyIf(() -> m_lockState != DriveLockState.Locked)
@@ -239,6 +240,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   private void updateTelemetry() {
     SmartDashboard.putString("Robot/Drive/LockState", m_lockState.toString());
+    SmartDashboard.putBoolean("Robot/Drive/IsAlignedToTarget", m_isAlignedToTarget);
     m_swerveModuleFrontLeft.updateTelemetry();
     m_swerveModuleFrontRight.updateTelemetry();
     m_swerveModuleRearLeft.updateTelemetry();
