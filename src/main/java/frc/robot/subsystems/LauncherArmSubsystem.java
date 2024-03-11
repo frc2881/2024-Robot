@@ -112,7 +112,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
     run(() -> {
       double position = calculatePositionForTarget(targetDistance.get()); 
       m_armPIDController.setReference(position, ControlType.kSmartMotion);
-      m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < 0.1;
+      m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < 0.5;
     })
     .beforeStarting(() -> m_isAlignedToTarget = false)
     .finallyDo(() -> { 

@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -75,10 +74,10 @@ public class AutoCommands {
     .withName("ResetGyro"); 
   }
 
-  private Command pathFindToNotePickup(Pose2d notePickupPose) {
+  private Command pathFindToNotePose(Pose2d notePose) {
     return Commands.either(
-      AutoBuilder.pathfindToPose(notePickupPose, Constants.Drive.kPathFindingConstraints),
-      AutoBuilder.pathfindToPoseFlipped(notePickupPose, Constants.Drive.kPathFindingConstraints),
+      AutoBuilder.pathfindToPose(notePose, Constants.Drive.kPathFindingConstraints),
+      AutoBuilder.pathfindToPoseFlipped(notePose, Constants.Drive.kPathFindingConstraints),
       () -> Robot.getAlliance() == Alliance.Blue
     )
     .withName("PathFindToNotePickup");
@@ -87,21 +86,20 @@ public class AutoCommands {
   private Command pickupAndScoreNote(AutoPoses autoPoses) {
     return Commands.sequence(
       Commands.parallel(
-        pathFindToNotePickup(autoPoses.notePickupPose())
-        //m_gameCommmands.runIntakeCommand()
+        pathFindToNotePose(autoPoses.notePickupPose()),
+        m_gameCommmands.runIntakeCommand()
       )
       .unless(() -> autoPoses.notePickupPose().getX() == 0.0),
       Commands.sequence(
-        pathFindToNotePickup(autoPoses.noteScorePose())
+        pathFindToNotePose(autoPoses.noteScorePose())
       )
       .unless(() -> autoPoses.noteScorePose().getX() == autoPoses.notePickupPose().getX()), 
       Commands.parallel(
         m_gameCommmands.alignRobotToTargetCommand().withTimeout(1.0),
-        m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(1.0) // TODO: add command get launcher pos
+        m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(1.0)
       ),
-      // m_gameCommmands.runLauncherAutoCommand()
-      // .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
-      new WaitCommand(2.0)
+      m_gameCommmands.runLauncherAutoCommand()
+      .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
     )
     .withName("PickupAndScoreNote");
   }
@@ -136,6 +134,143 @@ public class AutoCommands {
     );
   }
 
+  public Command backupScorePickup1() {
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNotePreload1Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
+        Commands.parallel(
+          pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote1Poses.notePickupPose()),
+          m_gameCommmands.runIntakeCommand()
+        ),
+        // TODO: Make it so if it doesn't have a note in launcher, eject
+        Commands.parallel(
+          m_gameCommmands.alignRobotToTargetCommand( ),
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
+      )
+    )
+ 
+    .withName("BackupScorePickup1");
+  } 
+
+  public Command dynamicBackupScorePickup1() {
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        pickupAndScoreNote(Constants.Game.Field.AutoWaypoints.kNotePreload1Poses),
+        pickupAndScoreNote(Constants.Game.Field.AutoWaypoints.kNote1Poses)
+      )
+    )
+ 
+    .withName("BackupScorePickup1");
+  } 
+
+  public Command backupScorePickup2() {
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNotePreload2Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
+        Commands.parallel(
+          pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote2Poses.notePickupPose()),
+          m_gameCommmands.runIntakeCommand()
+        ),
+        // TODO: Make it so if it doesn't have a note in launcher, eject
+        Commands.parallel(
+          m_gameCommmands.alignRobotToTargetCommand( ),
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
+      )
+    )
+ 
+    .withName("BackupScorePickup2");
+  } 
+
+  public Command backupScorePickup3() {
+    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup3");
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNotePreload3Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand(),
+          m_gameCommmands.alignRobotToTargetCommand().withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
+        Commands.parallel(
+          pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote3Poses.notePickupPose()),
+          m_gameCommmands.runIntakeCommand()
+        ),
+        // TODO: Make it so if it doesn't have a note in launcher, eject
+        Commands.parallel(
+          m_gameCommmands.alignRobotToTargetCommand( ),
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
+        // TODO: make launcher stop
+      )
+    )
+ 
+    .withName("BackupScorePickup3");
+  } 
+
+  public Command backupScorePickup14() {
+    PathPlannerPath path1 = PathPlannerPath.fromPathFile("BackupPickup1");
+    PathPlannerPath path2 = PathPlannerPath.fromPathFile("BackupPickup4");
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNotePreload1Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
+        Commands.parallel(
+          pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote1Poses.notePickupPose()),
+          m_gameCommmands.runIntakeCommand()
+        ),
+        Commands.parallel(
+          m_gameCommmands.alignRobotToTargetCommand( ),
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()), // TODO: Create run launcher command that stops when note shot // TODO: Create run launcher command that stops when note shot
+        Commands.parallel(
+          pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote4Poses.notePickupPose()), // grab next note
+          m_gameCommmands.runIntakeCommand() // grab next note
+        ),
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote4Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand()
+        ),
+        m_gameCommmands.runLauncherAutoCommand() // SHOOT THIRD NOTE
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
+      )
+    )
+    .withName("BackupShootPickup14");
+  } 
+
   public Command scorePickup1() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup1");
     return Commands
@@ -154,90 +289,6 @@ public class AutoCommands {
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
     )
     .withName("ScorePickup1");
-  } 
-
-  public Command backupScorePickup1() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("BackupPickup1");
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      Commands.sequence(
-        Commands.parallel(
-          Commands.either(
-            AutoBuilder.pathfindToPose(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), Constants.Drive.kPathFindingConstraints),
-            AutoBuilder.pathfindToPoseFlipped(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), Constants.Drive.kPathFindingConstraints),
-            () -> Robot.getAlliance() == Alliance.Blue
-          ),
-          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
-        ),
-        m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0),
-        m_gameCommmands.runLauncherAutoCommand()
-        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
-        Commands.parallel(
-          AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        // TODO: Make it so if it doesn't have a note in launcher, eject
-        Commands.parallel(
-          m_gameCommmands.alignRobotToTargetCommand( ),
-          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
-        ),
-        m_gameCommmands.runLauncherAutoCommand()
-        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
-      )
-    )
- 
-    .withName("BackupScorePickup1");
-  } 
-
-  public Command backupScorePickup14() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("BackupPickup1");
-    PathPlannerPath path2 = PathPlannerPath.fromPathFile("BackupPickup4");
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.7, 0.7)),
-      Commands.sequence(
-        Commands.parallel(
-          Commands.either(
-            AutoBuilder.pathfindToPose(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), Constants.Drive.kPathFindingConstraints),
-            AutoBuilder.pathfindToPoseFlipped(new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(45)), Constants.Drive.kPathFindingConstraints), // Go to first position
-            () -> Robot.getAlliance() == Alliance.Blue
-          ),
-          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0) // move arm to blue line position
-        ),
-        m_gameCommmands.alignRobotToTargetCommand( ), // Align robot
-        m_gameCommmands.runLauncherAutoCommand() // SHOOT FIRST NOTE
-        .until(() -> !m_launcherTopBeamBreakSensor.hasTarget()),
-        Commands.parallel(
-          AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints), // grab next note
-          m_gameCommmands.runIntakeAutoCommand() // grab next note
-        ),
-        Commands.parallel(
-          m_gameCommmands.alignRobotToTargetCommand( ), // align to speaker
-          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0) // align launcher to speaker
-        ),
-        m_gameCommmands.runLauncherAutoCommand() // SHOOT SECOND NOTE
-        .until(() -> !m_launcherTopBeamBreakSensor.hasTarget()), // TODO: Create run launcher command that stops when note shot
-        Commands.parallel(
-          Commands.either(
-            AutoBuilder.pathfindToPose(new Pose2d(8.6, 7.16, Rotation2d.fromDegrees(0)), Constants.Drive.kPathFindingConstraints),
-            AutoBuilder.pathfindToPoseFlipped(new Pose2d(8.6, 7.16, Rotation2d.fromDegrees(0)), Constants.Drive.kPathFindingConstraints),
-            () -> Robot.getAlliance() == Alliance.Blue
-          ), // grab next note
-          m_gameCommmands.runIntakeAutoCommand() // grab next note
-        ),
-        Commands.parallel(
-          Commands.either(
-            AutoBuilder.pathfindToPose(new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)), Constants.Drive.kPathFindingConstraints),
-            AutoBuilder.pathfindToPoseFlipped(new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)), Constants.Drive.kPathFindingConstraints),
-            () -> Robot.getAlliance() == Alliance.Blue
-          ),
-          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
-        ),
-        m_gameCommmands.alignRobotToTargetCommand( ),
-        m_gameCommmands.runLauncherAutoCommand() // SHOOT THIRD NOTE
-        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
-      )
-    )
-    .withName("BackupShootPickup14");
   } 
 
   public Command scorePickup2() {

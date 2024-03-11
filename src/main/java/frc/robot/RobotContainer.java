@@ -148,7 +148,7 @@ public class RobotContainer {
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
     m_driverController.leftTrigger().whileTrue(m_gameCommands.shuttleCommand());
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand()
-      .alongWith(m_gameCommands.rumbleControllers(true, true)
+      .alongWith(m_gameCommands.rumbleControllers(true, false)
       ));
     //m_driverController.leftBumper().whileTrue();
     m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
@@ -245,8 +245,11 @@ public class RobotContainer {
     m_autoChooser.addOption("ShootPickup2", m_autoCommands.scorePickup2());
     m_autoChooser.addOption("ShootPickup3", m_autoCommands.scorePickup3());
     m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupScorePickup1());
+    m_autoChooser.addOption("BackupShootPickup2", m_autoCommands.backupScorePickup2());
+    m_autoChooser.addOption("BackupShootPickup3", m_autoCommands.backupScorePickup3());
     m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupScorePickup14());
     m_autoChooser.addOption("ScorePreload", m_autoCommands.scoreSubwooferAuto());
+    m_autoChooser.addOption("TEST - DynamicBackupShootPickup1", m_autoCommands.scoreSubwooferAuto());
     // m_autoChooser.addOption("TEST - DynamicPreload1Grab1", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote1Poses}));
     // m_autoChooser.addOption("TEST - DynamicPreload1Grab6", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote6Poses}));
     

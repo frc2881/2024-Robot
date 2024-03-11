@@ -74,17 +74,6 @@ public class GameCommands {
       .withName("RunIntakeFront");
   }
 
-  public Command runIntakeAutoCommand() {
-    return 
-    m_intakeSubsystem.runIntakeFrontAutoCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-    .raceWith(m_launcherArmSubsystem.alignToIntakePositionCommand())
-    .andThen(
-      new WaitCommand(0.05),
-      m_intakeSubsystem.adjustNotePositionCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-    )
-    .withName("RunIntakeFront");
-}
-
   public Command runEjectCommand() {
       return
       m_intakeSubsystem.runEjectFrontCommand()
@@ -145,7 +134,7 @@ public class GameCommands {
     return 
     m_launcherRollerSubsystem.runCommand(() -> m_launcherRollerSubsystem.getSpeedsForArmPosition(m_poseSubsystem::getTargetDistance))
     .alongWith(
-      Commands.waitSeconds(2.0) // TODO: validate if shorter timeout is OK if rollers are already being warmed up by the launcher arm alignment by the operator
+      Commands.waitSeconds(0.5) // TODO: validate if shorter timeout is OK if rollers are already being warmed up by the launcher arm alignment by the operator
       .andThen(m_intakeSubsystem.runLaunchCommand())
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
@@ -184,14 +173,13 @@ public class GameCommands {
 
   public Command moveToClimbCommand() {
     return 
-    // m_launcherArmSubsystem.alignToPositionCommand(1.0)
     m_climberSubsystem.moveArmToPositionCommand(Constants.Climber.kArmMotorForwardSoftLimit)
     .withName("MoveToClimb");
   }
 
   public Command climbCommand() {
     return 
-    m_climberSubsystem.moveArmToPositionCommand(0.0) // TODO: update?
+    m_climberSubsystem.moveArmToPositionCommand(0.0)
     .withName("Climb");
   }
 
