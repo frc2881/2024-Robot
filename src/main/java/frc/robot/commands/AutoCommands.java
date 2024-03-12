@@ -6,6 +6,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -86,8 +87,8 @@ public class AutoCommands {
   private Command pickupAndScoreNote(AutoPoses autoPoses) {
     return Commands.sequence(
       Commands.parallel(
-        pathFindToNotePose(autoPoses.notePickupPose()),
-        m_gameCommmands.runIntakeCommand()
+        pathFindToNotePose(autoPoses.notePickupPose())
+        //m_gameCommmands.runIntakeCommand()
       )
       .unless(() -> autoPoses.notePickupPose().getX() == 0.0),
       Commands.sequence(
@@ -98,8 +99,9 @@ public class AutoCommands {
         m_gameCommmands.alignRobotToTargetCommand().withTimeout(1.0),
         m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(1.0)
       ),
-      m_gameCommmands.runLauncherAutoCommand()
-      .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
+      // m_gameCommmands.runLauncherAutoCommand()
+      // .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
+      new WaitCommand(1.0)
     )
     .withName("PickupAndScoreNote");
   }
@@ -203,7 +205,6 @@ public class AutoCommands {
   } 
 
   public Command backupScorePickup3() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup3");
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
       Commands.sequence(
@@ -233,8 +234,6 @@ public class AutoCommands {
   } 
 
   public Command backupScorePickup14() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("BackupPickup1");
-    PathPlannerPath path2 = PathPlannerPath.fromPathFile("BackupPickup4");
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
       Commands.sequence(

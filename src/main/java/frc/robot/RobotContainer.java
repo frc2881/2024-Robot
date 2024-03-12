@@ -220,6 +220,31 @@ public class RobotContainer {
     intakePositionChooser.addOption("7.0", 7.0);
     intakePositionChooser.onChange(intakePosition -> m_launcherArmSubsystem.setIntakePosition(intakePosition));
     SmartDashboard.putData("Robot/Launcher/Arm/IntakePosition", intakePositionChooser);
+
+    SendableChooser<Double> intakeSpeedChooser = new SendableChooser<Double>();
+    intakePositionChooser.setDefaultOption("" + Constants.Intake.kIntakeBeltSpeeds, Constants.Intake.kIntakeBeltSpeeds);
+    intakePositionChooser.addOption("1.0", 1.0);
+    intakePositionChooser.addOption("0.9", 0.9);
+    intakePositionChooser.addOption("0.85", 0.85);
+    intakePositionChooser.addOption("0.8", 0.8);
+    intakePositionChooser.addOption("0.75", 0.75);
+    intakePositionChooser.addOption("0.7", 0.7);
+    intakePositionChooser.onChange(intakeSpeed -> m_intakeSubsystem.setIntakeSpeed(intakeSpeed));
+    SmartDashboard.putData("Robot/Intake/Belts/IntakeSpeed", intakeSpeedChooser);
+
+    SendableChooser<Double> intakeWaitTimeChooser = new SendableChooser<Double>();
+    intakePositionChooser.setDefaultOption("" + Constants.Intake.kIntakeBeltWaitTime, Constants.Intake.kIntakeBeltWaitTime);
+    intakePositionChooser.addOption("0.05", 0.05);
+    intakePositionChooser.addOption("0.04", 0.04);
+    intakePositionChooser.addOption("0.035", 0.035);
+    intakePositionChooser.addOption("0.03", 0.03);
+    intakePositionChooser.addOption("0.025", 0.025);
+    intakePositionChooser.addOption("0.02", 0.02);
+    intakePositionChooser.addOption("0.015", 0.015);
+    intakePositionChooser.addOption("0.01", 0.01);
+    intakePositionChooser.addOption("0.005", 0.005);
+    intakePositionChooser.onChange(intakeWaitTime -> m_intakeSubsystem.setIntakeWaitTime(intakeWaitTime));
+    SmartDashboard.putData("Robot/Intake/Belts/IntakeWaitTime", intakeWaitTimeChooser);
   }
 
   private void configureAutos() {

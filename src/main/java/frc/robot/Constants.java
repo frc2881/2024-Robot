@@ -136,6 +136,9 @@ public final class Constants {
     public static final double kBottomBeltMotorMaxOutput = 0.6;
     public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kCoast;
 
+    public static final double kIntakeBeltSpeeds = 0.95; //1.0
+    public static final double kIntakeBeltWaitTime = 0.045; //0.05
+
     public static final int kRollerMotorCurrentLimit = 60;
     public static final double kRollerMotorMinOutput = -0.6;
     public static final double kRollerMotorMaxOutput = 0.6;

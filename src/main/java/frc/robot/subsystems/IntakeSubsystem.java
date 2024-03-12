@@ -19,6 +19,9 @@ public class IntakeSubsystem extends SubsystemBase {
   private final CANSparkMax m_bottomBeltMotor;
   private final CANSparkMax m_rollerMotor;
 
+  private double m_intakeSpeed = Constants.Intake.kIntakeBeltSpeeds;
+  private double m_intakeWaitTime = Constants.Intake.kIntakeBeltWaitTime;
+
   public IntakeSubsystem() {
     m_topBeltMotor = new CANSparkMax(Constants.Intake.kTopBeltMotorCANId, MotorType.kBrushless);
     m_topBeltMotor.restoreFactoryDefaults();
@@ -50,13 +53,13 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command runIntakeFrontCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
-      runTopBelts(MotorDirection.Forward); 
-      runBottomBelts(MotorDirection.Forward);
+      runTopBelts(MotorDirection.Forward, m_intakeSpeed); 
+      runBottomBelts(MotorDirection.Forward, m_intakeSpeed);
       runRollers(MotorDirection.Reverse);
     }, () -> {})
     .onlyWhile(() -> !launcherBottomHasTarget.get())
     .andThen(
-      new WaitCommand(0.05)
+      new WaitCommand(m_intakeWaitTime)
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None);
@@ -185,6 +188,15 @@ public class IntakeSubsystem extends SubsystemBase {
         break;
     }
   }
+
+  public void setIntakeSpeed(double speed) {
+    m_intakeSpeed = speed;
+  }
+
+  public void setIntakeWaitTime(double waitTime) {
+    m_intakeWaitTime = waitTime;
+  }
+
 
   public void reset() {
     m_topBeltMotor.set(0.0);
