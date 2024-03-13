@@ -188,63 +188,6 @@ public class RobotContainer {
     //m_operatorController.x().whileTrue(Commands.none());
     m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
-
-    // DASHBOARD ========================================
-    SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();
-    driveSpeedModeChooser.setDefaultOption(DriveSpeedMode.Competition.toString(), DriveSpeedMode.Competition);
-    driveSpeedModeChooser.addOption(DriveSpeedMode.Training.toString(), DriveSpeedMode.Training);
-    driveSpeedModeChooser.onChange(speedMode -> m_driveSubsystem.setSpeedMode(speedMode));
-    SmartDashboard.putData("Robot/Drive/SpeedMode", driveSpeedModeChooser);
-
-    SendableChooser<DriveOrientation> driveOrientationChooser = new SendableChooser<DriveOrientation>();
-    driveOrientationChooser.setDefaultOption(DriveOrientation.Field.toString(), DriveOrientation.Field);
-    driveOrientationChooser.addOption(DriveOrientation.Robot.toString(), DriveOrientation.Robot);
-    driveOrientationChooser.onChange(orientation -> m_driveSubsystem.setOrientation(orientation));
-    SmartDashboard.putData("Robot/Drive/Orientation", driveOrientationChooser);
-
-    SendableChooser<DriveDriftCorrection> driveDriftCorrectionChooser = new SendableChooser<DriveDriftCorrection>();
-    driveDriftCorrectionChooser.setDefaultOption(DriveDriftCorrection.Enabled.toString(), DriveDriftCorrection.Enabled);
-    driveDriftCorrectionChooser.addOption(DriveDriftCorrection.Disabled.toString(), DriveDriftCorrection.Disabled);
-    driveDriftCorrectionChooser.onChange(driftCorrection -> m_driveSubsystem.setDriftCorrection(driftCorrection));
-    SmartDashboard.putData("Robot/Drive/DriftCorrection", driveDriftCorrectionChooser);
-
-    SendableChooser<Double> intakePositionChooser = new SendableChooser<Double>();
-    intakePositionChooser.setDefaultOption("" + Constants.Launcher.kArmPositionIntake, Constants.Launcher.kArmPositionIntake);
-    intakePositionChooser.addOption("13.5", 13.5);
-    intakePositionChooser.addOption("13.0", 13.0);
-    intakePositionChooser.addOption("12.5", 12.5);
-    intakePositionChooser.addOption("12.0", 12.0);
-    intakePositionChooser.addOption("10.0", 10.0);
-    intakePositionChooser.addOption("9.0", 9.0);
-    intakePositionChooser.addOption("8.0", 8.0);
-    intakePositionChooser.addOption("7.0", 7.0);
-    intakePositionChooser.onChange(intakePosition -> m_launcherArmSubsystem.setIntakePosition(intakePosition));
-    SmartDashboard.putData("Robot/Launcher/Arm/IntakePosition", intakePositionChooser);
-
-    SendableChooser<Double> intakeSpeedChooser = new SendableChooser<Double>();
-    intakePositionChooser.setDefaultOption("" + Constants.Intake.kIntakeBeltSpeeds, Constants.Intake.kIntakeBeltSpeeds);
-    intakePositionChooser.addOption("1.0", 1.0);
-    intakePositionChooser.addOption("0.9", 0.9);
-    intakePositionChooser.addOption("0.85", 0.85);
-    intakePositionChooser.addOption("0.8", 0.8);
-    intakePositionChooser.addOption("0.75", 0.75);
-    intakePositionChooser.addOption("0.7", 0.7);
-    intakePositionChooser.onChange(intakeSpeed -> m_intakeSubsystem.setIntakeSpeed(intakeSpeed));
-    SmartDashboard.putData("Robot/Intake/Belts/IntakeSpeed", intakeSpeedChooser);
-
-    SendableChooser<Double> intakeWaitTimeChooser = new SendableChooser<Double>();
-    intakePositionChooser.setDefaultOption("" + Constants.Intake.kIntakeBeltWaitTime, Constants.Intake.kIntakeBeltWaitTime);
-    intakePositionChooser.addOption("0.05", 0.05);
-    intakePositionChooser.addOption("0.04", 0.04);
-    intakePositionChooser.addOption("0.035", 0.035);
-    intakePositionChooser.addOption("0.03", 0.03);
-    intakePositionChooser.addOption("0.025", 0.025);
-    intakePositionChooser.addOption("0.02", 0.02);
-    intakePositionChooser.addOption("0.015", 0.015);
-    intakePositionChooser.addOption("0.01", 0.01);
-    intakePositionChooser.addOption("0.005", 0.005);
-    intakePositionChooser.onChange(intakeWaitTime -> m_intakeSubsystem.setIntakeWaitTime(intakeWaitTime));
-    SmartDashboard.putData("Robot/Intake/Belts/IntakeWaitTime", intakeWaitTimeChooser);
   }
 
   private void configureAutos() {
@@ -265,16 +208,16 @@ public class RobotContainer {
     );
 
     m_autoChooser.setDefaultOption("None", Commands.none());
-    //m_autoChooser.addOption("BackupShoot1", m_autoCommands.runAuto(false, new AutoPoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses })); // TODO: Make empty noteposes array
-    m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupScorePickup1());
-    m_autoChooser.addOption("BackupShootPickup2", m_autoCommands.backupScorePickup2());
-    m_autoChooser.addOption("BackupShootPickup3", m_autoCommands.backupScorePickup3());
-    m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupScorePickup14());
-    m_autoChooser.addOption("BackupShootPickup15", m_autoCommands.backupScorePickup15());
-    m_autoChooser.addOption("ShootPickup1", m_autoCommands.scorePickup1());
-    m_autoChooser.addOption("ShootPickup2", m_autoCommands.scorePickup2());
-    m_autoChooser.addOption("ShootPickup3", m_autoCommands.scorePickup3());
-    m_autoChooser.addOption("ScorePreload", m_autoCommands.scoreSubwooferAuto());
+    m_autoChooser.addOption("/ > 0 > 1", m_autoCommands.backupScorePickup1());
+    m_autoChooser.addOption("| > 0 > 2", m_autoCommands.backupScorePickup2());
+    m_autoChooser.addOption("\\ > 0 > 3", m_autoCommands.backupScorePickup3());
+    m_autoChooser.addOption("/ > 0 > 1 > 4", m_autoCommands.backupScorePickup14());
+    m_autoChooser.addOption("/ > 0 > 1 > 5", m_autoCommands.backupScorePickup15());
+    m_autoChooser.addOption("/ 0 > 1", m_autoCommands.scorePickup1());
+    m_autoChooser.addOption("| 0 > 2", m_autoCommands.scorePickup2());
+    m_autoChooser.addOption("\\ 0 > 3", m_autoCommands.scorePickup3());
+    m_autoChooser.addOption("| 0", m_autoCommands.scoreSubwooferAuto());
+    // m_autoChooser.addOption("TEST - BackupShoot1", m_autoCommands.runAuto(false, new AutoPoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses })); // TODO: Make empty noteposes array
     // m_autoChooser.addOption("TEST - DynamicBackupShootPickup1", m_autoCommands.scoreSubwooferAuto());
     // m_autoChooser.addOption("TEST - DynamicPreload1Grab1", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote1Poses}));
     // m_autoChooser.addOption("TEST - DynamicPreload1Grab6", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote6Poses}));

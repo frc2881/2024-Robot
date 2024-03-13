@@ -10,6 +10,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -55,6 +56,8 @@ public class LauncherArmSubsystem extends SubsystemBase {
       m_distances[i] = Constants.Launcher.kArmPositions[i].distance();
       m_positions[i] = Constants.Launcher.kArmPositions[i].position();
     }   
+
+    SmartDashboard.putNumber("Robot/Launcher/Arm/IntakePosition", m_intakePosition);
   }
 
   @Override
@@ -102,11 +105,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
     })
     .withName("AlignLauncherArmToIntakePosition");
   }
-
-  public void setIntakePosition(double position) {
-    m_intakePosition = position;
-  }
-
+  
   public Command alignToTargetCommand(Supplier<Double> targetDistance) {
     return
     run(() -> {

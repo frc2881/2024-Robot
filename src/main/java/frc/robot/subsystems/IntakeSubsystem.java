@@ -43,6 +43,9 @@ public class IntakeSubsystem extends SubsystemBase {
     m_rollerMotor.setSmartCurrentLimit(Constants.Intake.kRollerMotorCurrentLimit);
     m_rollerMotor.setSecondaryCurrentLimit(Constants.Intake.kRollerMotorCurrentLimit);
     m_rollerMotor.burnFlash();
+
+    SmartDashboard.putNumber("Robot/Intake/Belts/IntakeSpeed", m_intakeSpeed);
+    SmartDashboard.putNumber("Robot/Intake/Belts/IntakeWaitTime", m_intakeWaitTime);
   }
 
   @Override
@@ -69,6 +72,7 @@ public class IntakeSubsystem extends SubsystemBase {
     .withName("RunIntakeFront");
   }
 
+  // TODO: add configurable wait time to auto option also?
   public Command runIntakeFrontAutoCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
@@ -90,9 +94,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command adjustNotePositionCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return Commands.run(
-        () -> {
-          runTopBelts(MotorDirection.Reverse, 0.4);
-        }
+      () -> {
+        runTopBelts(MotorDirection.Reverse, 0.4);
+      }
     )
     .until(() -> !launcherTopHasTarget.get())
     .finallyDo(() -> {
@@ -188,15 +192,6 @@ public class IntakeSubsystem extends SubsystemBase {
         break;
     }
   }
-
-  public void setIntakeSpeed(double speed) {
-    m_intakeSpeed = speed;
-  }
-
-  public void setIntakeWaitTime(double waitTime) {
-    m_intakeWaitTime = waitTime;
-  }
-
 
   public void reset() {
     m_topBeltMotor.set(0.0);

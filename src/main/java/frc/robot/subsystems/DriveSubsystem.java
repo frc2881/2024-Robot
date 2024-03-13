@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -80,6 +81,24 @@ public class DriveSubsystem extends SubsystemBase {
     m_driveInputXFilter = new SlewRateLimiter(Constants.Drive.kDriveInputRateLimit);
     m_driveInputYFilter = new SlewRateLimiter(Constants.Drive.kDriveInputRateLimit);
     m_driveInputRotFilter = new SlewRateLimiter(Constants.Drive.kDriveInputRateLimit);
+
+    SendableChooser<DriveSpeedMode> driveSpeedModeChooser = new SendableChooser<DriveSpeedMode>();
+    driveSpeedModeChooser.setDefaultOption(DriveSpeedMode.Competition.toString(), DriveSpeedMode.Competition);
+    driveSpeedModeChooser.addOption(DriveSpeedMode.Training.toString(), DriveSpeedMode.Training);
+    driveSpeedModeChooser.onChange(speedMode -> setSpeedMode(speedMode));
+    SmartDashboard.putData("Robot/Drive/SpeedMode", driveSpeedModeChooser);
+
+    SendableChooser<DriveOrientation> driveOrientationChooser = new SendableChooser<DriveOrientation>();
+    driveOrientationChooser.setDefaultOption(DriveOrientation.Field.toString(), DriveOrientation.Field);
+    driveOrientationChooser.addOption(DriveOrientation.Robot.toString(), DriveOrientation.Robot);
+    driveOrientationChooser.onChange(orientation -> setOrientation(orientation));
+    SmartDashboard.putData("Robot/Drive/Orientation", driveOrientationChooser);
+
+    SendableChooser<DriveDriftCorrection> driveDriftCorrectionChooser = new SendableChooser<DriveDriftCorrection>();
+    driveDriftCorrectionChooser.setDefaultOption(DriveDriftCorrection.Enabled.toString(), DriveDriftCorrection.Enabled);
+    driveDriftCorrectionChooser.addOption(DriveDriftCorrection.Disabled.toString(), DriveDriftCorrection.Disabled);
+    driveDriftCorrectionChooser.onChange(driftCorrection -> setDriftCorrection(driftCorrection));
+    SmartDashboard.putData("Robot/Drive/DriftCorrection", driveDriftCorrectionChooser);
   }
 
   @Override
