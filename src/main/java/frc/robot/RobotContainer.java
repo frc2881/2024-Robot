@@ -150,7 +150,7 @@ public class RobotContainer {
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand()
       .alongWith(m_gameCommands.rumbleControllers(true, false)
       ));
-    //m_driverController.leftBumper().whileTrue();
+    m_driverController.leftBumper().whileTrue(m_gameCommands.shootShuttleCommand());
     m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     // m_driverController.rightStick().whileTrue(Commands.none());
@@ -266,15 +266,17 @@ public class RobotContainer {
 
     m_autoChooser.setDefaultOption("None", Commands.none());
     //m_autoChooser.addOption("BackupShoot1", m_autoCommands.runAuto(false, new AutoPoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses })); // TODO: Make empty noteposes array
-    m_autoChooser.addOption("ShootPickup1", m_autoCommands.scorePickup1());
-    m_autoChooser.addOption("ShootPickup2", m_autoCommands.scorePickup2());
-    m_autoChooser.addOption("ShootPickup3", m_autoCommands.scorePickup3());
     m_autoChooser.addOption("BackupShootPickup1", m_autoCommands.backupScorePickup1());
     m_autoChooser.addOption("BackupShootPickup2", m_autoCommands.backupScorePickup2());
     m_autoChooser.addOption("BackupShootPickup3", m_autoCommands.backupScorePickup3());
     m_autoChooser.addOption("BackupShootPickup14", m_autoCommands.backupScorePickup14());
+    m_autoChooser.addOption("BackupShootPickup15", m_autoCommands.backupScorePickup15());
+    m_autoChooser.addOption("ShootPickup1", m_autoCommands.scorePickup1());
+    m_autoChooser.addOption("ShootPickup2", m_autoCommands.scorePickup2());
+    m_autoChooser.addOption("ShootPickup3", m_autoCommands.scorePickup3());
     m_autoChooser.addOption("ScorePreload", m_autoCommands.scoreSubwooferAuto());
     m_autoChooser.addOption("TEST - DynamicBackupShootPickup1", m_autoCommands.scoreSubwooferAuto());
+    m_autoChooser.addOption("TEST - MidAndBack", m_autoCommands.testAuto());
     // m_autoChooser.addOption("TEST - DynamicPreload1Grab1", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote1Poses}));
     // m_autoChooser.addOption("TEST - DynamicPreload1Grab6", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote6Poses}));
     

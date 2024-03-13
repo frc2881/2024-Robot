@@ -74,6 +74,17 @@ public class GameCommands {
       .withName("RunIntakeFront");
   }
 
+  public Command runIntakeAutoCommand() {
+    return 
+    m_intakeSubsystem.runIntakeFrontAutoCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+    .raceWith(m_launcherArmSubsystem.alignToIntakePositionCommand())
+    .andThen(
+      new WaitCommand(0.05),
+      m_intakeSubsystem.adjustNotePositionCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+    )
+    .withName("RunIntakeFront");
+}
+
   public Command runEjectCommand() {
       return
       m_intakeSubsystem.runEjectFrontCommand()
@@ -163,12 +174,14 @@ public class GameCommands {
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.60, 0.60)),
       Commands.sequence(
-        alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShuttle),
-        new WaitCommand(1.0),
-        runLauncherAutoCommand()
+        alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShuttle)
       )
     )
     .withName("shuttleNote");
+  }
+
+  public Command shootShuttleCommand() {
+    return runLauncherAutoCommand();
   }
 
   public Command moveToClimbCommand() {

@@ -88,7 +88,7 @@ public final class Constants {
 
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.5, 0, 0);
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.7, 0, 0);
-    public static final PathConstraints kPathFindingConstraints = new PathConstraints(1.0, 1.0, 540.00, 720.00);
+    public static final PathConstraints kPathFindingConstraints = new PathConstraints(4.0, 3.0, 540.00, 720.00);
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;
@@ -176,7 +176,7 @@ public final class Constants {
     public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.35, 0.35);
     
     public static final double kArmPositionIntake = 7.0;
-    public static final double kArmPositionAmp = 11.4;
+    public static final double kArmPositionAmp = 13;
     public static final double kArmPositionSubwoofer = 12.9; // 1.35m
     public static final double kArmPositionShortRange = 10.35; // 1.84m
     public static final double kArmPositionMidRange = 7.3; // 2.78m
@@ -313,24 +313,24 @@ public final class Constants {
       }
 
       public static final class AutoWaypoints {
-        public static final AutoPoses kNotePreload1Poses = new AutoPoses(new Pose2d(), new Pose2d(1.84, 6.70, Rotation2d.fromDegrees(0)));
-        public static final AutoPoses kNotePreload2Poses = new AutoPoses(new Pose2d(), new Pose2d(1.84, 5.38, Rotation2d.fromDegrees(0)));
-        public static final AutoPoses kNotePreload3Poses = new AutoPoses(new Pose2d(), new Pose2d(1.84, 3.8, Rotation2d.fromDegrees(0)));
+        public static final AutoPoses kNotePreload1Poses = new AutoPoses(new Pose2d(), new Pose2d(1.85, 6.70, Rotation2d.fromDegrees(0)));
+        public static final AutoPoses kNotePreload2Poses = new AutoPoses(new Pose2d(), new Pose2d(1.85, 5.50, Rotation2d.fromDegrees(0)));
+        public static final AutoPoses kNotePreload3Poses = new AutoPoses(new Pose2d(), new Pose2d(1.85, 3.8, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote1Poses = new AutoPoses(
           new Pose2d(2.90, 6.90, Rotation2d.fromDegrees(0)), 
           new Pose2d(2.90, 6.90, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote2Poses = new AutoPoses(
-          new Pose2d(2.78, 5.38, Rotation2d.fromDegrees(0)), 
-          new Pose2d(2.78, 5.38, Rotation2d.fromDegrees(0)));
+          new Pose2d(3.10, 5.50, Rotation2d.fromDegrees(0)), 
+          new Pose2d(3.10, 5.50, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote3Poses = new AutoPoses(
-          new Pose2d(2.52, 4.05, Rotation2d.fromDegrees(0)), 
-          new Pose2d(2.52, 4.05, Rotation2d.fromDegrees(0)));
+          new Pose2d(2.70, 4.10, Rotation2d.fromDegrees(0)), 
+          new Pose2d(2.70, 4.10, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote4Poses = new AutoPoses(
-          new Pose2d(7.87, 7.03, Rotation2d.fromDegrees(0)), 
+          new Pose2d(8.1, 7.4, Rotation2d.fromDegrees(0)), 
           new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote5Poses = new AutoPoses(
@@ -348,6 +348,10 @@ public final class Constants {
         public static final AutoPoses kNote8Poses = new AutoPoses(
           new Pose2d(7.87, 7.03, Rotation2d.fromDegrees(0)), 
           new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)));
+
+        public static final AutoPoses kTestPose = new AutoPoses(
+          new Pose2d(8.25, 5.37, Rotation2d.fromDegrees(0)), 
+          new Pose2d(1.4, 6.7, Rotation2d.fromDegrees(0)));
       }
     }
   }
