@@ -67,7 +67,6 @@ public class AutoCommands {
   }
 
   // TODO: Update pickup 4 and 5 fixed paths to use constraints 4.0 velocity and 3.0 acceleration (instead of defaults)
-  // TODO: update PathPlanner nav grid to remove exclusion zones from field border around note pickups
 
   private Command pathFindToNotePose(Pose2d notePose) {
     return Commands.either(

@@ -150,20 +150,20 @@ public class RobotContainer {
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand()
       .alongWith(m_gameCommands.rumbleControllers(true, false)
       ));
-    m_driverController.leftBumper().whileTrue(m_gameCommands.shootShuttleCommand());
+    //m_driverController.leftBumper().whileTrue();
     m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     // m_driverController.rightStick().whileTrue(Commands.none());
     // m_driverController.povLeft().whileTrue(Commands.none());
     // m_driverController.povUp().whileTrue(Commands.none()); 
     // m_driverController.povRight().whileTrue(Commands.none());
-    // m_driverController.povDown().whileTrue(Commands.none());
+    // m_driverController.povDown().whileTrue(Commands.none()); 
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand()
       .alongWith(m_gameCommands.rumbleControllers(true, true)
       ));
     m_driverController.b().whileTrue(m_gameCommands.moveToClimbCommand());
     m_driverController.y().whileTrue(m_gameCommands.climbCommand());
-    // m_driverController.x().whileTrue(Commands.none());
+    m_driverController.x().whileTrue(m_gameCommands.shootShuttleCommand());
     // m_driverController.start().whileTrue(Commands.none());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
