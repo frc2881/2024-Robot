@@ -20,6 +20,8 @@ public class LauncherRollerSubsystem extends SubsystemBase {
   private double[] m_distances;
   private double[] m_speeds;
 
+  // TODO: add REVLib error checking and param set retries to handle SparkFlex configuration issues
+
   public LauncherRollerSubsystem() {
     m_topRollerMotor = new CANSparkFlex(Constants.Launcher.kTopRollerMotorCANId, MotorType.kBrushless);
     m_topRollerMotor.restoreFactoryDefaults();
