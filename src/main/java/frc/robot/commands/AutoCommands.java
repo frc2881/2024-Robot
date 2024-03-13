@@ -66,22 +66,8 @@ public class AutoCommands {
     m_lightsController = lightsController;
   }
 
-  // TODO: update all autos to use path finding constraints from constants vs. inline
-
-  // TODO: run gyro reset at the END of auto commands instead of at start
-  public Command resetGyroCommand() { 
-    return Commands
-    .runOnce(() -> m_gyroSensor.reset(Utils.wrapAngle(m_poseSubsystem.getPose().getRotation().getDegrees())))
-    .withName("ResetGyro"); 
-  }
-
-  public Command autoCommand(Command autoToRun) {
-    return Commands.sequence(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      autoToRun,
-      resetGyroCommand()
-    );
-  }
+  // TODO: Update pickup 4 and 5 fixed paths to use constraints 4.0 velocity and 3.0 acceleration (instead of defaults)
+  // TODO: update PathPlanner nav grid to remove exclusion zones from field border around note pickups
 
   private Command pathFindToNotePose(Pose2d notePose) {
     return Commands.either(
@@ -166,6 +152,7 @@ public class AutoCommands {
         m_gameCommmands.runLauncherAutoCommand()
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
       )
+      // TODO: have launcher rollers / belts stop after last auto scoring sequence is completed
     )
     .withName("BackupScorePickup1");
   } 
@@ -178,7 +165,6 @@ public class AutoCommands {
         pickupAndScoreNote(Constants.Game.Field.AutoWaypoints.kNote1Poses)
       )
     )
- 
     .withName("BackupScorePickup1");
   } 
 
@@ -197,16 +183,15 @@ public class AutoCommands {
           pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote2Poses.notePickupPose()),
           m_gameCommmands.runIntakeAutoCommand()
         ),
-        // TODO: Make it so if it doesn't have a note in launcher, eject
         Commands.parallel(
           m_gameCommmands.alignRobotToTargetCommand( ),
           m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
         ),
         m_gameCommmands.runLauncherAutoCommand()
-        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
       )
+      // TODO: have launcher rollers / belts stop after last auto scoring sequence is completed
     )
- 
     .withName("BackupScorePickup2");
   } 
 
@@ -225,23 +210,20 @@ public class AutoCommands {
           pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote3Poses.notePickupPose()),
           m_gameCommmands.runIntakeAutoCommand()
         ),
-        // TODO: Make it so if it doesn't have a note in launcher, eject
         Commands.parallel(
           m_gameCommmands.alignRobotToTargetCommand( ),
           m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
         ),
         m_gameCommmands.runLauncherAutoCommand()
-        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
-        // TODO: make launcher stop
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
       )
+      // TODO: have launcher rollers / belts stop after last auto scoring sequence is completed
     )
- 
     .withName("BackupScorePickup3");
   } 
 
   public Command backupScorePickup14() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("BackupPickup4");
-    
+    PathPlannerPath pathToPickup4 = PathPlannerPath.fromPathFile("BackupPickup4");
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
       Commands.sequence(
@@ -263,7 +245,7 @@ public class AutoCommands {
         m_gameCommmands.runLauncherAutoCommand()
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()), 
         Commands.parallel(
-          AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints),
+          AutoBuilder.pathfindThenFollowPath(pathToPickup4, Constants.Drive.kPathFindingConstraints),
           //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kTestPose.notePickupPose()), // grab next note
           m_gameCommmands.runIntakeAutoCommand() // grab next note
         ),
@@ -275,13 +257,13 @@ public class AutoCommands {
         m_gameCommmands.runLauncherAutoCommand() // SHOOT THIRD NOTE
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
       )
+      // TODO: have launcher rollers / belts stop after last auto scoring sequence is completed
     )
     .withName("BackupShootPickup14");
   } 
 
   public Command backupScorePickup15() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("BackupPickup5");
-    
+    PathPlannerPath pathToPickup5 = PathPlannerPath.fromPathFile("BackupPickup5");
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
       Commands.sequence(
@@ -303,7 +285,7 @@ public class AutoCommands {
         m_gameCommmands.runLauncherAutoCommand()
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()), 
         Commands.parallel(
-          AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints),
+          AutoBuilder.pathfindThenFollowPath(pathToPickup5, Constants.Drive.kPathFindingConstraints),
           //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kTestPose.notePickupPose()), // grab next note
           m_gameCommmands.runIntakeAutoCommand() // grab next note
         ),
@@ -315,16 +297,10 @@ public class AutoCommands {
         m_gameCommmands.runLauncherAutoCommand() // SHOOT THIRD NOTE
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
       )
+      // TODO: have launcher rollers / belts stop after last auto scoring sequence is completed
     )
     .withName("BackupShootPickup15");
   } 
-
-  public Command testAuto() {
-    return Commands.sequence(
-      pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kTestPose.notePickupPose()),
-      pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kTestPose.noteScorePose())
-    );
-  }
 
   public Command scorePickup1() {
     PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup1");
@@ -335,7 +311,6 @@ public class AutoCommands {
         AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints),
         m_gameCommmands.runIntakeAutoCommand()
       ),
-      // TODO: Make it so if it doesn't have a note in launcher, eject
       Commands.parallel(
         m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0),
         m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionMidRange)
@@ -356,7 +331,6 @@ public class AutoCommands {
         m_gameCommmands.runIntakeAutoCommand()
       )
       .withTimeout(5.0), // TODO: make it so it ends when intake is done (race???)
-      // TODO: Make it so if it doesn't have a note in launcher, eject
       Commands.parallel(
         m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0), // TODO: Make it so it ends when at position, not when timeouts over
         m_gameCommmands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true)
@@ -365,7 +339,6 @@ public class AutoCommands {
       m_gameCommmands.runLauncherCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) // TODO: Create run launcher command that stops when note shot
     )
- 
     .withName("ScorePickup2");
   } 
 
@@ -379,7 +352,6 @@ public class AutoCommands {
         m_gameCommmands.runIntakeAutoCommand()
       )
       .withTimeout(5.0), // TODO: make it so it ends when intake is done (race???)
-      // TODO: Make it so if it doesn't have a note in launcher, eject
       Commands.parallel(
         m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0), // TODO: Make it so it ends when at position, not when timeouts over
         m_gameCommmands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true)
@@ -398,7 +370,6 @@ public class AutoCommands {
       m_gameCommmands.runLauncherAutoCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
     )
- 
     .withName("ScoreSubwooferAuto");
   }
 }

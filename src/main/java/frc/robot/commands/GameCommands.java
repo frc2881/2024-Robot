@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
+import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
@@ -145,7 +146,7 @@ public class GameCommands {
     return 
     m_launcherRollerSubsystem.runCommand(() -> m_launcherRollerSubsystem.getSpeedsForArmPosition(m_poseSubsystem::getTargetDistance))
     .alongWith(
-      Commands.waitSeconds(0.5) // TODO: validate if shorter timeout is OK if rollers are already being warmed up by the launcher arm alignment by the operator
+      Commands.waitSeconds(0.5)
       .andThen(m_intakeSubsystem.runLaunchCommand())
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
@@ -156,7 +157,7 @@ public class GameCommands {
     return 
     m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kAmpLauncherSpeeds)
     .alongWith(
-      Commands.waitSeconds(0.1) // TODO: validate if shorter timeout is OK if rollers are already being warmed up by the launcher arm alignment by the operator
+      Commands.waitSeconds(0.5)
       .andThen(m_intakeSubsystem.runLaunchCommand())
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
@@ -204,6 +205,12 @@ public class GameCommands {
     .withName("RumbleControllers");
   }
 
+  // TODO: test/validate that this command can be run immediately at the start of teleop for driver control
+  public Command resetGyroToPoseCommand() { 
+    return Commands
+    .runOnce(() -> m_gyroSensor.reset(Utils.wrapAngle(m_poseSubsystem.getPose().getRotation().getDegrees())))
+    .withName("ResetGyro"); 
+  }
 
   public Command resetSubsystems() {
     return 

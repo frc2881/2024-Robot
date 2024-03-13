@@ -221,9 +221,8 @@ public final class Constants {
     public static final double kRollerMotorMaxOutput = 0.25;
     public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
 
-    //38.7 is position for arm to lock
-    // 26 is chain position in middle
-    // 31 is chain position on side
+    public static final double kArmPositionForChainEngagement = 26.0;
+    public static final double kArmPositionForStageClimb = 38.7;
   }
 
   public static final class Sensors {

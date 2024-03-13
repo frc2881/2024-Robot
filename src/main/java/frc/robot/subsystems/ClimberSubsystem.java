@@ -122,7 +122,10 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   private void updateTelemetry() {
-    SmartDashboard.putNumber("Robot/Climber/Arm/Position", m_armEncoder.getPosition());
+    double armPosition = m_armEncoder.getPosition();
+    SmartDashboard.putNumber("Robot/Climber/Arm/Position", armPosition);
+    SmartDashboard.putBoolean("Robot/Climber/Arm/IsReadyForChainEngagement", armPosition >= Constants.Climber.kArmPositionForChainEngagement);
+    SmartDashboard.putBoolean("Robot/Climber/Arm/IsReadyForStageClimb", armPosition >= Constants.Climber.kArmPositionForStageClimb);
   }
 
   @Override

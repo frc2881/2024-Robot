@@ -275,8 +275,7 @@ public class RobotContainer {
     m_autoChooser.addOption("ShootPickup2", m_autoCommands.scorePickup2());
     m_autoChooser.addOption("ShootPickup3", m_autoCommands.scorePickup3());
     m_autoChooser.addOption("ScorePreload", m_autoCommands.scoreSubwooferAuto());
-    m_autoChooser.addOption("TEST - DynamicBackupShootPickup1", m_autoCommands.scoreSubwooferAuto());
-    m_autoChooser.addOption("TEST - MidAndBack", m_autoCommands.testAuto());
+    // m_autoChooser.addOption("TEST - DynamicBackupShootPickup1", m_autoCommands.scoreSubwooferAuto());
     // m_autoChooser.addOption("TEST - DynamicPreload1Grab1", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote1Poses}));
     // m_autoChooser.addOption("TEST - DynamicPreload1Grab6", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote6Poses}));
     
