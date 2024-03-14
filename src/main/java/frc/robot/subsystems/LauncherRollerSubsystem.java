@@ -72,8 +72,6 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     ? speed 
     : 0.8;
     return new LauncherRollerSpeeds(result, result);
-    
-    // TODO: add if to see if too far then move speed down 
   }
 
   public void reset() {

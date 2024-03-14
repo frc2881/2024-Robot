@@ -65,6 +65,10 @@ public class LauncherArmSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
+  public double getIntakePosition() {
+    return SmartDashboard.getNumber("Robot/Launcher/Arm/IntakePosition", m_intakePosition);
+  }
+
   public Command alignManualCommand(Supplier<Double> speed) {
     return 
     run(() -> {
@@ -95,7 +99,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
   public Command alignToIntakePositionCommand() {
     return 
     run(() -> { 
-      m_armPIDController.setReference(m_intakePosition, ControlType.kSmartMotion); 
+      m_armPIDController.setReference(getIntakePosition(), ControlType.kSmartMotion); 
       m_isAlignedToTarget = true;
     })
     .beforeStarting(() -> m_isAlignedToTarget = false)

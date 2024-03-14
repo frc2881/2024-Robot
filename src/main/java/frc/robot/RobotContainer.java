@@ -21,6 +21,7 @@ import frc.robot.lib.common.Enums.DriveOrientation;
 import frc.robot.lib.common.Enums.DriveSpeedMode;
 import frc.robot.lib.common.Enums.MotorDirection;
 import frc.robot.lib.common.Records.AutoPoses;
+import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
@@ -169,10 +170,8 @@ public class RobotContainer {
 
     // OPERATOR ========================================
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
-    // TODO: if/when launcher auto angle alignment is working, make alignLauncherToTargetCommand the default command
-    // m_operatorController.leftY().whileTrue(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
-    m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(true)); // TODO: amp launcher position left trigger - position/launch or just position
+    m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(true));
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
     m_operatorController.leftTrigger().whileTrue(m_gameCommands.runLauncherAmpCommand());
     //m_operatorController.rightBumper().whileTrue();
@@ -208,16 +207,16 @@ public class RobotContainer {
     );
 
     m_autoChooser.setDefaultOption("None", Commands.none());
-    m_autoChooser.addOption("/ > 0 > 1", m_autoCommands.backupScorePickup1());
-    m_autoChooser.addOption("| > 0 > 2", m_autoCommands.backupScorePickup2());
-    m_autoChooser.addOption("\\ > 0 > 3", m_autoCommands.backupScorePickup3());
-    m_autoChooser.addOption("/ > 0 > 1 > 4", m_autoCommands.backupScorePickup14());
-    m_autoChooser.addOption("/ > 0 > 1 > 5", m_autoCommands.backupScorePickup15());
-    m_autoChooser.addOption("/ 0 > 1", m_autoCommands.scorePickup1());
-    m_autoChooser.addOption("| 0 > 2", m_autoCommands.scorePickup2());
-    m_autoChooser.addOption("\\ 0 > 3", m_autoCommands.scorePickup3());
-    m_autoChooser.addOption("| 0", m_autoCommands.scoreSubwooferAuto());
-    // m_autoChooser.addOption("TEST - BackupShoot1", m_autoCommands.runAuto(false, new AutoPoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses })); // TODO: Make empty noteposes array
+    m_autoChooser.addOption("> 0 > 1", m_autoCommands.backupScorePickup1());
+    m_autoChooser.addOption("> 0 > 2", m_autoCommands.backupScorePickup2());
+    m_autoChooser.addOption("> 0 > 3", m_autoCommands.backupScorePickup3());
+    m_autoChooser.addOption("> 0 > 1 > 4", m_autoCommands.backupScorePickup14());
+    m_autoChooser.addOption("> 0 > 1 > 5", m_autoCommands.backupScorePickup15());
+    m_autoChooser.addOption("0 > 1", m_autoCommands.scorePickup1());
+    m_autoChooser.addOption("0 > 2", m_autoCommands.scorePickup2());
+    m_autoChooser.addOption("0 > 3", m_autoCommands.scorePickup3());
+    m_autoChooser.addOption("0", m_autoCommands.scoreSubwooferAuto());
+    // m_autoChooser.addOption("TEST - BackupShoot1", m_autoCommands.runAuto(false, new AutoPoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses }));
     // m_autoChooser.addOption("TEST - DynamicBackupShootPickup1", m_autoCommands.scoreSubwooferAuto());
     // m_autoChooser.addOption("TEST - DynamicPreload1Grab1", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote1Poses}));
     // m_autoChooser.addOption("TEST - DynamicPreload1Grab6", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote6Poses}));
@@ -244,6 +243,7 @@ public class RobotContainer {
 
   public void teleopInit() {
     resetRobot();
+    m_gyroSensor.reset(Utils.wrapAngle(m_poseSubsystem.getPose().getRotation().getDegrees()));
   }
 
   public void testInit() {

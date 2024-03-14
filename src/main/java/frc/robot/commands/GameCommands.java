@@ -92,7 +92,6 @@ public class GameCommands {
       .withName("RunEjectFront");
   }
 
-  // TODO: add rumble command to operator controller when driver aligns robot to target
   public Command alignRobotToTargetCommand() {
     return
     m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, m_poseSubsystem::getTargetYaw)

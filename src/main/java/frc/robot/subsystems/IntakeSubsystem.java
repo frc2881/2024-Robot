@@ -53,16 +53,24 @@ public class IntakeSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
+  public double getIntakeSpeed() {
+    return SmartDashboard.getNumber("Robot/Intake/Belts/IntakeSpeed", m_intakeSpeed);
+  }
+
+  public double getIntakeWaitTime() {
+    return SmartDashboard.getNumber("Robot/Intake/Belts/IntakeWaitTime", m_intakeWaitTime);
+  }
+
   public Command runIntakeFrontCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
-      runTopBelts(MotorDirection.Forward, m_intakeSpeed); 
-      runBottomBelts(MotorDirection.Forward, m_intakeSpeed);
+      runTopBelts(MotorDirection.Forward, getIntakeSpeed()); 
+      runBottomBelts(MotorDirection.Forward, getIntakeSpeed());
       runRollers(MotorDirection.Reverse);
     }, () -> {})
     .onlyWhile(() -> !launcherBottomHasTarget.get())
     .andThen(
-      new WaitCommand(m_intakeWaitTime)
+      new WaitCommand(getIntakeWaitTime())
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None);
@@ -72,12 +80,11 @@ public class IntakeSubsystem extends SubsystemBase {
     .withName("RunIntakeFront");
   }
 
-  // TODO: add configurable wait time to auto option also?
   public Command runIntakeFrontAutoCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
-      runTopBelts(MotorDirection.Forward); 
-      runBottomBelts(MotorDirection.Forward);
+      runTopBelts(MotorDirection.Forward, 0.85); 
+      runBottomBelts(MotorDirection.Forward, 0.85);
       runRollers(MotorDirection.Reverse);
     }, () -> {})
     .onlyWhile(() -> !launcherBottomHasTarget.get())
