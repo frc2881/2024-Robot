@@ -329,28 +329,24 @@ public final class Constants {
           new Pose2d(2.70, 4.10, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote4Poses = new AutoPoses(
-          new Pose2d(8.25, 7.4, Rotation2d.fromDegrees(0)), 
+          new Pose2d(8.25, 7.40, Rotation2d.fromDegrees(0)), 
           new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote5Poses = new AutoPoses(
-          new Pose2d(8.25, 5.37, Rotation2d.fromDegrees(0)), 
+          new Pose2d(8.25, 5.75, Rotation2d.fromDegrees(0)), 
           new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote6Poses = new AutoPoses(
-          new Pose2d(8.25, 3.70, Rotation2d.fromDegrees(0)), 
-          new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
+          new Pose2d(8.25, 4.08, Rotation2d.fromDegrees(0)), 
+          new Pose2d(4.19, 5.07, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote7Poses = new AutoPoses(
-          new Pose2d(8.25, 2.03, Rotation2d.fromDegrees(0)), 
-          new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)));
+          new Pose2d(8.25, 2.43, Rotation2d.fromDegrees(0)), 
+          new Pose2d(4.19, 5.07, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote8Poses = new AutoPoses(
-          new Pose2d(8.25, 7.03, Rotation2d.fromDegrees(0)), 
-          new Pose2d(5.37, 1.90, Rotation2d.fromDegrees(0)));
-
-        public static final AutoPoses kTestPose = new AutoPoses(
-          new Pose2d(7.0, 7.4, Rotation2d.fromDegrees(0)), 
-          new Pose2d(1.4, 6.7, Rotation2d.fromDegrees(0)));
+          new Pose2d(8.25, 0.76, Rotation2d.fromDegrees(0)), 
+          new Pose2d(5.37, 1.75, Rotation2d.fromDegrees(0)));
       }
     }
   }

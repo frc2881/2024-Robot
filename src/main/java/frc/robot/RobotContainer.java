@@ -208,10 +208,14 @@ public class RobotContainer {
 
     m_autoChooser.setDefaultOption("None", Commands.none());
     m_autoChooser.addOption("> 0 > 1", m_autoCommands.backupScorePickup1());
-    m_autoChooser.addOption("> 0 > 2", m_autoCommands.backupScorePickup2());
-    m_autoChooser.addOption("> 0 > 3", m_autoCommands.backupScorePickup3());
     m_autoChooser.addOption("> 0 > 1 > 4", m_autoCommands.backupScorePickup14());
     m_autoChooser.addOption("> 0 > 1 > 5", m_autoCommands.backupScorePickup15());
+    m_autoChooser.addOption("> 0 > 2", m_autoCommands.backupScorePickup2());
+    m_autoChooser.addOption("> 0 > 2 > 4", m_autoCommands.backupScorePickup24());
+    m_autoChooser.addOption("> 0 > 2 > 5", m_autoCommands.backupScorePickup25());
+    m_autoChooser.addOption("> 0 > 2 > 6", m_autoCommands.backupScorePickup26());
+    m_autoChooser.addOption("> 0 > 3", m_autoCommands.backupScorePickup3());
+    m_autoChooser.addOption("> 0 > 3 > 8", m_autoCommands.backupScorePickup38());
     m_autoChooser.addOption("0 > 1", m_autoCommands.scorePickup1());
     m_autoChooser.addOption("0 > 2", m_autoCommands.scorePickup2());
     m_autoChooser.addOption("0 > 3", m_autoCommands.scorePickup3());

@@ -66,7 +66,57 @@ public class AutoCommands {
     m_lightsController = lightsController;
   }
 
-  // TODO: Update pickup 4 and 5 fixed paths to use constraints 4.0 velocity and 3.0 acceleration (instead of defaults)
+  // private Command pickupAndScoreNote(AutoPoses autoPoses) {
+  //   return Commands.sequence(
+  //     Commands.parallel(
+  //       pathFindToNotePose(autoPoses.notePickupPose())
+  //       //m_gameCommmands.runIntakeAutoCommand()
+  //     )
+  //     .unless(() -> autoPoses.notePickupPose().getX() == 0.0),
+  //     Commands.sequence(
+  //       pathFindToNotePose(autoPoses.noteScorePose())
+  //     )
+  //     .unless(() -> autoPoses.noteScorePose().getX() == autoPoses.notePickupPose().getX()), 
+  //     Commands.parallel(
+  //       m_gameCommmands.alignRobotToTargetCommand().withTimeout(1.0),
+  //       m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(1.0)
+  //     ),
+  //     // m_gameCommmands.runLauncherAutoCommand()
+  //     // .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
+  //     new WaitCommand(1.0)
+  //   )
+  //   .withName("PickupAndScoreNote");
+  // }
+
+  // private Command runAutos(AutoPoses[] autoPoses) {
+  //   return Commands.repeatingSequence(
+  //     pickupAndScoreNote(autoPoses[m_i]),
+  //     Commands.runOnce(
+  //       () -> {
+  //         m_i = m_i + 1;
+  //       }
+  //     )
+  //   )
+  //   .until(() -> m_i >= autoPoses.length)
+  //   .beforeStarting(
+  //     () -> {
+  //       m_i = 1;
+  //     }
+  //   );
+  // }
+
+  // public Command runAuto(boolean isScoreAtSubwoofer, AutoPoses[] notesPoses) {
+  //   return Commands.parallel(
+  //     //m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+  //     Commands.sequence(
+  //       Commands.either(
+  //         scoreSubwooferAuto(), 
+  //         pickupAndScoreNote(notesPoses[0]), 
+  //         () -> isScoreAtSubwoofer),
+  //       runAutos(notesPoses)
+  //     )
+  //   );
+  // }
 
   private Command pathFindToNotePose(Pose2d notePose) {
     return Commands.either(
@@ -75,58 +125,6 @@ public class AutoCommands {
       () -> Robot.getAlliance() == Alliance.Blue
     )
     .withName("PathFindToNotePickup");
-  }
-
-  private Command pickupAndScoreNote(AutoPoses autoPoses) {
-    return Commands.sequence(
-      Commands.parallel(
-        pathFindToNotePose(autoPoses.notePickupPose())
-        //m_gameCommmands.runIntakeAutoCommand()
-      )
-      .unless(() -> autoPoses.notePickupPose().getX() == 0.0),
-      Commands.sequence(
-        pathFindToNotePose(autoPoses.noteScorePose())
-      )
-      .unless(() -> autoPoses.noteScorePose().getX() == autoPoses.notePickupPose().getX()), 
-      Commands.parallel(
-        m_gameCommmands.alignRobotToTargetCommand().withTimeout(1.0),
-        m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(1.0)
-      ),
-      // m_gameCommmands.runLauncherAutoCommand()
-      // .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
-      new WaitCommand(1.0)
-    )
-    .withName("PickupAndScoreNote");
-  }
-
-  private Command runAutos(AutoPoses[] autoPoses) {
-    return Commands.repeatingSequence(
-      pickupAndScoreNote(autoPoses[m_i]),
-      Commands.runOnce(
-        () -> {
-          m_i = m_i + 1;
-        }
-      )
-    )
-    .until(() -> m_i >= autoPoses.length)
-    .beforeStarting(
-      () -> {
-        m_i = 1;
-      }
-    );
-  }
-
-  public Command runAuto(boolean isScoreAtSubwoofer, AutoPoses[] notesPoses) {
-    return Commands.parallel(
-      //m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      Commands.sequence(
-        Commands.either(
-          scoreSubwooferAuto(), 
-          pickupAndScoreNote(notesPoses[0]), 
-          () -> isScoreAtSubwoofer),
-        runAutos(notesPoses)
-      )
-    );
   }
 
   public Command backupScorePickup1() {
@@ -156,16 +154,16 @@ public class AutoCommands {
     .withName("BackupScorePickup1");
   } 
 
-  public Command dynamicBackupScorePickup1() {
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      Commands.sequence(
-        pickupAndScoreNote(Constants.Game.Field.AutoWaypoints.kNotePreload1Poses),
-        pickupAndScoreNote(Constants.Game.Field.AutoWaypoints.kNote1Poses)
-      )
-    )
-    .withName("BackupScorePickup1");
-  } 
+  // public Command dynamicBackupScorePickup1() {
+  //   return Commands.parallel(
+  //     m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+  //     Commands.sequence(
+  //       pickupAndScoreNote(Constants.Game.Field.AutoWaypoints.kNotePreload1Poses),
+  //       pickupAndScoreNote(Constants.Game.Field.AutoWaypoints.kNote1Poses)
+  //     )
+  //   )
+  //   .withName("DynamicBackupScorePickup1");
+  // } 
 
   public Command backupScorePickup2() {
     return Commands.parallel(
@@ -222,7 +220,7 @@ public class AutoCommands {
   } 
 
   public Command backupScorePickup14() {
-    PathPlannerPath pathToPickup4 = PathPlannerPath.fromPathFile("BackupPickup4");
+    PathPlannerPath pathToPickup4 = PathPlannerPath.fromPathFile("Pickup4");
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
       Commands.sequence(
@@ -247,7 +245,7 @@ public class AutoCommands {
         //new WaitCommand(1.0),
         Commands.parallel(
           AutoBuilder.pathfindThenFollowPath(pathToPickup4, Constants.Drive.kPathFindingConstraints),
-          //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kTestPose.notePickupPose()) // grab next note
+          //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote4Poses.notePickupPose()) // grab next note
           m_gameCommmands.runIntakeAutoCommand() // grab next note
         ),
         //new WaitCommand(0.5),
@@ -266,7 +264,7 @@ public class AutoCommands {
   } 
 
   public Command backupScorePickup15() {
-    PathPlannerPath pathToPickup5 = PathPlannerPath.fromPathFile("BackupPickup5");
+    PathPlannerPath pathToPickup5 = PathPlannerPath.fromPathFile("Pickup5");
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
       Commands.sequence(
@@ -289,7 +287,7 @@ public class AutoCommands {
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()), 
         Commands.parallel(
           AutoBuilder.pathfindThenFollowPath(pathToPickup5, Constants.Drive.kPathFindingConstraints),
-          //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kTestPose.notePickupPose()), // grab next note
+          //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote5Poses.notePickupPose()), // grab next note
           m_gameCommmands.runIntakeAutoCommand() // grab next note
         ),
         pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote5Poses.noteScorePose()),
@@ -303,6 +301,170 @@ public class AutoCommands {
       // TODO: have launcher rollers / belts stop after last auto scoring sequence is completed
     )
     .withName("BackupShootPickup15");
+  } 
+
+  public Command backupScorePickup24() {
+    PathPlannerPath pathToPickup4 = PathPlannerPath.fromPathFile("Pickup4");
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNotePreload2Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
+        //new WaitCommand(1.0),
+        Commands.parallel(
+          pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote2Poses.notePickupPose()),
+          m_gameCommmands.runIntakeAutoCommand()
+        ),
+        Commands.parallel(
+          m_gameCommmands.alignRobotToTargetCommand(),
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()), 
+        //new WaitCommand(1.0),
+        Commands.parallel(
+          AutoBuilder.pathfindThenFollowPath(pathToPickup4, Constants.Drive.kPathFindingConstraints),
+          //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote4Poses.notePickupPose()) // grab next note
+          m_gameCommmands.runIntakeAutoCommand() // grab next note
+        ),
+        //new WaitCommand(0.5),
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote4Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand()
+        ),
+        m_gameCommmands.runLauncherAutoCommand() // SHOOT THIRD NOTE
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
+        // new WaitCommand(2.0)
+      )
+      // TODO: have launcher rollers / belts stop after last auto scoring sequence is completed
+    )
+    .withName("BackupShootPickup24");
+  } 
+
+  public Command backupScorePickup25() {
+    PathPlannerPath pathToPickup5 = PathPlannerPath.fromPathFile("Pickup5");
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNotePreload2Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
+        Commands.parallel(
+          pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote2Poses.notePickupPose()),
+          m_gameCommmands.runIntakeAutoCommand()
+        ),
+        Commands.parallel(
+          m_gameCommmands.alignRobotToTargetCommand(),
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()), 
+        Commands.parallel(
+          AutoBuilder.pathfindThenFollowPath(pathToPickup5, Constants.Drive.kPathFindingConstraints),
+          //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote5Poses.notePickupPose()), // grab next note
+          m_gameCommmands.runIntakeAutoCommand() // grab next note
+        ),
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote5Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand()
+        ),
+        m_gameCommmands.runLauncherAutoCommand() // SHOOT THIRD NOTE
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
+      )
+      // TODO: have launcher rollers / belts stop after last auto scoring sequence is completed
+    )
+    .withName("BackupShootPickup25");
+  } 
+
+  public Command backupScorePickup26() {
+    PathPlannerPath pathToPickup6 = PathPlannerPath.fromPathFile("Pickup6");
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNotePreload2Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
+        Commands.parallel(
+          pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote2Poses.notePickupPose()),
+          m_gameCommmands.runIntakeAutoCommand()
+        ),
+        Commands.parallel(
+          m_gameCommmands.alignRobotToTargetCommand(),
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()), 
+        Commands.parallel(
+          AutoBuilder.pathfindThenFollowPath(pathToPickup6, Constants.Drive.kPathFindingConstraints),
+          //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote6Poses.notePickupPose()), // grab next note
+          m_gameCommmands.runIntakeAutoCommand() // grab next note
+        ),
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote6Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand()
+        ),
+        m_gameCommmands.runLauncherAutoCommand() // SHOOT THIRD NOTE
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
+      )
+      // TODO: have launcher rollers / belts stop after last auto scoring sequence is completed
+    )
+    .withName("BackupShootPickup25");
+  } 
+
+  public Command backupScorePickup38() {
+    PathPlannerPath pathToPickup8 = PathPlannerPath.fromPathFile("Pickup8");
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
+      Commands.sequence(
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNotePreload3Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
+        Commands.parallel(
+          pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote3Poses.notePickupPose()),
+          m_gameCommmands.runIntakeAutoCommand()
+        ),
+        Commands.parallel(
+          m_gameCommmands.alignRobotToTargetCommand(),
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0)
+        ),
+        m_gameCommmands.runLauncherAutoCommand()
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()), 
+        Commands.parallel(
+          AutoBuilder.pathfindThenFollowPath(pathToPickup8, Constants.Drive.kPathFindingConstraints),
+          //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote6Poses.notePickupPose()), // grab next note
+          m_gameCommmands.runIntakeAutoCommand() // grab next note
+        ),
+        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote8Poses.noteScorePose()),
+        Commands.parallel(
+          m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
+          m_gameCommmands.alignRobotToTargetCommand()
+        ),
+        m_gameCommmands.runLauncherAutoCommand() // SHOOT THIRD NOTE
+        .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
+      )
+      // TODO: have launcher rollers / belts stop after last auto scoring sequence is completed
+    )
+    .withName("BackupShootPickup25");
   } 
 
   public Command scorePickup1() {

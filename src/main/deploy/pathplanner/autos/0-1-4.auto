@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.7512873207564597,
+      "y": 6.6140808645253655
+    },
+    "rotation": 59.7435628364708
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "TEST"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
