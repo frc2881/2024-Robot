@@ -14,18 +14,15 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.GameCommands;
-import frc.robot.lib.common.Enums.DriveDriftCorrection;
-import frc.robot.lib.common.Enums.DriveOrientation;
-import frc.robot.lib.common.Enums.DriveSpeedMode;
+import frc.robot.lib.common.Enums.LightsMode;
 import frc.robot.lib.common.Enums.MotorDirection;
-import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
-import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.lib.sensors.ObjectSensor;
 import frc.robot.lib.sensors.PoseSensor;
@@ -120,8 +117,7 @@ public class RobotContainer {
       m_launcherRollerSubsystem, 
       m_climberSubsystem, 
       m_driverController, 
-      m_operatorController, 
-      m_lightsController
+      m_operatorController
     );
 
     m_autoCommands = new AutoCommands(
@@ -134,13 +130,13 @@ public class RobotContainer {
       m_intakeSubsystem, 
       m_launcherArmSubsystem, 
       m_launcherRollerSubsystem, 
-      m_climberSubsystem, 
-      m_lightsController
+      m_climberSubsystem
     );
     
     m_autoChooser = new SendableChooser<Command>();
 
     configureBindings();
+    configureTriggers();
     configureAutos();
   }
 
@@ -187,6 +183,16 @@ public class RobotContainer {
     //m_operatorController.x().whileTrue(Commands.none());
     m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
+  }
+
+  private void configureTriggers() {
+    new Trigger(() -> 
+      m_driveSubsystem.isAlignedToTarget() && 
+      m_launcherArmSubsystem.isAlignedToTarget() &&
+      m_launcherBottomBeamBreakSensor.hasTarget() &&
+      !m_launcherTopBeamBreakSensor.hasTarget())
+      .onTrue(Commands.runOnce(() -> { m_lightsController.setLightsMode(LightsMode.Launch); }))
+      .onFalse(Commands.runOnce(() -> { m_lightsController.setLightsMode(LightsMode.Default); }));
   }
 
   private void configureAutos() {

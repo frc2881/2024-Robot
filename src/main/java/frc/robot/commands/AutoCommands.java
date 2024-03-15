@@ -14,8 +14,6 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
-import frc.robot.lib.common.Utils;
-import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
 import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -36,7 +34,6 @@ public class AutoCommands {
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ClimberSubsystem m_climberSubsystem;
-  private final LightsController m_lightsController;
 
   private int m_i;
 
@@ -50,8 +47,7 @@ public class AutoCommands {
     IntakeSubsystem intakeSubsystem,
     LauncherArmSubsystem launcherArmSubsystem,
     LauncherRollerSubsystem launcherRollerSubsystem,
-    ClimberSubsystem climberSubsystem,
-    LightsController lightsController
+    ClimberSubsystem climberSubsystem
   ) {
     m_gameCommmands = gameCommands; 
     m_gyroSensor = gyroSensor;
@@ -63,7 +59,6 @@ public class AutoCommands {
     m_launcherArmSubsystem = launcherArmSubsystem;
     m_launcherRollerSubsystem = launcherRollerSubsystem;
     m_climberSubsystem = climberSubsystem;
-    m_lightsController = lightsController;
   }
 
   // private Command pickupAndScoreNote(AutoPoses autoPoses) {

@@ -4,13 +4,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.GameController;
-import frc.robot.lib.controllers.LightsController;
 import frc.robot.lib.sensors.BeamBreakSensor;
-import frc.robot.lib.sensors.DistanceSensor;
 import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -31,10 +28,7 @@ public class GameCommands {
   private final ClimberSubsystem m_climberSubsystem;
   private final GameController m_driverController;
   private final GameController m_operatorControlller;
-  private final LightsController m_lightsController;
   
-  private int m_controllerI;
-
   public GameCommands(
     GyroSensor gyroSensor, 
     BeamBreakSensor launcherBottomBeamBreakSensor,
@@ -46,8 +40,7 @@ public class GameCommands {
     LauncherRollerSubsystem launcherRollerSubsystem,
     ClimberSubsystem climberSubsystem,
     GameController driverController,
-    GameController operatorControlller,
-    LightsController lightsController
+    GameController operatorControlller
   ) {
     m_gyroSensor = gyroSensor;
     m_launcherBottomBeamBreakSensor = launcherBottomBeamBreakSensor;
@@ -60,7 +53,6 @@ public class GameCommands {
     m_climberSubsystem = climberSubsystem;
     m_driverController = driverController;
     m_operatorControlller = operatorControlller;
-    m_lightsController = lightsController;
   }
 
   // TODO: take out intake direction
@@ -204,7 +196,6 @@ public class GameCommands {
     .withName("RumbleControllers");
   }
 
-  // TODO: test/validate that this command can be run immediately at the start of teleop for driver control
   public Command resetGyroToPoseCommand() { 
     return Commands
     .runOnce(() -> m_gyroSensor.reset(Utils.wrapAngle(m_poseSubsystem.getPose().getRotation().getDegrees())))

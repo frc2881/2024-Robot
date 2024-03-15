@@ -175,6 +175,10 @@ public class LauncherArmSubsystem extends SubsystemBase {
     return m_hasInitialReset;
   }
 
+  public boolean isAlignedToTarget() {
+    return m_isAlignedToTarget;
+  }
+
   public void reset() {
     m_armMotor.set(0.0);
   }

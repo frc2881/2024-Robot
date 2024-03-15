@@ -253,6 +253,10 @@ public class DriveSubsystem extends SubsystemBase {
     .withName("AlignDriveRotationToTarget");
   }
 
+  public boolean isAlignedToTarget() {
+    return m_isAlignedToTarget;
+  }
+
   public void reset() {
     drive(0.0, 0.0, 0.0);
   }

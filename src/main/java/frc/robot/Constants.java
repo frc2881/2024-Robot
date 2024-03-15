@@ -173,7 +173,7 @@ public final class Constants {
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
     public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.60, 0.60);
-    public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.23, 0.23);
+    public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.35, 0.35);
     
     public static final double kArmPositionIntake = 7.0;
     public static final double kArmPositionAmp = 13;
@@ -188,8 +188,8 @@ public final class Constants {
       new LauncherArmPosition(1.35, 12.7),
       new LauncherArmPosition(2.3, 8.55),
       new LauncherArmPosition(3.65, 6.24),
-      new LauncherArmPosition(5.0, 4.3),
-      new LauncherArmPosition(6.2, 4.0)
+      new LauncherArmPosition(5.0, 4.4),
+      new LauncherArmPosition(6.2, 4.1)
     };
 
     public static final LauncherRollerSpeedForPosition[] kRollerSpeeds = new LauncherRollerSpeedForPosition[] {
@@ -216,9 +216,9 @@ public final class Constants {
     public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
     public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
 
-    public static final int kRollerMotorCurrentLimit = 60;
-    public static final double kRollerMotorMinOutput = -0.25;
-    public static final double kRollerMotorMaxOutput = 0.25;
+    public static final int kRollerMotorCurrentLimit = 80;
+    public static final double kRollerMotorMinOutput = -0.85;
+    public static final double kRollerMotorMaxOutput = 0.85;
     public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
 
     public static final double kArmPositionForChainEngagement = 26.0;
