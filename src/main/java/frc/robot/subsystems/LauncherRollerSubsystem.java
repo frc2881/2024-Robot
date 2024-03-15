@@ -6,12 +6,14 @@ import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.common.Utils;
+import frc.robot.lib.logging.Logger;
 
 public class LauncherRollerSubsystem extends SubsystemBase {
   private final CANSparkFlex m_topRollerMotor;
@@ -20,15 +22,20 @@ public class LauncherRollerSubsystem extends SubsystemBase {
   private double[] m_distances;
   private double[] m_speeds;
 
-  // TODO: add REVLib error checking and param set retries to handle SparkFlex configuration issues
-
   public LauncherRollerSubsystem() {
     m_topRollerMotor = new CANSparkFlex(Constants.Launcher.kTopRollerMotorCANId, MotorType.kBrushless);
     m_topRollerMotor.restoreFactoryDefaults();
     m_topRollerMotor.setIdleMode(Constants.Launcher.kTopRollerMotorIdleMode); 
     m_topRollerMotor.setSmartCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
     m_topRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
-    m_topRollerMotor.setInverted(true);
+    for (int i = 0; i < 10; i++) {
+      m_topRollerMotor.setInverted(true);
+      if (m_topRollerMotor.getInverted()) {
+        Logger.debug("LauncherRollerTop setInverted validated");
+        break;
+      }
+      Timer.delay(0.005);
+    }
     m_topRollerMotor.burnFlash();
 
     m_bottomRollerMotor = new CANSparkFlex(Constants.Launcher.kBottomRollerMotorCANId, MotorType.kBrushless);

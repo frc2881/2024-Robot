@@ -136,8 +136,8 @@ public final class Constants {
     public static final double kBottomBeltMotorMaxOutput = 0.6;
     public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kCoast;
 
-    public static final double kIntakeBeltSpeeds = 0.95; //1.0
-    public static final double kIntakeBeltWaitTime = 0.045; //0.05
+    public static final double kIntakeBeltSpeeds = 0.75; //1.0
+    public static final double kIntakeBeltWaitTime = 0.04; //0.05
 
     public static final int kRollerMotorCurrentLimit = 60;
     public static final double kRollerMotorMinOutput = -0.6;
@@ -173,7 +173,7 @@ public final class Constants {
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
     public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.60, 0.60);
-    public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.35, 0.35);
+    public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.23, 0.23);
     
     public static final double kArmPositionIntake = 7.0;
     public static final double kArmPositionAmp = 13;
@@ -187,9 +187,9 @@ public final class Constants {
       new LauncherArmPosition(1.00, 13),
       new LauncherArmPosition(1.35, 12.7),
       new LauncherArmPosition(2.3, 8.55),
-      new LauncherArmPosition(3.65, 6.25),
-      new LauncherArmPosition(5.0, 4.5),
-      new LauncherArmPosition(6.2, 4.1)
+      new LauncherArmPosition(3.65, 6.24),
+      new LauncherArmPosition(5.0, 4.3),
+      new LauncherArmPosition(6.2, 4.0)
     };
 
     public static final LauncherRollerSpeedForPosition[] kRollerSpeeds = new LauncherRollerSpeedForPosition[] {
