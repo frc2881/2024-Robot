@@ -88,7 +88,7 @@ public final class Constants {
 
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.5, 0, 0);
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.7, 0, 0);
-    public static final PathConstraints kPathFindingConstraints = new PathConstraints(4.0, 3.0, 540.00, 720.00);
+    public static final PathConstraints kPathFindingConstraints = new PathConstraints(4.5, 3.5, 720.00, 960.00);
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;
@@ -136,8 +136,8 @@ public final class Constants {
     public static final double kBottomBeltMotorMaxOutput = 0.6;
     public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kCoast;
 
-    public static final double kIntakeBeltSpeeds = 0.75; //1.0
-    public static final double kIntakeBeltWaitTime = 0.04; //0.05
+    public static final double kIntakeBeltSpeeds = 0.70; //1.0
+    public static final double kIntakeBeltWaitTime = 0.039; //0.05
 
     public static final int kRollerMotorCurrentLimit = 60;
     public static final double kRollerMotorMinOutput = -0.6;
@@ -173,7 +173,7 @@ public final class Constants {
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
     public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.60, 0.60);
-    public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.35, 0.35);
+    public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.26, 0.26);
     
     public static final double kArmPositionIntake = 7.0;
     public static final double kArmPositionAmp = 13;
@@ -186,16 +186,16 @@ public final class Constants {
     public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
       new LauncherArmPosition(1.00, 13),
       new LauncherArmPosition(1.35, 12.7),
-      new LauncherArmPosition(2.3, 8.55),
+      new LauncherArmPosition(2.3, 8.5),
       new LauncherArmPosition(3.65, 6.24),
-      new LauncherArmPosition(5.0, 4.4),
-      new LauncherArmPosition(6.2, 4.1)
+      new LauncherArmPosition(5.0, 4.3),
+      new LauncherArmPosition(6.2, 4.0)
     };
 
     public static final LauncherRollerSpeedForPosition[] kRollerSpeeds = new LauncherRollerSpeedForPosition[] {
-      new LauncherRollerSpeedForPosition(1.00, 0.5),
-      new LauncherRollerSpeedForPosition(1.35, 0.55),
-      new LauncherRollerSpeedForPosition(3.65, 0.75),
+      new LauncherRollerSpeedForPosition(1.00, 0.8),
+      new LauncherRollerSpeedForPosition(1.35, 0.8),
+      new LauncherRollerSpeedForPosition(3.65, 0.8),
       new LauncherRollerSpeedForPosition(6.2, 0.8)
     };
   }
@@ -317,8 +317,8 @@ public final class Constants {
         public static final AutoPoses kNotePreload3Poses = new AutoPoses(new Pose2d(), new Pose2d(1.85, 3.8, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote1Poses = new AutoPoses(
-          new Pose2d(2.90, 6.90, Rotation2d.fromDegrees(0)), 
-          new Pose2d(2.90, 6.90, Rotation2d.fromDegrees(0)));
+          new Pose2d(3.30, 6.90, Rotation2d.fromDegrees(0)), 
+          new Pose2d(3.30, 6.90, Rotation2d.fromDegrees(0)));
 
         public static final AutoPoses kNote2Poses = new AutoPoses(
           new Pose2d(3.10, 5.50, Rotation2d.fromDegrees(0)), 

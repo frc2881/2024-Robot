@@ -7,7 +7,10 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Robot;
 import frc.robot.lib.common.Utils;
+import frc.robot.lib.common.Enums.RobotMode;
+import frc.robot.lib.common.Enums.RobotState;
 
 public class GyroSensor extends ADIS16470_IMU {
 
@@ -42,6 +45,17 @@ public class GyroSensor extends ADIS16470_IMU {
     () -> reset(value))
     .ignoringDisable(true)
     .withName("ResetGyroToAngle");
+  }
+
+  public Command calibrateCommand() {
+    return Commands.runOnce(
+    () -> {
+      configCalTime(CalibrationTime._2s);
+      calibrate();
+    })
+    .onlyIf(() -> Robot.getState() == RobotState.Disabled)
+    .ignoringDisable(true)
+    .withName("CalibrateGyro");
   }
 
   public double getRoll() {

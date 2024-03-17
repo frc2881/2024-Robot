@@ -216,13 +216,14 @@ public class AutoCommands {
 
   public Command backupScorePickup14() {
     PathPlannerPath pathToPickup4 = PathPlannerPath.fromPathFile("Pickup4");
+    PathPlannerPath pathToScoreStage = PathPlannerPath.fromPathFile("ScoreStage");
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
       Commands.sequence(
         pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNotePreload1Poses.noteScorePose()),
         Commands.parallel(
           m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
-          m_gameCommmands.alignRobotToTargetCommand( ).withTimeout(2.0)
+          m_gameCommmands.alignRobotToTargetCommand().withTimeout(2.0)
         ),
         m_gameCommmands.runLauncherAutoCommand()
         .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()),
@@ -244,7 +245,8 @@ public class AutoCommands {
           m_gameCommmands.runIntakeAutoCommand() // grab next note
         ),
         //new WaitCommand(0.5),
-        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote4Poses.noteScorePose()),
+        //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote4Poses.noteScorePose()),
+        AutoBuilder.pathfindThenFollowPath(pathToScoreStage, Constants.Drive.kPathFindingConstraints),
         Commands.parallel(
           m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
           m_gameCommmands.alignRobotToTargetCommand()
@@ -260,6 +262,7 @@ public class AutoCommands {
 
   public Command backupScorePickup15() {
     PathPlannerPath pathToPickup5 = PathPlannerPath.fromPathFile("Pickup5");
+    PathPlannerPath pathToScoreStage = PathPlannerPath.fromPathFile("ScoreStage");
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
       Commands.sequence(
@@ -285,7 +288,8 @@ public class AutoCommands {
           //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote5Poses.notePickupPose()), // grab next note
           m_gameCommmands.runIntakeAutoCommand() // grab next note
         ),
-        pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote5Poses.noteScorePose()),
+        AutoBuilder.pathfindThenFollowPath(pathToScoreStage, Constants.Drive.kPathFindingConstraints),
+        //pathFindToNotePose(Constants.Game.Field.AutoWaypoints.kNote5Poses.noteScorePose()),
         Commands.parallel(
           m_gameCommmands.alignLauncherToTargetAutoCommand().withTimeout(2.0),
           m_gameCommmands.alignRobotToTargetCommand()
@@ -519,8 +523,18 @@ public class AutoCommands {
       .withTimeout(1.0),
       m_gameCommmands.runLauncherCommand()
       .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget()) 
+
     )
     .withName("ScorePickup3");
+  } 
+
+  public Command scoreMoveout3() {
+    return Commands
+    .sequence(
+      scoreSubwooferAuto(),
+      pathFindToNotePose(new Pose2d(2.75, 2.75, Rotation2d.fromDegrees(0)))
+    )
+    .withName("ScoreMoveout3");
   } 
 
   public Command scoreSubwooferAuto() {

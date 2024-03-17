@@ -19,6 +19,7 @@ import frc.robot.commands.AutoCommands;
 import frc.robot.commands.GameCommands;
 import frc.robot.lib.common.Enums.LightsMode;
 import frc.robot.lib.common.Enums.MotorDirection;
+import frc.robot.lib.common.Enums.RobotState;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
@@ -161,7 +162,7 @@ public class RobotContainer {
     m_driverController.b().whileTrue(m_gameCommands.moveToClimbCommand());
     m_driverController.y().whileTrue(m_gameCommands.climbCommand());
     m_driverController.x().whileTrue(m_gameCommands.shootShuttleCommand());
-    // m_driverController.start().whileTrue(Commands.none());
+    m_driverController.start().onTrue(m_gyroSensor.calibrateCommand());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
@@ -225,6 +226,7 @@ public class RobotContainer {
     m_autoChooser.addOption("0 > 1", m_autoCommands.scorePickup1());
     m_autoChooser.addOption("0 > 2", m_autoCommands.scorePickup2());
     m_autoChooser.addOption("0 > 3", m_autoCommands.scorePickup3());
+    m_autoChooser.addOption("0 >", m_autoCommands.scoreMoveout3());
     m_autoChooser.addOption("0", m_autoCommands.scoreSubwooferAuto());
     // m_autoChooser.addOption("TEST - BackupShoot1", m_autoCommands.runAuto(false, new AutoPoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses }));
     // m_autoChooser.addOption("TEST - DynamicBackupShootPickup1", m_autoCommands.scoreSubwooferAuto());
