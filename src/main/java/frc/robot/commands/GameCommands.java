@@ -5,10 +5,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
-import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.sensors.BeamBreakSensor;
-import frc.robot.lib.sensors.GyroSensor;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -16,8 +14,7 @@ import frc.robot.subsystems.LauncherArmSubsystem;
 import frc.robot.subsystems.LauncherRollerSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
 
-public class GameCommands {
-  private final GyroSensor m_gyroSensor;   
+public class GameCommands {  
   private final BeamBreakSensor m_launcherBottomBeamBreakSensor;
   private final BeamBreakSensor m_launcherTopBeamBreakSensor; 
   private final DriveSubsystem m_driveSubsystem;
@@ -29,8 +26,7 @@ public class GameCommands {
   private final GameController m_driverController;
   private final GameController m_operatorControlller;
   
-  public GameCommands(
-    GyroSensor gyroSensor, 
+  public GameCommands( 
     BeamBreakSensor launcherBottomBeamBreakSensor,
     BeamBreakSensor launcherTopBeamBreakSensor,
     DriveSubsystem driveSubsystem, 
@@ -42,7 +38,6 @@ public class GameCommands {
     GameController driverController,
     GameController operatorControlller
   ) {
-    m_gyroSensor = gyroSensor;
     m_launcherBottomBeamBreakSensor = launcherBottomBeamBreakSensor;
     m_launcherTopBeamBreakSensor = launcherTopBeamBreakSensor;
     m_driveSubsystem = driveSubsystem;
@@ -55,38 +50,39 @@ public class GameCommands {
     m_operatorControlller = operatorControlller;
   }
 
-  // TODO: take out intake direction
   public Command runIntakeCommand() {
-      return 
-      m_intakeSubsystem.runIntakeFrontCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-      .raceWith(m_launcherArmSubsystem.alignToIntakePositionCommand())
-      .andThen(
-        new WaitCommand(0.05),
-        m_intakeSubsystem.adjustNotePositionCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-      )
-      .withName("RunIntakeFront");
+    return 
+    m_intakeSubsystem.runIntakeCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+    .raceWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
+    .andThen(
+      new WaitCommand(0.05),
+      m_intakeSubsystem.runAdjustNotePositionCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+    )
+    .andThen(rumbleControllersCommand(true, false))
+    .withName("RunIntake");
   }
 
   public Command runIntakeAutoCommand() {
     return 
-    m_intakeSubsystem.runIntakeFrontAutoCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-    .raceWith(m_launcherArmSubsystem.alignToIntakePositionCommand())
+    m_intakeSubsystem.runIntakeAutoCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+    .raceWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
     .andThen(
       new WaitCommand(0.05),
-      m_intakeSubsystem.adjustNotePositionCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+      m_intakeSubsystem.runAdjustNotePositionCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
     )
-    .withName("RunIntakeFront");
-}
+    .withName("RunIntakeAuto");
+  }
 
   public Command runEjectCommand() {
-      return
-      m_intakeSubsystem.runEjectFrontCommand()
-      .withName("RunEjectFront");
+    return
+    m_intakeSubsystem.runEjectCommand()
+    .withName("RunEject");
   }
 
   public Command alignRobotToTargetCommand() {
     return
     m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, m_poseSubsystem::getTargetYaw)
+    .andThen(rumbleControllersCommand(true, true))
     .withName("AlignRobotToTarget");
   }
   
@@ -103,7 +99,7 @@ public class GameCommands {
   public Command alignLauncherToTargetAutoCommand() {
     return
     m_launcherArmSubsystem.alignToTargetAutoCommand(m_poseSubsystem::getTargetDistance)
-    .withName("AlignLauncherToTarget");
+    .withName("AlignLauncherToTargetAuto");
   }
 
   public Command alignLauncherToPositionCommand(double position, boolean isRollersEnabled) {
@@ -116,6 +112,12 @@ public class GameCommands {
     .withName("AlignLauncherToPosition");
   }
 
+  public Command alignLauncherToPositionAutoCommand(double position) {
+    return
+    m_launcherArmSubsystem.alignToPositionAutoCommand(position)
+    .withName("AlignLauncherToPositionAuto");
+  }
+
   public Command alignLauncherToAmpCommand(boolean isRollersEnabled) {
     return
     m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionAmp)
@@ -126,11 +128,14 @@ public class GameCommands {
     .withName("AlignLauncherToAmp");
   }
 
-  public Command alignLauncherToPositionAutoCommand(double position) {
-    return
-    m_launcherArmSubsystem.alignToPositionCommand(position)
-    .until(() -> Math.abs(m_launcherArmSubsystem.getArmPosition() - position) < 0.1)
-    .withName("AlignLauncherToPositionAuto");
+  public Command alignLauncherForShuttleCommand() {
+    return Commands.parallel(
+      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.60, 0.60)),
+      Commands.sequence(
+        alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShuttle)
+      )
+    )
+    .withName("AlignLauncherForShuttle");
   }
 
   public Command runLauncherCommand() {
@@ -141,17 +146,10 @@ public class GameCommands {
       .andThen(m_intakeSubsystem.runLaunchCommand())
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
-    .withName("RunLauncher");
-  }
-
-  public Command runLauncherAmpCommand() {
-    return 
-    m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kAmpLauncherSpeeds)
-    .alongWith(
-      Commands.waitSeconds(0.5)
-      .andThen(m_intakeSubsystem.runLaunchCommand())
-    )
-    .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
+    .finallyDo(() -> { 
+      m_driveSubsystem.clearTargetAlignment();
+      m_launcherArmSubsystem.clearTargetAlignment(); 
+    })
     .withName("RunLauncher");
   }
 
@@ -159,21 +157,31 @@ public class GameCommands {
     return 
     m_intakeSubsystem.runLaunchCommand()
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
+    .finallyDo(() -> { 
+      m_driveSubsystem.clearTargetAlignment();
+      m_launcherArmSubsystem.clearTargetAlignment(); 
+    })
     .withName("RunLauncherAuto");
   }
 
-  public Command shuttleCommand() {
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.60, 0.60)),
-      Commands.sequence(
-        alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShuttle)
-      )
+  public Command runLauncherForAmpCommand() {
+    return 
+    m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kAmpLauncherSpeeds)
+    .alongWith(
+      Commands.waitSeconds(0.5)
+      .andThen(m_intakeSubsystem.runLaunchCommand())
     )
-    .withName("shuttleNote");
+    .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
+    .finallyDo(() -> { 
+      m_driveSubsystem.clearTargetAlignment();
+      m_launcherArmSubsystem.clearTargetAlignment(); 
+    })
+    .withName("RunLauncherForAmp");
   }
 
-  public Command shootShuttleCommand() {
-    return runLauncherAutoCommand();
+  public Command runLauncherForShuttleCommand() {
+    return runLauncherAutoCommand()
+    .withName("RunLauncherForShuttle");
   }
 
   public Command moveToClimbCommand() {
@@ -188,23 +196,11 @@ public class GameCommands {
     .withName("Climb");
   }
 
-  public Command rumbleControllers(boolean rumbleDriver, boolean rumbleOperator) {
+  public Command rumbleControllersCommand(boolean isDriverRumbleEnabled, boolean isRumbleOperatorEnabled) {
     return Commands.parallel(
-      m_driverController.rumbleShort().onlyIf(() -> rumbleDriver),
-      m_operatorControlller.rumbleShort().onlyIf(() -> rumbleOperator)
+      m_driverController.rumbleShort().onlyIf(() -> isDriverRumbleEnabled),
+      m_operatorControlller.rumbleShort().onlyIf(() -> isRumbleOperatorEnabled)
     )
     .withName("RumbleControllers");
-  }
-
-  public Command resetGyroToPoseCommand() { 
-    return Commands
-    .runOnce(() -> m_gyroSensor.reset(Utils.wrapAngle(m_poseSubsystem.getPose().getRotation().getDegrees())))
-    .withName("ResetGyro"); 
-  }
-
-  public Command resetSubsystems() {
-    return 
-    m_climberSubsystem.resetCommand()
-    .withName("ResetSubsystems");
   }
 }

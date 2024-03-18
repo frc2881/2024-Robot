@@ -146,7 +146,9 @@ public class DriveSubsystem extends SubsystemBase {
           }
         }
       }
-      m_isAlignedToTarget = false;
+      if (speedX > 0.0 || speedY > 0.0 || speedRotation > 0.0) {
+        clearTargetAlignment();
+      }
       drive(speedX, speedY, speedRotation);
     })
     .onlyIf(() -> m_lockState != DriveLockState.Locked)
@@ -255,6 +257,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   public boolean isAlignedToTarget() {
     return m_isAlignedToTarget;
+  }
+
+  public void clearTargetAlignment() {
+    m_isAlignedToTarget = false;
   }
 
   public void reset() {

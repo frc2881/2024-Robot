@@ -61,7 +61,7 @@ public class IntakeSubsystem extends SubsystemBase {
     return SmartDashboard.getNumber("Robot/Intake/Belts/IntakeWaitTime", m_intakeWaitTime);
   }
 
-  public Command runIntakeFrontCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
+  public Command runIntakeCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
       runTopBelts(MotorDirection.Forward, getIntakeSpeed()); 
@@ -77,10 +77,10 @@ public class IntakeSubsystem extends SubsystemBase {
       runBottomBelts(MotorDirection.None);
       runRollers(MotorDirection.None);
     })
-    .withName("RunIntakeFront");
+    .withName("RunIntake");
   }
 
-  public Command runIntakeFrontAutoCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
+  public Command runIntakeAutoCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
       runTopBelts(MotorDirection.Forward, 0.85); 
@@ -96,10 +96,10 @@ public class IntakeSubsystem extends SubsystemBase {
       runBottomBelts(MotorDirection.None);
       runRollers(MotorDirection.None);
     })
-    .withName("RunIntakeFront");
+    .withName("RunIntakeAuto");
   }
 
-  public Command adjustNotePositionCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
+  public Command runAdjustNotePositionCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return Commands.run(
       () -> {
         runTopBelts(MotorDirection.Reverse, 0.4);
@@ -111,10 +111,10 @@ public class IntakeSubsystem extends SubsystemBase {
       runBottomBelts(MotorDirection.None);
       runRollers(MotorDirection.None);
     })
-    .withName("adjustNotePosition");
+    .withName("AdjustNotePosition");
   }
 
-  public Command runEjectFrontCommand() {
+  public Command runEjectCommand() {
     return
     startEnd(() -> {
       runTopBelts(MotorDirection.Reverse);
@@ -125,7 +125,7 @@ public class IntakeSubsystem extends SubsystemBase {
       runBottomBelts(MotorDirection.None);
       runRollers(MotorDirection.None);
     })
-    .withName("RunEjectFront");
+    .withName("RunEject");
   }
 
   public Command runLaunchCommand() {

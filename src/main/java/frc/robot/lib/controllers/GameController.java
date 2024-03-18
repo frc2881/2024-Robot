@@ -54,11 +54,5 @@ public class GameController extends CommandXboxController {
     return Commands.startEnd(
       () -> super.getHID().setRumble(RumbleType.kBothRumble, 1), 
       () -> super.getHID().setRumble(RumbleType.kBothRumble, 0));
-
-
-  //   Commands.runOnce()
-  //   .andThen(Commands.waitSeconds(0.5))
-  //   .andThen(Commands.runOnce(() -> super.getHID().setRumble(RumbleType.kBothRumble, 0)))
-  //   .withName("ResetGyroToZero");
   }
 }

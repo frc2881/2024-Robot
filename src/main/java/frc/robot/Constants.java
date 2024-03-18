@@ -174,7 +174,10 @@ public final class Constants {
 
     public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.60, 0.60);
     public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.26, 0.26);
+
+    public static final double kArmTargetAlignmentPositionTolerance = 0.1;
     
+    // TODO: validate fixed distance position values based on event tuning of linear interpolation values
     public static final double kArmPositionIntake = 7.0;
     public static final double kArmPositionAmp = 13;
     public static final double kArmPositionSubwoofer = 12.9; // 1.35m
@@ -192,6 +195,7 @@ public final class Constants {
       new LauncherArmPosition(6.2, 4.0)
     };
 
+    // TODO: remove variable launcher roller speeds based on performance updates at last event
     public static final LauncherRollerSpeedForPosition[] kRollerSpeeds = new LauncherRollerSpeedForPosition[] {
       new LauncherRollerSpeedForPosition(1.00, 0.8),
       new LauncherRollerSpeedForPosition(1.35, 0.8),
@@ -262,10 +266,6 @@ public final class Constants {
     }
 
     public static final class BeamBreak {
-      public static final class Intake {
-        public static final String kSensorName = "Intake";
-        public static final int kChannel = 9;
-      }
       public static final class LauncherBottom {
         public static final String kSensorName = "LauncherBottom";
         public static final int kChannel = 7;
@@ -280,19 +280,6 @@ public final class Constants {
       public static final String kCameraName = "Front";
       public static final String kObjectName = "Note";
       public static final double kObjectRangeYaw = 10.0;
-    }
-
-    public static final class Distance {
-      public static final class Intake {
-        public static final String kSensorName = "Intake";
-        public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 250;
-      }
-      public static final class Launcher {
-        public static final String kSensorName = "Launcher";
-        public static final double kMinTargetDistance = 0;
-        public static final double kMaxTargetDistance = 250;
-      }
     }
   }
 
@@ -312,6 +299,9 @@ public final class Constants {
       }
 
       public static final class AutoWaypoints {
+
+        // TODO: remap pose constants to have only position 1, 2, 3 preload scoring poses as everything else is handled through PathPlanner drawn paths and pathFindThenFollowPath methods
+
         public static final AutoPoses kNotePreload1Poses = new AutoPoses(new Pose2d(), new Pose2d(1.85, 6.70, Rotation2d.fromDegrees(0)));
         public static final AutoPoses kNotePreload2Poses = new AutoPoses(new Pose2d(), new Pose2d(1.85, 5.50, Rotation2d.fromDegrees(0)));
         public static final AutoPoses kNotePreload3Poses = new AutoPoses(new Pose2d(), new Pose2d(1.85, 3.8, Rotation2d.fromDegrees(0)));

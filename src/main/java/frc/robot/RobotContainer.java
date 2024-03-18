@@ -19,7 +19,6 @@ import frc.robot.commands.AutoCommands;
 import frc.robot.commands.GameCommands;
 import frc.robot.lib.common.Enums.LightsMode;
 import frc.robot.lib.common.Enums.MotorDirection;
-import frc.robot.lib.common.Enums.RobotState;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
@@ -108,7 +107,6 @@ public class RobotContainer {
     
     // COMMANDS ========================================
     m_gameCommands = new GameCommands(
-      m_gyroSensor, 
       m_launcherBottomBeamBreakSensor, 
       m_launcherTopBeamBreakSensor,  
       m_driveSubsystem, 
@@ -123,15 +121,13 @@ public class RobotContainer {
 
     m_autoCommands = new AutoCommands(
       m_gameCommands, 
-      m_gyroSensor, 
       m_launcherBottomBeamBreakSensor, 
       m_launcherTopBeamBreakSensor, 
       m_driveSubsystem, 
       m_poseSubsystem,  
       m_intakeSubsystem, 
       m_launcherArmSubsystem, 
-      m_launcherRollerSubsystem, 
-      m_climberSubsystem
+      m_launcherRollerSubsystem
     );
     
     m_autoChooser = new SendableChooser<Command>();
@@ -144,10 +140,8 @@ public class RobotContainer {
   private void configureBindings() {
     // DRIVER ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
-    m_driverController.leftTrigger().whileTrue(m_gameCommands.shuttleCommand());
-    m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand()
-      .alongWith(m_gameCommands.rumbleControllers(true, false)
-      ));
+    m_driverController.leftTrigger().whileTrue(m_gameCommands.alignLauncherForShuttleCommand());
+    m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand());
     //m_driverController.leftBumper().whileTrue();
     m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
@@ -156,22 +150,20 @@ public class RobotContainer {
     // m_driverController.povUp().whileTrue(Commands.none()); 
     // m_driverController.povRight().whileTrue(Commands.none());
     // m_driverController.povDown().whileTrue(Commands.none()); 
-    m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand()
-      .alongWith(m_gameCommands.rumbleControllers(true, true)
-      ));
+    m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     m_driverController.b().whileTrue(m_gameCommands.moveToClimbCommand());
     m_driverController.y().whileTrue(m_gameCommands.climbCommand());
-    m_driverController.x().whileTrue(m_gameCommands.shootShuttleCommand());
+    m_driverController.x().whileTrue(m_gameCommands.runLauncherForShuttleCommand());
     m_driverController.start().onTrue(m_gyroSensor.calibrateCommand());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
-    m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(true));
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
-    m_operatorController.leftTrigger().whileTrue(m_gameCommands.runLauncherAmpCommand());
-    //m_operatorController.rightBumper().whileTrue();
+    //m_operatorController.rightBumper().whileTrue(Commands.none());
+    m_operatorController.leftTrigger().whileTrue(m_gameCommands.runLauncherForAmpCommand());
+    m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(true));
     // m_operatorController.leftStick().whileTrue(Commands.none());
     // m_operatorController.rightStick().whileTrue(Commands.none());
     m_operatorController.povLeft().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionLongRange, true));
@@ -183,16 +175,18 @@ public class RobotContainer {
     m_operatorController.b().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
     //m_operatorController.x().whileTrue(Commands.none());
     m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
-    m_operatorController.back().whileTrue(m_gameCommands.resetSubsystems());
+    m_operatorController.back().whileTrue(m_climberSubsystem.resetCommand());
   }
 
   private void configureTriggers() {
+    // TODO: add new trigger for light mode when intake is loaded and ready
+
     new Trigger(() -> 
       m_driveSubsystem.isAlignedToTarget() && 
       m_launcherArmSubsystem.isAlignedToTarget() &&
       m_launcherBottomBeamBreakSensor.hasTarget() &&
       !m_launcherTopBeamBreakSensor.hasTarget())
-      .onTrue(Commands.runOnce(() -> { m_lightsController.setLightsMode(LightsMode.Launch); }))
+      .onTrue(Commands.runOnce(() -> { m_lightsController.setLightsMode(LightsMode.LaunchReady); }))
       .onFalse(Commands.runOnce(() -> { m_lightsController.setLightsMode(LightsMode.Default); }));
   }
 
@@ -228,10 +222,6 @@ public class RobotContainer {
     m_autoChooser.addOption("0 > 3", m_autoCommands.scorePickup3());
     m_autoChooser.addOption("0 >", m_autoCommands.scoreMoveout3());
     m_autoChooser.addOption("0", m_autoCommands.scoreSubwooferAuto());
-    // m_autoChooser.addOption("TEST - BackupShoot1", m_autoCommands.runAuto(false, new AutoPoses[] { Constants.Game.Field.AutoWaypoints.kNotePreload1Poses }));
-    // m_autoChooser.addOption("TEST - DynamicBackupShootPickup1", m_autoCommands.scoreSubwooferAuto());
-    // m_autoChooser.addOption("TEST - DynamicPreload1Grab1", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote1Poses}));
-    // m_autoChooser.addOption("TEST - DynamicPreload1Grab6", m_autoCommands.runAuto(false, new AutoPoses[] {Constants.Game.Field.AutoWaypoints.kNotePreload1Poses, Constants.Game.Field.AutoWaypoints.kNote6Poses}));
     
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }

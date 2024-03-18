@@ -98,6 +98,10 @@ public class ClimberSubsystem extends SubsystemBase {
     .withName("RunClimberArmRollers");
   }
 
+  public boolean hasInitialReset() {
+    return m_hasInitialReset;
+  }
+
   public Command resetCommand() {
     return 
     startEnd(() -> {
@@ -110,10 +114,6 @@ public class ClimberSubsystem extends SubsystemBase {
       m_hasInitialReset = true;
     })
     .withName("ResetClimberArm");
-  }
-
-  public boolean hasInitialReset() {
-    return m_hasInitialReset;
   }
 
   public void reset() {
