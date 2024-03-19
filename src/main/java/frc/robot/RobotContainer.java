@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
@@ -207,21 +208,24 @@ public class RobotContainer {
       m_driveSubsystem
     );
 
+    PathfindingCommand.warmupCommand().schedule();
+
+    // TODO: update naming conventions to work more easily with driver station dashboard selections
     m_autoChooser.setDefaultOption("None", Commands.none());
-    m_autoChooser.addOption("> 0 > 1", m_autoCommands.backupScorePickup1());
-    m_autoChooser.addOption("> 0 > 1 > 4", m_autoCommands.backupScorePickup14());
-    m_autoChooser.addOption("> 0 > 1 > 5", m_autoCommands.backupScorePickup15());
-    m_autoChooser.addOption("> 0 > 2", m_autoCommands.backupScorePickup2());
-    m_autoChooser.addOption("> 0 > 2 > 4", m_autoCommands.backupScorePickup24());
-    m_autoChooser.addOption("> 0 > 2 > 5", m_autoCommands.backupScorePickup25());
-    m_autoChooser.addOption("> 0 > 2 > 6", m_autoCommands.backupScorePickup26());
-    m_autoChooser.addOption("> 0 > 3", m_autoCommands.backupScorePickup3());
-    m_autoChooser.addOption("> 0 > 3 > 8", m_autoCommands.backupScorePickup38());
-    m_autoChooser.addOption("0 > 1", m_autoCommands.scorePickup1());
-    m_autoChooser.addOption("0 > 2", m_autoCommands.scorePickup2());
-    m_autoChooser.addOption("0 > 3", m_autoCommands.scorePickup3());
-    m_autoChooser.addOption("0 >", m_autoCommands.scoreMoveout3());
-    m_autoChooser.addOption("0", m_autoCommands.scoreSubwooferAuto());
+    m_autoChooser.addOption("[1]_0_1", m_autoCommands.backupScorePickup1());
+    m_autoChooser.addOption("[1]_0_1_4", m_autoCommands.backupScorePickup14());
+    m_autoChooser.addOption("[1]_0_1_5", m_autoCommands.backupScorePickup15());
+    m_autoChooser.addOption("[2]_0_2", m_autoCommands.backupScorePickup2());
+    m_autoChooser.addOption("[2]_0_2_4", m_autoCommands.backupScorePickup24());
+    m_autoChooser.addOption("[2]_0_2_5", m_autoCommands.backupScorePickup25());
+    m_autoChooser.addOption("[2]_0_2_6", m_autoCommands.backupScorePickup26());
+    m_autoChooser.addOption("[3]_0_3", m_autoCommands.backupScorePickup3());
+    m_autoChooser.addOption("[3]_0_3_8", m_autoCommands.backupScorePickup38());
+    m_autoChooser.addOption("[1]0_1", m_autoCommands.scorePickup1());
+    m_autoChooser.addOption("[2]0_2", m_autoCommands.scorePickup2());
+    m_autoChooser.addOption("[3]0_3", m_autoCommands.scorePickup3());
+    m_autoChooser.addOption("[3]0_", m_autoCommands.scoreMoveout3());
+    m_autoChooser.addOption("[3]0", m_autoCommands.scoreSubwooferAuto());
     
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }

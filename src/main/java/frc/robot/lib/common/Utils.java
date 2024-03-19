@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import frc.robot.Robot;
+import frc.robot.lib.logging.Logger;
 
 public final class Utils {
 
@@ -99,5 +100,11 @@ public final class Utils {
 
   public static <T> T getValueForAlliance(T blueValue, T redValue) {
     return Robot.getAlliance() == Alliance.Blue ? blueValue : redValue;
+  }
+
+  public static void checkForREVSparkError(boolean predicate) {
+    if (predicate) {
+      Logger.error("REV Spark controller set/get parameter call failed!");
+    }
   }
 }

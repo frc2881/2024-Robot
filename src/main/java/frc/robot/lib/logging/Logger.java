@@ -3,6 +3,7 @@ package frc.robot.lib.logging;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 import frc.robot.Robot;
@@ -18,6 +19,8 @@ public final class Logger {
     CommandScheduler.getInstance().onCommandInitialize(command -> log("----> Start Command: " + command.getName()));
     CommandScheduler.getInstance().onCommandInterrupt(command -> log("----X Interrupt Command: " + command.getName()));
     CommandScheduler.getInstance().onCommandFinish(command -> log("----< Finish Command: " + command.getName()));
+
+    SmartDashboard.putBoolean("Robot/Errors/HasError", false);
   }
 
   public static void start() {
@@ -34,5 +37,11 @@ public final class Logger {
 
   public static void debug(String message) {
     log("@@@@@@@@@@ DEBUG: " + message + " @@@@@@@@@@");
+  }
+
+  public static void error(String message) {
+    log("!!!!!!!!!! ERROR: " + message + " !!!!!!!!!!");
+    SmartDashboard.putBoolean("Robot/Error/HasError", true);
+    SmartDashboard.putString("Robot/Error/LastError", message);
   }
 }

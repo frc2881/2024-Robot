@@ -48,10 +48,12 @@ public class AutoCommands {
     m_launcherRollerSubsystem = launcherRollerSubsystem;
   }
 
-  // TODO: migate all note pickup paths to use pathFindThenFollowPath methods and only use pathFindToPose for initial move out and preload scoring
-  // TODO: move all beam break sensor until predicate checks into the runLaunchAutoCommand function to simplify the commands below
+  // TODO: preload all defined paths from PathPlanner to local variables inside this class so they can be loaded/referenced before first use in commands (see next TODO as well) 
   // TODO: isolate various path following commands into separate commands that can be "warmed up" with the new PathPlannerLib scheduling feature for optimization
-  // TODO: create a new shared parallel command for aligning the robot and launcher to target to be reused across all auto commands
+  // TODO: migate all note pickup paths to use pathFindThenFollowPath methods and only use pathFindToPose for initial move out and preload scoring
+  // TODO: move all beam break sensor "until" predicate checks into the runLaunchAutoCommand function to simplify the commands below
+  // TODO: create a new shared parallel command for aligning the robot and launcher to target to be reused across all auto commands (with a single timeout for the parallel)
+  // TODO: move the run intake command to use raceWith for running a path in parallel where if the intake successfully gets a note, the path can immediately stop and transition into alignment/scoring (no need waste time completing the path)
 
   public Command backupScorePickup1() {
     return Commands.parallel(
