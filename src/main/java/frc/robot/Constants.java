@@ -2,11 +2,14 @@ package frc.robot;
 
 import static java.util.Map.entry;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -297,15 +300,38 @@ public final class Constants {
         public static final double kSpeakerTargetPitchTransformZ = Units.inchesToMeters(24);
         public static final double kSpeakerTargetDistanceTransformX = Units.inchesToMeters(0);
       }
+    }
 
-      public static final class AutoWaypoints {
+    public static final class Auto {
+      public static final Map<String, Pose2d> kNoteScoringPoses = Map.ofEntries(
+        entry("Preload1", new Pose2d(1.85, 6.70, Rotation2d.fromDegrees(0))),
+        entry("Preload2", new Pose2d(1.85, 5.50, Rotation2d.fromDegrees(0))),
+        entry("Preload3", new Pose2d(1.85, 3.8, Rotation2d.fromDegrees(0)))
+      );
 
-        // TODO: remap pose constants to have only position 1, 2, 3 preload scoring poses as everything else is handled through PathPlanner drawn paths and pathFindThenFollowPath methods
+      // TODO: make scoring paths for near side (1), center/under (2), far side (3) of stage alignment (for use with second level note 4-8 pickups)
+      public static final Map<String, PathPlannerPath> kNoteScoringPaths = Map.ofEntries(
+        entry("ScoreStage", PathPlannerPath.fromPathFile("ScoreStage"))
+      );
 
-        public static final AutoPoses kNotePreload1Poses = new AutoPoses(new Pose2d(), new Pose2d(1.85, 6.70, Rotation2d.fromDegrees(0)));
-        public static final AutoPoses kNotePreload2Poses = new AutoPoses(new Pose2d(), new Pose2d(1.85, 5.50, Rotation2d.fromDegrees(0)));
-        public static final AutoPoses kNotePreload3Poses = new AutoPoses(new Pose2d(), new Pose2d(1.85, 3.8, Rotation2d.fromDegrees(0)));
+      public static final Map<String, PathPlannerPath> kNotePickupPaths = Map.ofEntries(
+        entry("Pickup1", PathPlannerPath.fromPathFile("Pickup1")), // TODO: validate/fix pickup 1 path
+        entry("Pickup2", PathPlannerPath.fromPathFile("Pickup2")), // TODO: validate/fix pickup 2 path
+        entry("Pickup3", PathPlannerPath.fromPathFile("Pickup3")), // TODO: validate/fix pickup 3 path
+        entry("Pickup4", PathPlannerPath.fromPathFile("Pickup4")),
+        entry("Pickup5", PathPlannerPath.fromPathFile("Pickup5")), // TODO: validate pickup 5 path
+        entry("Pickup6", PathPlannerPath.fromPathFile("Pickup6")), // TODO: validate pickup 6 path
+        // TODO: make a pickup 7 path
+        entry("Pickup8", PathPlannerPath.fromPathFile("Pickup8")) // TODO: validate pickup 8 path
+      );
 
+      // TODO: make scoring paths for near side (1), center/under (2), far side (3) of stage alignment (for use when only moving out after preload scoring at subwoofer)
+      public static final Map<String, PathPlannerPath> kMoveOutPaths = Map.ofEntries(
+        //entry("MoveOut1", PathPlannerPath.fromPathFile("MoveOut1"))
+      );
+
+      // TODO: remove these waypoints after converting to planned paths for pickup and scoring
+      public static final class Waypoints {
         public static final AutoPoses kNote1Poses = new AutoPoses(
           new Pose2d(3.30, 6.90, Rotation2d.fromDegrees(0)), 
           new Pose2d(3.30, 6.90, Rotation2d.fromDegrees(0)));

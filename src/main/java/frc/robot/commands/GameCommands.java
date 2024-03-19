@@ -50,6 +50,8 @@ public class GameCommands {
     m_operatorControlller = operatorControlller;
   }
 
+  // TODO: change from raceWith to deadlineWith for proper intended use of the command composition type
+
   public Command runIntakeCommand() {
     return 
     m_intakeSubsystem.runIntakeCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
