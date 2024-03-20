@@ -19,9 +19,6 @@ public class IntakeSubsystem extends SubsystemBase {
   private final CANSparkMax m_bottomBeltMotor;
   private final CANSparkMax m_rollerMotor;
 
-  private double m_intakeSpeed = Constants.Intake.kIntakeBeltSpeeds;
-  private double m_intakeWaitTime = Constants.Intake.kIntakeBeltWaitTime;
-
   public IntakeSubsystem() {
     m_topBeltMotor = new CANSparkMax(Constants.Intake.kTopBeltMotorCANId, MotorType.kBrushless);
     m_topBeltMotor.restoreFactoryDefaults();
@@ -43,9 +40,6 @@ public class IntakeSubsystem extends SubsystemBase {
     m_rollerMotor.setSmartCurrentLimit(Constants.Intake.kRollerMotorCurrentLimit);
     m_rollerMotor.setSecondaryCurrentLimit(Constants.Intake.kRollerMotorCurrentLimit);
     m_rollerMotor.burnFlash();
-
-    SmartDashboard.putNumber("Robot/Intake/Belts/IntakeSpeed", m_intakeSpeed);
-    SmartDashboard.putNumber("Robot/Intake/Belts/IntakeWaitTime", m_intakeWaitTime);
   }
 
   @Override
@@ -53,24 +47,16 @@ public class IntakeSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public double getIntakeSpeed() {
-    return SmartDashboard.getNumber("Robot/Intake/Belts/IntakeSpeed", m_intakeSpeed);
-  }
-
-  public double getIntakeWaitTime() {
-    return SmartDashboard.getNumber("Robot/Intake/Belts/IntakeWaitTime", m_intakeWaitTime);
-  }
-
   public Command runIntakeCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
-      runTopBelts(MotorDirection.Forward, getIntakeSpeed()); 
-      runBottomBelts(MotorDirection.Forward, getIntakeSpeed());
+      runTopBelts(MotorDirection.Forward, Constants.Intake.kIntakeBeltSpeeds); 
+      runBottomBelts(MotorDirection.Forward, Constants.Intake.kIntakeBeltSpeeds);
       runRollers(MotorDirection.Reverse);
     }, () -> {})
     .onlyWhile(() -> !launcherBottomHasTarget.get())
     .andThen(
-      new WaitCommand(getIntakeWaitTime())
+      new WaitCommand(Constants.Intake.kIntakeBeltWaitTime)
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None);
@@ -80,6 +66,7 @@ public class IntakeSubsystem extends SubsystemBase {
     .withName("RunIntake");
   }
 
+  // TODO: validate that hard-coded 85% is correct vs. teleop setting of 70%
   public Command runIntakeAutoCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
