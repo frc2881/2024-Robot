@@ -16,19 +16,13 @@ public class Records {
     Pose2d noteScorePose
   ){}
 
-  public record LauncherRollerSpeeds(
-    double top, 
-    double bottom
-  ){}
-
   public record LauncherArmPosition(
     double distance,
     double position
   ){}
 
-  public record LauncherRollerSpeedForPosition(
-    double distance,
-    double speed
+  public record LauncherRollerSpeeds(
+    double top, 
+    double bottom
   ){}
-
 }

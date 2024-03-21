@@ -103,7 +103,7 @@ public final class Utils {
   }
 
   public static void checkForREVSparkError(boolean predicate) {
-    if (predicate) {
+    if (!predicate) {
       Logger.error("REV Spark controller set/get parameter call failed!");
     }
   }

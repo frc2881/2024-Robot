@@ -2,8 +2,6 @@ package frc.robot;
 
 import static java.util.Map.entry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -32,7 +30,6 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.common.Records.LauncherArmPosition;
-import frc.robot.lib.common.Records.LauncherRollerSpeedForPosition;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.common.Records.PIDConstants;
 
@@ -175,7 +172,9 @@ public final class Constants {
     public static final double kBottomRollerMotorMaxOutput = 1.0;
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
-    public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.60, 0.60);
+    public static final LauncherRollerSpeeds kDefaultLauncherSpeeds = new LauncherRollerSpeeds(0.8, 0.8);
+    public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.6, 0.6);
+    public static final LauncherRollerSpeeds kShuttleLauncherSpeeds = new LauncherRollerSpeeds(0.6, 0.6);
     public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.26, 0.26);
 
     public static final double kArmTargetAlignmentPositionTolerance = 0.1;
@@ -196,14 +195,6 @@ public final class Constants {
       new LauncherArmPosition(3.65, 6.24),
       new LauncherArmPosition(5.0, 4.3),
       new LauncherArmPosition(6.2, 4.0)
-    };
-
-    // TODO: remove variable launcher roller speeds based on performance updates at last event
-    public static final LauncherRollerSpeedForPosition[] kRollerSpeeds = new LauncherRollerSpeedForPosition[] {
-      new LauncherRollerSpeedForPosition(1.00, 0.8),
-      new LauncherRollerSpeedForPosition(1.35, 0.8),
-      new LauncherRollerSpeedForPosition(3.65, 0.8),
-      new LauncherRollerSpeedForPosition(6.2, 0.8)
     };
   }
 
@@ -238,7 +229,7 @@ public final class Constants {
       public static final IMUAxis kIMUAxisRoll = IMUAxis.kY;
       public static final IMUAxis kIMUAxisPitch = IMUAxis.kX;
       public static final SPI.Port kSPIPort = SPI.Port.kOnboardCS0;
-      public static final CalibrationTime kCalibrationTime = CalibrationTime._8s;
+      public static final CalibrationTime kCalibrationTime = CalibrationTime._4s;
     }
 
     public static final class Pose {
@@ -311,7 +302,9 @@ public final class Constants {
 
       // TODO: make scoring paths for near side (1), center/under (2), far side (3) of stage alignment (for use with second level note 4-8 pickups)
       public static final Map<String, PathPlannerPath> kNoteScoringPaths = Map.ofEntries(
-        entry("ScoreStage", PathPlannerPath.fromPathFile("ScoreStage"))
+        entry("ScoreStage1", PathPlannerPath.fromPathFile("ScoreStage1"))
+        // entry("ScoreStage2", PathPlannerPath.fromPathFile("ScoreStage2"))
+        // entry("ScoreStage3", PathPlannerPath.fromPathFile("ScoreStage3"))
       );
 
       public static final Map<String, PathPlannerPath> kNotePickupPaths = Map.ofEntries(
@@ -321,11 +314,11 @@ public final class Constants {
         entry("Pickup4", PathPlannerPath.fromPathFile("Pickup4")),
         entry("Pickup5", PathPlannerPath.fromPathFile("Pickup5")), // TODO: validate pickup 5 path
         entry("Pickup6", PathPlannerPath.fromPathFile("Pickup6")), // TODO: validate pickup 6 path
-        // TODO: make a pickup 7 path
+        // entry("Pickup7", PathPlannerPath.fromPathFile("Pickup7")), TODO: make a pickup 7 path
         entry("Pickup8", PathPlannerPath.fromPathFile("Pickup8")) // TODO: validate pickup 8 path
       );
 
-      // TODO: make scoring paths for near side (1), center/under (2), far side (3) of stage alignment (for use when only moving out after preload scoring at subwoofer)
+      // TODO: make move out paths for near side (1), center/under (2), far side (3) of stage alignment (for use when only moving out after preload scoring at subwoofer)
       public static final Map<String, PathPlannerPath> kMoveOutPaths = Map.ofEntries(
         //entry("MoveOut1", PathPlannerPath.fromPathFile("MoveOut1"))
       );

@@ -11,14 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
-import frc.robot.lib.common.Utils;
 
 public class LauncherRollerSubsystem extends SubsystemBase {
   private final CANSparkFlex m_topRollerMotor;
   private final CANSparkFlex m_bottomRollerMotor;
-
-  private double[] m_distances;
-  private double[] m_speeds;
 
   public LauncherRollerSubsystem() {
     m_topRollerMotor = new CANSparkFlex(Constants.Launcher.kTopRollerMotorCANId, MotorType.kBrushless);
@@ -28,7 +24,6 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     m_topRollerMotor.setSmartCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
     m_topRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
     m_topRollerMotor.setInverted(true);
-    Utils.checkForREVSparkError(!m_topRollerMotor.getInverted());
     m_topRollerMotor.burnFlash();
 
     m_bottomRollerMotor = new CANSparkFlex(Constants.Launcher.kBottomRollerMotorCANId, MotorType.kBrushless);
@@ -38,13 +33,6 @@ public class LauncherRollerSubsystem extends SubsystemBase {
     m_bottomRollerMotor.setSmartCurrentLimit(Constants.Launcher.kBottomRollerMotorCurrentLimit);
     m_bottomRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kBottomRollerMotorCurrentLimit);
     m_bottomRollerMotor.burnFlash();
-
-    m_distances = new double[Constants.Launcher.kRollerSpeeds.length];
-    m_speeds = new double[Constants.Launcher.kRollerSpeeds.length];
-    for (int i = 0; i < Constants.Launcher.kRollerSpeeds.length; i++) {
-      m_distances[i] = Constants.Launcher.kRollerSpeeds[i].distance();
-      m_speeds[i] = Constants.Launcher.kRollerSpeeds[i].speed();
-    }  
   }
 
   @Override
@@ -63,16 +51,6 @@ public class LauncherRollerSubsystem extends SubsystemBase {
       m_bottomRollerMotor.set(0.0);
     })
     .withName("RunLauncherRollers");
-  }
-
-  public LauncherRollerSpeeds getSpeedsForArmPosition(Supplier<Double> distance) {
-    double speed = Utils.getLinearInterpolation(m_distances, m_speeds, distance.get());
-    SmartDashboard.putNumber("CalculatedLauncherSpeed", speed);
-
-    double result = Utils.isValueBetween(speed, 0.0, Constants.Launcher.kArmMotorMaxOutput) 
-    ? speed 
-    : 0.8;
-    return new LauncherRollerSpeeds(result, result);
   }
 
   public void reset() {

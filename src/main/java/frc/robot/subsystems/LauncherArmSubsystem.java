@@ -61,6 +61,16 @@ public class LauncherArmSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
+  public Command alignManualCommand(Supplier<Double> speed) {
+    return 
+    run(() -> {
+      m_armMotor.set(speed.get() * 0.5);
+    })
+    .beforeStarting(() -> m_isAlignedToTarget = false)
+    .finallyDo(() -> { reset(); })
+    .withName("AlignLauncherArmManual");
+  }
+
   public Command alignToPositionCommand(double position) {
     return 
     run(() -> { 
@@ -72,17 +82,10 @@ public class LauncherArmSubsystem extends SubsystemBase {
     .withName("AlignLauncherArmToPosition");
   }
 
-  // TODO: optimize to use alignToPositionCommand and decorating with only the until predicate for target alignment
   public Command alignToPositionAutoCommand(double position) {
     return 
-    run(() -> { 
-      m_armPIDController.setReference(position, ControlType.kSmartMotion); 
-      m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) <= Constants.Launcher.kArmTargetAlignmentPositionTolerance;
-    })
-    .beforeStarting(() -> m_isAlignedToTarget = false)
-    .until(() -> m_isAlignedToTarget)
-    .finallyDo(() -> { reset(); })
-    .withName("AlignLauncherArmToPosition");
+    alignToPositionAutoCommand(position)
+    .until(() -> m_isAlignedToTarget);
   }
   
   public Command alignToTargetCommand(Supplier<Double> targetDistance) {
@@ -97,18 +100,10 @@ public class LauncherArmSubsystem extends SubsystemBase {
     .withName("AlignLauncherArmToTarget");
   }
 
-  // TODO: optimize to use alignToTargetCommand and decorating with only the until predicate for target alignment
   public Command alignToTargetAutoCommand(Supplier<Double> targetDistance) {
     return
-    run(() -> {
-      double position = calculatePositionForTarget(targetDistance.get()); 
-      m_armPIDController.setReference(position, ControlType.kSmartMotion);
-      m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < Constants.Launcher.kArmTargetAlignmentPositionTolerance;
-    })
-    .beforeStarting(() -> m_isAlignedToTarget = false)
-    .until(() -> m_isAlignedToTarget)
-    .finallyDo(() -> { reset(); })
-    .withName("AlignLauncherArmToTarget");
+    alignToTargetCommand(targetDistance)
+    .until(() -> m_isAlignedToTarget);
   }
 
   private double calculatePositionForTarget(double distance) {
@@ -118,16 +113,6 @@ public class LauncherArmSubsystem extends SubsystemBase {
     Utils.isValueBetween(position, Constants.Launcher.kArmMotorReverseSoftLimit, Constants.Launcher.kArmMotorForwardSoftLimit) 
       ? position 
       : Constants.Launcher.kArmPositionSubwoofer;
-  }
-
-  public Command alignManualCommand(Supplier<Double> speed) {
-    return 
-    run(() -> {
-      m_armMotor.set(speed.get() * 0.5);
-    })
-    .beforeStarting(() -> m_isAlignedToTarget = false)
-    .finallyDo(() -> { reset(); })
-    .withName("AlignLauncherArmManual");
   }
 
   public double getArmPosition() {

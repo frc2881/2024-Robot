@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.sensors.BeamBreakSensor;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -50,12 +49,10 @@ public class GameCommands {
     m_operatorControlller = operatorControlller;
   }
 
-  // TODO: change from raceWith to deadlineWith for proper intended use of the command composition type
-
   public Command runIntakeCommand() {
     return 
     m_intakeSubsystem.runIntakeCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-    .raceWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
+    .deadlineWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
     .andThen(
       new WaitCommand(0.05),
       m_intakeSubsystem.runAdjustNotePositionCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
@@ -67,7 +64,7 @@ public class GameCommands {
   public Command runIntakeAutoCommand() {
     return 
     m_intakeSubsystem.runIntakeAutoCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
-    .raceWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
+    .deadlineWith(m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionIntake))
     .andThen(
       new WaitCommand(0.05),
       m_intakeSubsystem.runAdjustNotePositionCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
@@ -132,7 +129,7 @@ public class GameCommands {
 
   public Command alignLauncherForShuttleCommand() {
     return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.60, 0.60)),
+      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kShuttleLauncherSpeeds),
       Commands.sequence(
         alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionShuttle)
       )
@@ -142,7 +139,7 @@ public class GameCommands {
 
   public Command runLauncherCommand() {
     return 
-    m_launcherRollerSubsystem.runCommand(() -> m_launcherRollerSubsystem.getSpeedsForArmPosition(m_poseSubsystem::getTargetDistance))
+    m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kDefaultLauncherSpeeds)
     .alongWith(
       Commands.waitSeconds(0.5)
       .andThen(m_intakeSubsystem.runLaunchCommand())
@@ -159,6 +156,7 @@ public class GameCommands {
     return 
     m_intakeSubsystem.runLaunchCommand()
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
+    .until(() -> !m_launcherBottomBeamBreakSensor.hasTarget() && !m_launcherTopBeamBreakSensor.hasTarget())
     .finallyDo(() -> { 
       m_driveSubsystem.clearTargetAlignment();
       m_launcherArmSubsystem.clearTargetAlignment(); 
@@ -184,18 +182,6 @@ public class GameCommands {
   public Command runLauncherForShuttleCommand() {
     return runLauncherAutoCommand()
     .withName("RunLauncherForShuttle");
-  }
-
-  public Command moveToClimbCommand() {
-    return 
-    m_climberSubsystem.moveArmToPositionCommand(Constants.Climber.kArmMotorForwardSoftLimit)
-    .withName("MoveToClimb");
-  }
-
-  public Command climbCommand() {
-    return 
-    m_climberSubsystem.moveArmToPositionCommand(0.0)
-    .withName("Climb");
   }
 
   public Command rumbleControllersCommand(boolean isDriverRumbleEnabled, boolean isRumbleOperatorEnabled) {

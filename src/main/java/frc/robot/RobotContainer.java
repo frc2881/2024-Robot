@@ -122,8 +122,6 @@ public class RobotContainer {
 
     m_autoCommands = new AutoCommands(
       m_gameCommands, 
-      m_launcherBottomBeamBreakSensor, 
-      m_launcherTopBeamBreakSensor, 
       m_driveSubsystem, 
       m_poseSubsystem,  
       m_intakeSubsystem, 
@@ -143,17 +141,17 @@ public class RobotContainer {
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
     m_driverController.leftTrigger().whileTrue(m_gameCommands.alignLauncherForShuttleCommand());
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand());
-    //m_driverController.leftBumper().whileTrue();
+    // m_driverController.leftBumper().whileTrue();
     m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
-    // m_driverController.rightStick().whileTrue(Commands.none());
+    m_driverController.rightStick().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     // m_driverController.povLeft().whileTrue(Commands.none());
     // m_driverController.povUp().whileTrue(Commands.none()); 
     // m_driverController.povRight().whileTrue(Commands.none());
     // m_driverController.povDown().whileTrue(Commands.none()); 
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
-    m_driverController.b().whileTrue(m_gameCommands.moveToClimbCommand());
-    m_driverController.y().whileTrue(m_gameCommands.climbCommand());
+    // m_driverController.b().whileTrue(Commands.none());
+    // m_driverController.y().whileTrue(Commands.none());
     m_driverController.x().whileTrue(m_gameCommands.runLauncherForShuttleCommand());
     m_driverController.start().onTrue(m_gyroSensor.calibrateCommand());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
@@ -162,7 +160,7 @@ public class RobotContainer {
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
-    //m_operatorController.rightBumper().whileTrue(Commands.none());
+    // m_operatorController.rightBumper().whileTrue(Commands.none());
     m_operatorController.leftTrigger().whileTrue(m_gameCommands.runLauncherForAmpCommand());
     m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(true));
     // m_operatorController.leftStick().whileTrue(Commands.none());
@@ -174,21 +172,29 @@ public class RobotContainer {
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand(true)); 
     m_operatorController.y().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
     m_operatorController.b().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
-    //m_operatorController.x().whileTrue(Commands.none());
+    // m_operatorController.x().whileTrue(Commands.none());
     m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.back().whileTrue(m_climberSubsystem.resetCommand());
   }
 
   private void configureTriggers() {
-    // TODO: add new trigger for light mode when intake is loaded and ready
-
-    new Trigger(() -> 
-      m_driveSubsystem.isAlignedToTarget() && 
-      m_launcherArmSubsystem.isAlignedToTarget() &&
-      m_launcherBottomBeamBreakSensor.hasTarget() &&
-      !m_launcherTopBeamBreakSensor.hasTarget())
-      .onTrue(Commands.runOnce(() -> { m_lightsController.setLightsMode(LightsMode.LaunchReady); }))
-      .onFalse(Commands.runOnce(() -> { m_lightsController.setLightsMode(LightsMode.Default); }));
+    new Trigger(
+      () -> m_launcherBottomBeamBreakSensor.hasTarget())
+      .onTrue(Commands.runOnce(() -> { 
+        LightsMode lightsMode = LightsMode.IntakeReady;
+        if (m_launcherTopBeamBreakSensor.hasTarget()) {
+          lightsMode = LightsMode.IntakeNotReady;
+        } else {
+          if (m_driveSubsystem.isAlignedToTarget() && m_launcherArmSubsystem.isAlignedToTarget()) {
+            lightsMode = LightsMode.LaunchReady;
+          }
+        }
+        m_lightsController.setLightsMode(lightsMode);        
+      }).ignoringDisable(true))
+      .onFalse(Commands.runOnce(() -> { 
+        m_lightsController.setLightsMode(LightsMode.Default); 
+      }).ignoringDisable(true)
+    );
   }
 
   private void configureAutos() {
@@ -210,22 +216,21 @@ public class RobotContainer {
 
     PathfindingCommand.warmupCommand().schedule();
 
-    // TODO: update naming conventions to work more easily with driver station dashboard selections
     m_autoChooser.setDefaultOption("None", Commands.none());
-    m_autoChooser.addOption("[1]_0_1", m_autoCommands.backupScorePickup1());
-    m_autoChooser.addOption("[1]_0_1_4", m_autoCommands.backupScorePickup14());
-    m_autoChooser.addOption("[1]_0_1_5", m_autoCommands.backupScorePickup15());
-    m_autoChooser.addOption("[2]_0_2", m_autoCommands.backupScorePickup2());
-    m_autoChooser.addOption("[2]_0_2_4", m_autoCommands.backupScorePickup24());
-    m_autoChooser.addOption("[2]_0_2_5", m_autoCommands.backupScorePickup25());
-    m_autoChooser.addOption("[2]_0_2_6", m_autoCommands.backupScorePickup26());
-    m_autoChooser.addOption("[3]_0_3", m_autoCommands.backupScorePickup3());
-    m_autoChooser.addOption("[3]_0_3_8", m_autoCommands.backupScorePickup38());
-    m_autoChooser.addOption("[1]0_1", m_autoCommands.scorePickup1());
-    m_autoChooser.addOption("[2]0_2", m_autoCommands.scorePickup2());
-    m_autoChooser.addOption("[3]0_3", m_autoCommands.scorePickup3());
-    m_autoChooser.addOption("[3]0_", m_autoCommands.scoreMoveout3());
-    m_autoChooser.addOption("[3]0", m_autoCommands.scoreSubwooferAuto());
+    m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands.backupScorePickup1());
+    m_autoChooser.addOption("[ 1 ] _0_1_4", m_autoCommands.auto_1_0_1_4());
+    m_autoChooser.addOption("[ 1 ] _0_1_5", m_autoCommands.backupScorePickup15());
+    m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands.backupScorePickup2());
+    m_autoChooser.addOption("[ 2 ] _0_2_4", m_autoCommands.backupScorePickup24());
+    m_autoChooser.addOption("[ 2 ] _0_2_5", m_autoCommands.backupScorePickup25());
+    m_autoChooser.addOption("[ 2 ] _0_2_6", m_autoCommands.backupScorePickup26());
+    m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands.backupScorePickup3());
+    m_autoChooser.addOption("[ 3 ] _0_3_8", m_autoCommands.backupScorePickup38());
+    m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands.scorePickup1());
+    m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands.scorePickup2());
+    m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands.scorePickup3());
+    m_autoChooser.addOption("[ 3 ] 0_", m_autoCommands.scoreMoveout3());
+    m_autoChooser.addOption("[ 3 ] 0", m_autoCommands.scoreSubwooferAuto());
     
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }

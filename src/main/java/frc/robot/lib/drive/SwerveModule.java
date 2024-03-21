@@ -1,8 +1,6 @@
 package frc.robot.lib.drive;
 
-import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
@@ -15,11 +13,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.lib.common.Utils;
 import frc.robot.lib.common.Enums.SwerveModuleLocation;
-import frc.robot.lib.logging.Logger;
 import frc.robot.Constants;
 
 public class SwerveModule implements Sendable {
@@ -61,11 +56,8 @@ public class SwerveModule implements Sendable {
 
   private void setDrivingMotorParams() {
     m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionConversionFactor);
-    Utils.checkForREVSparkError(m_drivingEncoder.getPositionConversionFactor() != Constants.Drive.SwerveModule.kDrivingEncoderPositionConversionFactor);
     m_drivingEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderVelocityConversionFactor);
-    Utils.checkForREVSparkError(m_drivingEncoder.getVelocityConversionFactor() == Constants.Drive.SwerveModule.kDrivingEncoderVelocityConversionFactor);
     m_drivingPIDController.setP(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.P());
-    Utils.checkForREVSparkError(m_drivingPIDController.getP() != Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.P());
     m_drivingPIDController.setI(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.I());
     m_drivingPIDController.setD(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.D());
     m_drivingPIDController.setFF(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.FF());
@@ -76,13 +68,9 @@ public class SwerveModule implements Sendable {
 
   private void setTurningMotorParams() {
     m_turningEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderPositionConversionFactor);
-    Utils.checkForREVSparkError(m_turningEncoder.getPositionConversionFactor() != Constants.Drive.SwerveModule.kTurningEncoderPositionConversionFactor);
     m_turningEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderVelocityConversionFactor);
-    Utils.checkForREVSparkError(m_turningEncoder.getVelocityConversionFactor() != Constants.Drive.SwerveModule.kTurningEncoderVelocityConversionFactor);
     m_turningEncoder.setInverted(Constants.Drive.SwerveModule.kTurningEncoderInverted);
-    Utils.checkForREVSparkError(m_turningEncoder.getInverted() != Constants.Drive.SwerveModule.kTurningEncoderInverted);
     m_turningPIDController.setP(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.P());
-    Utils.checkForREVSparkError(m_turningPIDController.getP() != Constants.Drive.SwerveModule.kTurningMotorPIDConstants.P());
     m_turningPIDController.setI(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.I());
     m_turningPIDController.setD(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.D());
     m_turningPIDController.setFF(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.FF());
