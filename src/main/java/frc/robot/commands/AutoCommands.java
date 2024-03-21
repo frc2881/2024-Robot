@@ -4,13 +4,13 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants;
 import frc.robot.Robot;
-import frc.robot.lib.common.Records.LauncherRollerSpeeds;
+import frc.robot.lib.common.Enums.AutoPath;
+import frc.robot.lib.common.Enums.AutoPose;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
@@ -42,9 +42,15 @@ public class AutoCommands {
   }
 
   // TODO: migate all note pickup paths to use pathFindThenFollowPath methods and only use pathFindToPose for initial move out and preload scoring
-  // TODO: move the run intake command to use race/deadline for running a path in parallel where if the intake successfully gets a note, the path can immediately stop and transition into alignment/scoring (no need waste time completing the path)
-  // TODO: construct all commands to use race/deadline with the full auto sequence as first command and parallel run of launcher rollers (which will end at the completion of the sequence)
   // TODO: add timeouts to note pickup/scoring sequences that allows to move on to next pickup/score option if the note pickup is missed
+
+  private PathPlannerPath path(AutoPath autoPath) {
+    return Constants.Game.Auto.kPaths.get(autoPath);
+  }
+
+  private Pose2d pose(AutoPose autoPose) {
+    return Constants.Game.Auto.kPoses.get(autoPose);
+  }
 
   private Command pathFindToPose(Pose2d pose) {
     return 
@@ -54,6 +60,18 @@ public class AutoCommands {
       () -> Robot.getAlliance() == Alliance.Blue
     )
     .withName("PathFindToPose");
+  }
+
+  private Command move(PathPlannerPath path) {
+    return
+    AutoBuilder.pathfindThenFollowPath(path, Constants.Drive.kPathFindingConstraints)
+    .withName("MoveWithPath");
+  }
+
+  private Command move(Pose2d pose) {
+    return
+    pathFindToPose(pose)
+    .withName("MoveToPose");
   }
 
   private Command pickup(PathPlannerPath path) {
@@ -67,273 +85,122 @@ public class AutoCommands {
     return
     m_gameCommmands.runIntakeAutoCommand()
     .deadlineWith(pathFindToPose(pose))
-    .withName("PickupWithPose");
+    .withName("PickupAtPose");
   }
 
-  private Command move(PathPlannerPath path) {
-    return
-    AutoBuilder.pathfindThenFollowPath(path, Constants.Drive.kPathFindingConstraints)
-    .withName("MoveWithPath");
-  }
-
-  private Command move(Pose2d pose) {
-    return
-    pathFindToPose(pose)
-    .withName("MoveWithPose");
-  }
-
-  private Command run() {
-    return
-    m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kDefaultLauncherSpeeds);
-  }
-
-  private Command launch() {
+  private Command score() {
     return
     m_gameCommmands.alignRobotToTargetCommand()
     .alongWith(m_gameCommmands.alignLauncherToTargetAutoCommand())
     .withTimeout(2.0)
     .andThen(m_gameCommmands.runLauncherAutoCommand())
-    .withName("AlignToTargetAndLaunch");
+    .withName("ScoreDynamicPosition");
+  }
+
+  public Command score(double launcherArmPosition) {
+    return 
+    m_gameCommmands.alignLauncherToPositionAutoCommand(launcherArmPosition)
+    .withTimeout(2.0)
+    .andThen(m_gameCommmands.runLauncherAutoCommand())
+    .withName("ScoreFixedPosition");
+  }
+
+  private Command run() {
+    return
+    m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kDefaultLauncherSpeeds)
+    .withName("RunLauncherRollers");
   }
 
   // ============================================================
 
-  public Command backupScorePickup1() {
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      Commands.sequence(
-        pathFindToPose(Constants.Game.Auto.kNoteScoringPoses.get("Preload1")),
-        launch(),
-        Commands.parallel(
-          pathFindToPose(Constants.Game.Auto.Waypoints.kNote1Poses.notePickupPose()),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        launch()
-      )
-    )
-    .withName("BackupScorePickup1");
+  public Command auto_0() {
+    return 
+    score(Constants.Launcher.kArmPositionSubwoofer)
+    .deadlineWith(run())
+    .withName("Auto_0");
   } 
 
-  public Command backupScorePickup2() {
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      Commands.sequence(
-        pathFindToPose(Constants.Game.Auto.kNoteScoringPoses.get("Preload2")),
-        launch(),
-        Commands.parallel(
-          pathFindToPose(Constants.Game.Auto.Waypoints.kNote2Poses.notePickupPose()),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        launch()
-      )
+  public Command auto_10_1() {
+    return 
+    Commands.sequence(
+      score(Constants.Launcher.kArmPositionSubwoofer),
+      pickup(pose(AutoPose.Pickup1)),
+      score()
     )
-    .withName("BackupScorePickup2");
-  } 
+    .deadlineWith(run())
+    .withName("Auto_10_1");
+  }
 
-  public Command backupScorePickup3() {
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      Commands.sequence(
-        pathFindToPose(Constants.Game.Auto.kNoteScoringPoses.get("Preload3")),
-        launch(),
-        Commands.parallel(
-          pathFindToPose(Constants.Game.Auto.Waypoints.kNote3Poses.notePickupPose()),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        launch()
-      )
+  public Command auto_1_0_1() {
+    return 
+    Commands.sequence(
+      move(pose(AutoPose.ScorePreload1)),
+      score(),
+      pickup(pose(AutoPose.Pickup1)),
+      score()
     )
-    .withName("BackupScorePickup3");
+    .deadlineWith(run())
+    .withName("Auto_1_0_1");
   } 
 
   public Command auto_1_0_1_4() {
     return 
     Commands.sequence(
-      move(Constants.Game.Auto.kNoteScoringPoses.get("Preload1")),
-      launch(),
-      pickup(Constants.Game.Auto.Waypoints.kNote1Poses.notePickupPose()),
-      launch(), 
-      pickup(Constants.Game.Auto.kNotePickupPaths.get("Pickup4")),
-      move(Constants.Game.Auto.kNoteScoringPaths.get("ScoreStage1")),
-      launch()
+      move(pose(AutoPose.ScorePreload1)),
+      score(),
+      pickup(pose(AutoPose.Pickup1)),
+      score(), 
+      pickup(path(AutoPath.Pickup4)),
+      move(path(AutoPath.ScoreStage1)),
+      score()
     )
     .deadlineWith(run())
     .withName("Auto_1_0_1_4");
   } 
 
-  public Command backupScorePickup15() {
-    PathPlannerPath pathToPickup5 = PathPlannerPath.fromPathFile("Pickup5");
-    PathPlannerPath pathToScoreStage = PathPlannerPath.fromPathFile("ScoreStage1");
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      Commands.sequence(
-        pathFindToPose(Constants.Game.Auto.kNoteScoringPoses.get("Preload1")),
-        launch(),
-        Commands.parallel(
-          pathFindToPose(Constants.Game.Auto.Waypoints.kNote1Poses.notePickupPose()),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        launch(), 
-        Commands.parallel(
-          AutoBuilder.pathfindThenFollowPath(pathToPickup5, Constants.Drive.kPathFindingConstraints),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        AutoBuilder.pathfindThenFollowPath(pathToScoreStage, Constants.Drive.kPathFindingConstraints),
-        launch()
-      )
+  public Command auto_20_2() {
+    return 
+    Commands.sequence(
+      score(Constants.Launcher.kArmPositionSubwoofer),
+      pickup(pose(AutoPose.Pickup2)),
+      score()
     )
-    .withName("BackupShootPickup15");
-  } 
-
-  public Command backupScorePickup24() {
-    PathPlannerPath pathToPickup4 = PathPlannerPath.fromPathFile("Pickup4");
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      Commands.sequence(
-        pathFindToPose(Constants.Game.Auto.kNoteScoringPoses.get("Preload2")),
-        launch(),
-        Commands.parallel(
-          pathFindToPose(Constants.Game.Auto.Waypoints.kNote2Poses.notePickupPose()),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        launch(),
-        Commands.parallel(
-          AutoBuilder.pathfindThenFollowPath(pathToPickup4, Constants.Drive.kPathFindingConstraints),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        pathFindToPose(Constants.Game.Auto.Waypoints.kNote4Poses.noteScorePose()),
-        launch()
-      )
-    )
-    .withName("BackupShootPickup24");
-  } 
-
-  public Command backupScorePickup25() {
-    PathPlannerPath pathToPickup5 = PathPlannerPath.fromPathFile("Pickup5");
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      Commands.sequence(
-        pathFindToPose(Constants.Game.Auto.kNoteScoringPoses.get("Preload2")),
-        launch(),
-        Commands.parallel(
-          pathFindToPose(Constants.Game.Auto.Waypoints.kNote2Poses.notePickupPose()),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        launch(), 
-        Commands.parallel(
-          AutoBuilder.pathfindThenFollowPath(pathToPickup5, Constants.Drive.kPathFindingConstraints),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        pathFindToPose(Constants.Game.Auto.Waypoints.kNote5Poses.noteScorePose()),
-        launch()
-      )
-    )
-    .withName("BackupShootPickup25");
-  } 
-
-  public Command backupScorePickup26() {
-    PathPlannerPath pathToPickup6 = PathPlannerPath.fromPathFile("Pickup6");
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      Commands.sequence(
-        pathFindToPose(Constants.Game.Auto.kNoteScoringPoses.get("Preload2")),
-        launch(),
-        Commands.parallel(
-          pathFindToPose(Constants.Game.Auto.Waypoints.kNote2Poses.notePickupPose()),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        launch(),
-        Commands.parallel(
-          AutoBuilder.pathfindThenFollowPath(pathToPickup6, Constants.Drive.kPathFindingConstraints),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        pathFindToPose(Constants.Game.Auto.Waypoints.kNote6Poses.noteScorePose()),
-        launch()
-      )
-    )
-    .withName("BackupShootPickup25");
-  } 
-
-  public Command backupScorePickup38() {
-    PathPlannerPath pathToPickup8 = PathPlannerPath.fromPathFile("Pickup8");
-    return Commands.parallel(
-      m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.8, 0.8)),
-      Commands.sequence(
-        pathFindToPose(Constants.Game.Auto.kNoteScoringPoses.get("Preload3")),
-        launch(),
-        Commands.parallel(
-          pathFindToPose(Constants.Game.Auto.Waypoints.kNote3Poses.notePickupPose()),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        launch(),
-        Commands.parallel(
-          AutoBuilder.pathfindThenFollowPath(pathToPickup8, Constants.Drive.kPathFindingConstraints),
-          m_gameCommmands.runIntakeAutoCommand()
-        ),
-        pathFindToPose(Constants.Game.Auto.Waypoints.kNote8Poses.noteScorePose()),
-        launch()
-      )
-    )
-    .withName("BackupShootPickup25");
-  } 
-
-  public Command scorePickup1() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup1");
-    return Commands
-    .sequence(
-      scoreSubwooferAuto(),
-      Commands.parallel(
-        AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints),
-        m_gameCommmands.runIntakeAutoCommand()
-      ),
-      launch()
-    )
-    .withName("ScorePickup1");
-  } 
-
-  public Command scorePickup2() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup2");
-    return Commands
-    .sequence(
-      scoreSubwooferAuto(),
-      Commands.parallel(
-        AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints),
-        m_gameCommmands.runIntakeAutoCommand()
-      ),
-      launch()
-    )
-    .withName("ScorePickup2");
-  } 
-
-  public Command scorePickup3() {
-    PathPlannerPath path1 = PathPlannerPath.fromPathFile("Pickup3");
-    return Commands
-    .sequence(
-      scoreSubwooferAuto(),
-      Commands.parallel(
-        AutoBuilder.pathfindThenFollowPath(path1, Constants.Drive.kPathFindingConstraints),
-        m_gameCommmands.runIntakeAutoCommand()
-      ),
-      launch()
-    )
-    .withName("ScorePickup3");
-  } 
-
-  public Command scoreMoveout3() {
-    return Commands
-    .sequence(
-      scoreSubwooferAuto(),
-      pathFindToPose(new Pose2d(2.75, 2.75, Rotation2d.fromDegrees(0)))
-    )
-    .withName("ScoreMoveout3");
-  } 
-
-  public Command scoreSubwooferAuto() {
-    return m_gameCommmands.alignLauncherToPositionAutoCommand(Constants.Launcher.kArmPositionSubwoofer)
-    .withTimeout(1.0)
-    .andThen(
-      m_gameCommmands.runLauncherAutoCommand()
-    )
-    .withName("ScoreSubwooferAuto");
+    .deadlineWith(run())
+    .withName("Auto_20_2");
   }
+
+  public Command auto_2_0_2() {
+    return 
+    Commands.sequence(
+      move(pose(AutoPose.ScorePreload2)),
+      score(),
+      pickup(pose(AutoPose.Pickup2)),
+      score()
+    )
+    .deadlineWith(run())
+    .withName("Auto_2_0_2");
+  } 
+
+  public Command auto_30_3() {
+    return 
+    Commands.sequence(
+      score(Constants.Launcher.kArmPositionSubwoofer),
+      pickup(pose(AutoPose.Pickup3)),
+      score()
+    )
+    .deadlineWith(run())
+    .withName("Auto_20_2");
+  }
+
+  public Command auto_3_0_3() {
+    return 
+    Commands.sequence(
+      move(pose(AutoPose.ScorePreload3)),
+      score(),
+      pickup(pose(AutoPose.Pickup3)),
+      score()
+    )
+    .deadlineWith(run())
+    .withName("Auto_3_0_3");
+  } 
 }

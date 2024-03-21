@@ -28,6 +28,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.CalibrationTime;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.SPI;
+import frc.robot.lib.common.Enums.AutoPath;
+import frc.robot.lib.common.Enums.AutoPose;
 import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.common.Records.LauncherArmPosition;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
@@ -294,69 +296,31 @@ public final class Constants {
     }
 
     public static final class Auto {
-      public static final Map<String, Pose2d> kNoteScoringPoses = Map.ofEntries(
-        entry("Preload1", new Pose2d(1.85, 6.70, Rotation2d.fromDegrees(0))),
-        entry("Preload2", new Pose2d(1.85, 5.50, Rotation2d.fromDegrees(0))),
-        entry("Preload3", new Pose2d(1.85, 3.8, Rotation2d.fromDegrees(0)))
+      public static final Map<AutoPose, Pose2d> kPoses = Map.ofEntries(
+        entry(AutoPose.ScorePreload1, new Pose2d(1.85, 6.70, Rotation2d.fromDegrees(0))),
+        entry(AutoPose.ScorePreload2, new Pose2d(1.85, 5.50, Rotation2d.fromDegrees(0))),
+        entry(AutoPose.ScorePreload3, new Pose2d(1.85, 3.8, Rotation2d.fromDegrees(0))),
+        entry(AutoPose.Pickup1, new Pose2d(3.30, 6.90, Rotation2d.fromDegrees(0))),
+        entry(AutoPose.Pickup2, new Pose2d(3.30, 5.50, Rotation2d.fromDegrees(0))),
+        entry(AutoPose.Pickup3, new Pose2d(2.80, 4.10, Rotation2d.fromDegrees(0)))
       );
 
-      // TODO: make scoring paths for near side (1), center/under (2), far side (3) of stage alignment (for use with second level note 4-8 pickups)
-      public static final Map<String, PathPlannerPath> kNoteScoringPaths = Map.ofEntries(
-        entry("ScoreStage1", PathPlannerPath.fromPathFile("ScoreStage1"))
-        // entry("ScoreStage2", PathPlannerPath.fromPathFile("ScoreStage2"))
-        // entry("ScoreStage3", PathPlannerPath.fromPathFile("ScoreStage3"))
+      public static final Map<AutoPath, PathPlannerPath> kPaths = Map.ofEntries(
+        entry(AutoPath.Pickup1, PathPlannerPath.fromPathFile("Pickup1")), // TODO: validate/fix pickup 1 path
+        entry(AutoPath.Pickup2, PathPlannerPath.fromPathFile("Pickup2")), // TODO: validate/fix pickup 2 path
+        entry(AutoPath.Pickup3, PathPlannerPath.fromPathFile("Pickup3")), // TODO: validate/fix pickup 3 path
+        entry(AutoPath.Pickup4, PathPlannerPath.fromPathFile("Pickup4")),
+        entry(AutoPath.Pickup5, PathPlannerPath.fromPathFile("Pickup5")), // TODO: validate pickup 5 path
+        entry(AutoPath.Pickup6, PathPlannerPath.fromPathFile("Pickup6")), // TODO: validate pickup 6 path
+        // entry(AutoPath.Pickup7, PathPlannerPath.fromPathFile("Pickup7")), // TODO: create pickup 7 path
+        entry(AutoPath.Pickup8, PathPlannerPath.fromPathFile("Pickup8")), // TODO: validate pickup 8 path
+        entry(AutoPath.ScoreStage1, PathPlannerPath.fromPathFile("ScoreStage1"))
+        // entry(AutoPath.ScoreStage2, PathPlannerPath.fromPathFile("ScoreStage2")), // TODO: create score stage 2 path
+        // entry(AutoPath.ScoreStage3, PathPlannerPath.fromPathFile("ScoreStage3")), // TODO: create score stage 3 path
+        // entry(AutoPath.MoveOut1, PathPlannerPath.fromPathFile("MoveOut1")), // TODO: create move out 1 path
+        // entry(AutoPath.MoveOut2, PathPlannerPath.fromPathFile("MoveOut2")), // TODO: create move out 2 path
+        // entry(AutoPath.MoveOut3, PathPlannerPath.fromPathFile("MoveOut3")) // TODO: create move out 3 path
       );
-
-      public static final Map<String, PathPlannerPath> kNotePickupPaths = Map.ofEntries(
-        entry("Pickup1", PathPlannerPath.fromPathFile("Pickup1")), // TODO: validate/fix pickup 1 path
-        entry("Pickup2", PathPlannerPath.fromPathFile("Pickup2")), // TODO: validate/fix pickup 2 path
-        entry("Pickup3", PathPlannerPath.fromPathFile("Pickup3")), // TODO: validate/fix pickup 3 path
-        entry("Pickup4", PathPlannerPath.fromPathFile("Pickup4")),
-        entry("Pickup5", PathPlannerPath.fromPathFile("Pickup5")), // TODO: validate pickup 5 path
-        entry("Pickup6", PathPlannerPath.fromPathFile("Pickup6")), // TODO: validate pickup 6 path
-        // entry("Pickup7", PathPlannerPath.fromPathFile("Pickup7")), TODO: make a pickup 7 path
-        entry("Pickup8", PathPlannerPath.fromPathFile("Pickup8")) // TODO: validate pickup 8 path
-      );
-
-      // TODO: make move out paths for near side (1), center/under (2), far side (3) of stage alignment (for use when only moving out after preload scoring at subwoofer)
-      public static final Map<String, PathPlannerPath> kMoveOutPaths = Map.ofEntries(
-        //entry("MoveOut1", PathPlannerPath.fromPathFile("MoveOut1"))
-      );
-
-      // TODO: remove these waypoints after converting to planned paths for pickup and scoring
-      public static final class Waypoints {
-        public static final AutoPoses kNote1Poses = new AutoPoses(
-          new Pose2d(3.30, 6.90, Rotation2d.fromDegrees(0)), 
-          new Pose2d(3.30, 6.90, Rotation2d.fromDegrees(0)));
-
-        public static final AutoPoses kNote2Poses = new AutoPoses(
-          new Pose2d(3.10, 5.50, Rotation2d.fromDegrees(0)), 
-          new Pose2d(3.10, 5.50, Rotation2d.fromDegrees(0)));
-
-        public static final AutoPoses kNote3Poses = new AutoPoses(
-          new Pose2d(2.70, 4.10, Rotation2d.fromDegrees(0)), 
-          new Pose2d(2.70, 4.10, Rotation2d.fromDegrees(0)));
-
-        public static final AutoPoses kNote4Poses = new AutoPoses(
-          new Pose2d(8.25, 7.40, Rotation2d.fromDegrees(0)), 
-          new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
-
-        public static final AutoPoses kNote5Poses = new AutoPoses(
-          new Pose2d(8.25, 5.75, Rotation2d.fromDegrees(0)), 
-          new Pose2d(5.37, 6.15, Rotation2d.fromDegrees(0)));
-
-        public static final AutoPoses kNote6Poses = new AutoPoses(
-          new Pose2d(8.25, 4.08, Rotation2d.fromDegrees(0)), 
-          new Pose2d(4.19, 5.07, Rotation2d.fromDegrees(0)));
-
-        public static final AutoPoses kNote7Poses = new AutoPoses(
-          new Pose2d(8.25, 2.43, Rotation2d.fromDegrees(0)), 
-          new Pose2d(4.19, 5.07, Rotation2d.fromDegrees(0)));
-
-        public static final AutoPoses kNote8Poses = new AutoPoses(
-          new Pose2d(8.25, 0.76, Rotation2d.fromDegrees(0)), 
-          new Pose2d(5.37, 1.75, Rotation2d.fromDegrees(0)));
-      }
     }
   }
 }

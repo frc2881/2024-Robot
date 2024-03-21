@@ -217,21 +217,20 @@ public class RobotContainer {
     PathfindingCommand.warmupCommand().schedule();
 
     m_autoChooser.setDefaultOption("None", Commands.none());
-    m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands.backupScorePickup1());
+
+    m_autoChooser.addOption("[ 1 ] 0", m_autoCommands.auto_0());
+    m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands.auto_10_1());
+    m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands.auto_1_0_1());
     m_autoChooser.addOption("[ 1 ] _0_1_4", m_autoCommands.auto_1_0_1_4());
-    m_autoChooser.addOption("[ 1 ] _0_1_5", m_autoCommands.backupScorePickup15());
-    m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands.backupScorePickup2());
-    m_autoChooser.addOption("[ 2 ] _0_2_4", m_autoCommands.backupScorePickup24());
-    m_autoChooser.addOption("[ 2 ] _0_2_5", m_autoCommands.backupScorePickup25());
-    m_autoChooser.addOption("[ 2 ] _0_2_6", m_autoCommands.backupScorePickup26());
-    m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands.backupScorePickup3());
-    m_autoChooser.addOption("[ 3 ] _0_3_8", m_autoCommands.backupScorePickup38());
-    m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands.scorePickup1());
-    m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands.scorePickup2());
-    m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands.scorePickup3());
-    m_autoChooser.addOption("[ 3 ] 0_", m_autoCommands.scoreMoveout3());
-    m_autoChooser.addOption("[ 3 ] 0", m_autoCommands.scoreSubwooferAuto());
-    
+
+    m_autoChooser.addOption("[ 2 ] 0", m_autoCommands.auto_0());
+    m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands.auto_20_2());
+    m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands.auto_2_0_2());
+
+    m_autoChooser.addOption("[ 3 ] 0", m_autoCommands.auto_0());
+    m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands.auto_30_3());
+    m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands.auto_3_0_3());
+
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }
 
