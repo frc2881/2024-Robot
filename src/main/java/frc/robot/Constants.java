@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.lib.common.Enums.AutoPath;
 import frc.robot.lib.common.Enums.AutoPose;
-import frc.robot.lib.common.Records.AutoPoses;
 import frc.robot.lib.common.Records.LauncherArmPosition;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.common.Records.PIDConstants;

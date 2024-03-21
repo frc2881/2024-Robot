@@ -11,34 +11,12 @@ import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.lib.common.Enums.AutoPath;
 import frc.robot.lib.common.Enums.AutoPose;
-import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LauncherArmSubsystem;
-import frc.robot.subsystems.LauncherRollerSubsystem;
-import frc.robot.subsystems.PoseSubsystem;
 
 public class AutoCommands {
   private final GameCommands m_gameCommmands; 
-  private final DriveSubsystem m_driveSubsystem;
-  private final PoseSubsystem m_poseSubsystem;
-  private final IntakeSubsystem m_intakeSubsystem;
-  private final LauncherArmSubsystem m_launcherArmSubsystem;
-  private final LauncherRollerSubsystem m_launcherRollerSubsystem;
 
-  public AutoCommands(
-    GameCommands gameCommands,
-    DriveSubsystem driveSubsystem, 
-    PoseSubsystem poseSubsystem,
-    IntakeSubsystem intakeSubsystem,
-    LauncherArmSubsystem launcherArmSubsystem,
-    LauncherRollerSubsystem launcherRollerSubsystem
-  ) {
-    m_gameCommmands = gameCommands; 
-    m_driveSubsystem = driveSubsystem;
-    m_poseSubsystem = poseSubsystem;
-    m_intakeSubsystem = intakeSubsystem;
-    m_launcherArmSubsystem = launcherArmSubsystem;
-    m_launcherRollerSubsystem = launcherRollerSubsystem;
+  public AutoCommands(GameCommands gameCommands) {
+    m_gameCommmands = gameCommands;
   }
 
   // TODO: migate all note pickup paths to use pathFindThenFollowPath methods and only use pathFindToPose for initial move out and preload scoring
@@ -52,16 +30,6 @@ public class AutoCommands {
     return Constants.Game.Auto.kPoses.get(autoPose);
   }
 
-  private Command pathFindToPose(Pose2d pose) {
-    return 
-    Commands.either(
-      AutoBuilder.pathfindToPose(pose, Constants.Drive.kPathFindingConstraints),
-      AutoBuilder.pathfindToPoseFlipped(pose, Constants.Drive.kPathFindingConstraints),
-      () -> Robot.getAlliance() == Alliance.Blue
-    )
-    .withName("PathFindToPose");
-  }
-
   private Command move(PathPlannerPath path) {
     return
     AutoBuilder.pathfindThenFollowPath(path, Constants.Drive.kPathFindingConstraints)
@@ -70,21 +38,29 @@ public class AutoCommands {
 
   private Command move(Pose2d pose) {
     return
-    pathFindToPose(pose)
+    Commands.either(
+      AutoBuilder.pathfindToPose(pose, Constants.Drive.kPathFindingConstraints),
+      AutoBuilder.pathfindToPoseFlipped(pose, Constants.Drive.kPathFindingConstraints),
+      () -> Robot.getAlliance() == Alliance.Blue
+    )
     .withName("MoveToPose");
   }
 
   private Command pickup(PathPlannerPath path) {
     return
     m_gameCommmands.runIntakeAutoCommand()
-    .deadlineWith(AutoBuilder.pathfindThenFollowPath(path, Constants.Drive.kPathFindingConstraints))
+    .deadlineWith(move(path))
+    // TODO: configure timeout length for real auto progression and simulated auto runs for testing paths
+    //.withTimeout(3.0)
     .withName("PickupWithPath");
   }
 
   private Command pickup(Pose2d pose) {
     return
     m_gameCommmands.runIntakeAutoCommand()
-    .deadlineWith(pathFindToPose(pose))
+    .deadlineWith(move(pose))
+    // TODO: configure timeout length for real auto progression and simulated auto runs for testing paths
+    //.withTimeout(3.0)
     .withName("PickupAtPose");
   }
 
@@ -92,31 +68,38 @@ public class AutoCommands {
     return
     m_gameCommmands.alignRobotToTargetCommand()
     .alongWith(m_gameCommmands.alignLauncherToTargetAutoCommand())
-    .withTimeout(2.0)
     .andThen(m_gameCommmands.runLauncherAutoCommand())
     .withName("ScoreDynamicPosition");
   }
 
+  // TODO: test that the predicate for subwoofer location only skips the robot alignment and not the launcher also
   public Command score(double launcherArmPosition) {
     return 
-    m_gameCommmands.alignLauncherToPositionAutoCommand(launcherArmPosition)
-    .withTimeout(2.0)
+    m_gameCommmands.alignRobotToTargetCommand()
+    .onlyIf(() -> launcherArmPosition != Constants.Launcher.kArmPositionSubwoofer)
+    .alongWith(m_gameCommmands.alignLauncherToPositionAutoCommand(launcherArmPosition))
     .andThen(m_gameCommmands.runLauncherAutoCommand())
     .withName("ScoreFixedPosition");
   }
 
-  private Command run() {
+  private Command start() {
     return
-    m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kDefaultLauncherSpeeds)
-    .withName("RunLauncherRollers");
+    m_gameCommmands.startLauncherRollersAutoCommand()
+    .withName("StartLauncherRollersAuto");
   }
 
-  // ============================================================
+  /*
+   * ######################################################################
+   * ################################ AUTOS ###############################
+   * ######################################################################
+   */
 
   public Command auto_0() {
     return 
-    score(Constants.Launcher.kArmPositionSubwoofer)
-    .deadlineWith(run())
+    Commands.sequence(
+      score(Constants.Launcher.kArmPositionSubwoofer)
+    )
+    .deadlineWith(start())
     .withName("Auto_0");
   } 
 
@@ -127,7 +110,7 @@ public class AutoCommands {
       pickup(pose(AutoPose.Pickup1)),
       score()
     )
-    .deadlineWith(run())
+    .deadlineWith(start())
     .withName("Auto_10_1");
   }
 
@@ -139,7 +122,7 @@ public class AutoCommands {
       pickup(pose(AutoPose.Pickup1)),
       score()
     )
-    .deadlineWith(run())
+    .deadlineWith(start())
     .withName("Auto_1_0_1");
   } 
 
@@ -154,7 +137,7 @@ public class AutoCommands {
       move(path(AutoPath.ScoreStage1)),
       score()
     )
-    .deadlineWith(run())
+    .deadlineWith(start())
     .withName("Auto_1_0_1_4");
   } 
 
@@ -165,7 +148,7 @@ public class AutoCommands {
       pickup(pose(AutoPose.Pickup2)),
       score()
     )
-    .deadlineWith(run())
+    .deadlineWith(start())
     .withName("Auto_20_2");
   }
 
@@ -177,7 +160,7 @@ public class AutoCommands {
       pickup(pose(AutoPose.Pickup2)),
       score()
     )
-    .deadlineWith(run())
+    .deadlineWith(start())
     .withName("Auto_2_0_2");
   } 
 
@@ -188,7 +171,7 @@ public class AutoCommands {
       pickup(pose(AutoPose.Pickup3)),
       score()
     )
-    .deadlineWith(run())
+    .deadlineWith(start())
     .withName("Auto_20_2");
   }
 
@@ -200,7 +183,7 @@ public class AutoCommands {
       pickup(pose(AutoPose.Pickup3)),
       score()
     )
-    .deadlineWith(run())
+    .deadlineWith(start())
     .withName("Auto_3_0_3");
   } 
 }

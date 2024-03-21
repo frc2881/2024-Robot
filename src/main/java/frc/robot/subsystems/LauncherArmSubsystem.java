@@ -84,7 +84,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
 
   public Command alignToPositionAutoCommand(double position) {
     return 
-    alignToPositionAutoCommand(position)
+    alignToPositionCommand(position)
     .until(() -> m_isAlignedToTarget);
   }
   

@@ -120,15 +120,7 @@ public class RobotContainer {
       m_operatorController
     );
 
-    m_autoCommands = new AutoCommands(
-      m_gameCommands, 
-      m_driveSubsystem, 
-      m_poseSubsystem,  
-      m_intakeSubsystem, 
-      m_launcherArmSubsystem, 
-      m_launcherRollerSubsystem
-    );
-    
+    m_autoCommands = new AutoCommands(m_gameCommands);
     m_autoChooser = new SendableChooser<Command>();
 
     configureBindings();
@@ -178,6 +170,7 @@ public class RobotContainer {
   }
 
   private void configureTriggers() {
+    // TODO: implement "intake not ready" lighting pattern on coprocessor Python script
     new Trigger(
       () -> m_launcherBottomBeamBreakSensor.hasTarget())
       .onTrue(Commands.runOnce(() -> { 
@@ -217,6 +210,8 @@ public class RobotContainer {
     PathfindingCommand.warmupCommand().schedule();
 
     m_autoChooser.setDefaultOption("None", Commands.none());
+
+    // TODO: create additional 3-note, 4-note, and move out auto variations from all starting positions (e.g. 0145, 015, 038, 087, etc.)
 
     m_autoChooser.addOption("[ 1 ] 0", m_autoCommands.auto_0());
     m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands.auto_10_1());

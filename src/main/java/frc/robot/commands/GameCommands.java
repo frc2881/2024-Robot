@@ -84,6 +84,13 @@ public class GameCommands {
     .andThen(rumbleControllersCommand(true, true))
     .withName("AlignRobotToTarget");
   }
+
+  public Command alignRobotToTargetAutoCommand() {
+    return
+    m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, m_poseSubsystem::getTargetYaw)
+    .withTimeout(2.0)
+    .withName("AlignRobotToTargetAuto");
+  }
   
   public Command alignLauncherToTargetCommand(boolean isRollersEnabled) {
     return
@@ -98,6 +105,7 @@ public class GameCommands {
   public Command alignLauncherToTargetAutoCommand() {
     return
     m_launcherArmSubsystem.alignToTargetAutoCommand(m_poseSubsystem::getTargetDistance)
+    .withTimeout(2.0)
     .withName("AlignLauncherToTargetAuto");
   }
 
@@ -114,6 +122,7 @@ public class GameCommands {
   public Command alignLauncherToPositionAutoCommand(double position) {
     return
     m_launcherArmSubsystem.alignToPositionAutoCommand(position)
+    .withTimeout(2.0)
     .withName("AlignLauncherToPositionAuto");
   }
 
@@ -135,6 +144,12 @@ public class GameCommands {
       )
     )
     .withName("AlignLauncherForShuttle");
+  }
+
+  public Command startLauncherRollersAutoCommand() {
+    return
+    m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kDefaultLauncherSpeeds)
+    .withName("StartLauncherRollersAuto");
   }
 
   public Command runLauncherCommand() {
