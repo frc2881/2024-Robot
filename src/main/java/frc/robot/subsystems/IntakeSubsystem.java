@@ -134,10 +134,10 @@ public class IntakeSubsystem extends SubsystemBase {
   private void runTopBelts(MotorDirection motorDirection, Double speed) {
     switch (motorDirection) {
       case Forward:
-        m_topBeltMotor.set(speed * Constants.Intake.kTopBeltMotorMaxOutput);
+        m_topBeltMotor.set(speed * Constants.Intake.kTopBeltMotorMaxForwardOutput);
         break;
       case Reverse:
-        m_topBeltMotor.set(speed * Constants.Intake.kTopBeltMotorMinOutput);
+        m_topBeltMotor.set(speed * Constants.Intake.kTopBeltMotorMaxReverseOutput);
         break;
       case None:
         m_topBeltMotor.set(0.0);
@@ -154,10 +154,10 @@ public class IntakeSubsystem extends SubsystemBase {
   private void runBottomBelts(MotorDirection motorDirection, Double speed) {
     switch (motorDirection) {
       case Forward:
-        m_bottomBeltMotor.set(speed * Constants.Intake.kBottomBeltMotorMaxOutput);
+        m_bottomBeltMotor.set(speed * Constants.Intake.kBottomBeltMotorMaxForwardOutput);
         break;
       case Reverse:
-        m_bottomBeltMotor.set(speed * Constants.Intake.kBottomBeltMotorMinOutput);
+        m_bottomBeltMotor.set(speed * Constants.Intake.kBottomBeltMotorMaxReverseOutput);
         break;
       case None:
         m_bottomBeltMotor.set(0.0);
@@ -174,10 +174,10 @@ public class IntakeSubsystem extends SubsystemBase {
   private void runRollers(MotorDirection motorDirection, Double speed) {
     switch (motorDirection) {
       case Forward:
-        m_rollerMotor.set(Constants.Intake.kTopBeltMotorMaxOutput);
+        m_rollerMotor.set(Constants.Intake.kTopBeltMotorMaxForwardOutput);
         break;
       case Reverse:
-        m_rollerMotor.set(Constants.Intake.kTopBeltMotorMinOutput);
+        m_rollerMotor.set(Constants.Intake.kTopBeltMotorMaxReverseOutput);
         break;
       case None:
         m_rollerMotor.set(0.0);

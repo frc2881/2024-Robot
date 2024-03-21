@@ -44,7 +44,7 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armPIDController.setFeedbackDevice(m_armEncoder);
     m_armPIDController.setP(Constants.Climber.kArmMotorPIDConstants.P());
     m_armPIDController.setD(Constants.Climber.kArmMotorPIDConstants.D());
-    m_armPIDController.setOutputRange(Constants.Climber.kArmMotorMinOutput, Constants.Climber.kArmMotorMaxOutput);
+    m_armPIDController.setOutputRange(Constants.Climber.kArmMotorMaxReverseOutput, Constants.Climber.kArmMotorMaxForwardOutput);
     m_armPIDController.setSmartMotionMaxVelocity(Constants.Climber.kArmMotorSmartMotionMaxVelocity, 0);
     m_armPIDController.setSmartMotionMaxAccel(Constants.Climber.kArmMotorSmartMotionMaxAccel, 0);
 
@@ -89,8 +89,8 @@ public class ClimberSubsystem extends SubsystemBase {
     Commands.startEnd(() -> {
       m_rollerMotor.set(
         direction == MotorDirection.Forward ? 
-        Constants.Climber.kRollerMotorMaxOutput : 
-        Constants.Climber.kRollerMotorMinOutput
+        Constants.Climber.kRollerMotorMaxForwardOutput : 
+        Constants.Climber.kRollerMotorMaxReverseOutput
       ); 
     }, () -> {
       m_rollerMotor.set(0.0);

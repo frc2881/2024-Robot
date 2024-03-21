@@ -43,7 +43,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
     m_armPIDController.setFeedbackDevice(m_armEncoder);
     m_armPIDController.setP(Constants.Launcher.kArmMotorPIDConstants.P());
     m_armPIDController.setD(Constants.Launcher.kArmMotorPIDConstants.D());
-    m_armPIDController.setOutputRange(Constants.Launcher.kArmMotorMinOutput, Constants.Launcher.kArmMotorMaxOutput);
+    m_armPIDController.setOutputRange(Constants.Launcher.kArmMotorMaxReverseOutput, Constants.Launcher.kArmMotorMaxForwardOutput);
     m_armPIDController.setSmartMotionMaxVelocity(Constants.Launcher.kArmMotorSmartMotionMaxVelocity, 0);
     m_armPIDController.setSmartMotionMaxAccel(Constants.Launcher.kArmMotorSmartMotionMaxAccel, 0);
     m_armMotor.burnFlash();

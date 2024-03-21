@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.revrobotics.CANSparkBase;
+import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
 import edu.wpi.first.math.MathUtil;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 import frc.robot.Robot;
@@ -31,6 +33,10 @@ public final class Utils {
     }
   }
 
+  public static <T> T getValueForAlliance(T blueValue, T redValue) {
+    return Robot.getAlliance() == Alliance.Blue ? blueValue : redValue;
+  }
+
   public static boolean isValueBetween(double value, double minValue, double maxValue) {
     return value >= minValue && value <= maxValue;
   }
@@ -40,7 +46,7 @@ public final class Utils {
     return (deadbandInput * deadbandInput) * Math.signum(input);
   }
 
-  public static double voltsToPsi(double sensorVoltage, double supplyVoltage) {
+  public static double getVoltsToPsi(double sensorVoltage, double supplyVoltage) {
     return 250 * (sensorVoltage / supplyVoltage) - 25;
   }
 
@@ -98,13 +104,17 @@ public final class Utils {
     controller.enableSoftLimit(SoftLimitDirection.kReverse, isEnabled);
   }
 
-  public static <T> T getValueForAlliance(T blueValue, T redValue) {
-    return Robot.getAlliance() == Alliance.Blue ? blueValue : redValue;
+  public static void validateREVLib(REVLibError error) {
+    Timer.delay(0.001);
+    if (error != REVLibError.kOk) {
+      Logger.error("REVLibError: " + error.toString());
+    }
   }
 
-  public static void checkForREVSparkError(boolean predicate) {
+  public static void validateREVLib(boolean predicate) {
+    Timer.delay(0.001);
     if (!predicate) {
-      Logger.error("REV Spark controller set/get parameter call failed!");
+      Logger.error("REVLibError: set parameter call failed validation!");
     }
   }
 }

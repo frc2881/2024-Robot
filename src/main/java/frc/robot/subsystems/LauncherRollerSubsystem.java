@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.lib.common.Utils;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 
 public class LauncherRollerSubsystem extends SubsystemBase {
@@ -19,20 +20,19 @@ public class LauncherRollerSubsystem extends SubsystemBase {
   public LauncherRollerSubsystem() {
     m_topRollerMotor = new CANSparkFlex(Constants.Launcher.kTopRollerMotorCANId, MotorType.kBrushless);
     m_topRollerMotor.setCANMaxRetries(10);
-    m_topRollerMotor.restoreFactoryDefaults();
-    m_topRollerMotor.setIdleMode(Constants.Launcher.kTopRollerMotorIdleMode); 
-    m_topRollerMotor.setSmartCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
-    m_topRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit);
-    m_topRollerMotor.setInverted(true);
-    m_topRollerMotor.burnFlash();
+    Utils.validateREVLib(m_topRollerMotor.restoreFactoryDefaults());
+    Utils.validateREVLib(m_topRollerMotor.setIdleMode(Constants.Launcher.kTopRollerMotorIdleMode)); 
+    Utils.validateREVLib(m_topRollerMotor.setSmartCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit));
+    Utils.validateREVLib(m_topRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kTopRollerMotorCurrentLimit));
+    Utils.validateREVLib(m_topRollerMotor.burnFlash());
 
     m_bottomRollerMotor = new CANSparkFlex(Constants.Launcher.kBottomRollerMotorCANId, MotorType.kBrushless);
     m_bottomRollerMotor.setCANMaxRetries(10);
-    m_bottomRollerMotor.restoreFactoryDefaults();
-    m_bottomRollerMotor.setIdleMode(Constants.Launcher.kBottomRollerMotorIdleMode); 
-    m_bottomRollerMotor.setSmartCurrentLimit(Constants.Launcher.kBottomRollerMotorCurrentLimit);
-    m_bottomRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kBottomRollerMotorCurrentLimit);
-    m_bottomRollerMotor.burnFlash();
+    Utils.validateREVLib(m_bottomRollerMotor.restoreFactoryDefaults());
+    Utils.validateREVLib(m_bottomRollerMotor.setIdleMode(Constants.Launcher.kBottomRollerMotorIdleMode)); 
+    Utils.validateREVLib(m_bottomRollerMotor.setSmartCurrentLimit(Constants.Launcher.kBottomRollerMotorCurrentLimit));
+    Utils.validateREVLib(m_bottomRollerMotor.setSecondaryCurrentLimit(Constants.Launcher.kBottomRollerMotorCurrentLimit));
+    Utils.validateREVLib(m_bottomRollerMotor.burnFlash());
   }
 
   @Override
@@ -43,8 +43,8 @@ public class LauncherRollerSubsystem extends SubsystemBase {
   public Command runCommand(Supplier<LauncherRollerSpeeds> rollerSpeeds) {
     return 
     startEnd(() -> {
-      m_topRollerMotor.set(rollerSpeeds.get().top() * Constants.Launcher.kTopRollerMotorMaxOutput);
-      m_bottomRollerMotor.set(rollerSpeeds.get().bottom() * Constants.Launcher.kBottomRollerMotorMaxOutput);
+      m_topRollerMotor.set(rollerSpeeds.get().top() * Constants.Launcher.kTopRollerMotorMaxReverseOutput);
+      m_bottomRollerMotor.set(rollerSpeeds.get().bottom() * Constants.Launcher.kBottomRollerMotorMaxForwardOutput);
     },
     () -> { 
       m_topRollerMotor.set(0.0);

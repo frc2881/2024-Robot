@@ -15,6 +15,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.lib.common.Enums.SwerveModuleLocation;
+import frc.robot.lib.common.Utils;
 import frc.robot.Constants;
 
 public class SwerveModule implements Sendable {
@@ -35,51 +36,43 @@ public class SwerveModule implements Sendable {
 
     m_drivingMotor = new CANSparkMax(drivingMotorCanId, MotorType.kBrushless);
     m_drivingMotor.setCANMaxRetries(10);
-    m_drivingMotor.restoreFactoryDefaults();
+    Utils.validateREVLib(m_drivingMotor.restoreFactoryDefaults());
     m_drivingEncoder = m_drivingMotor.getEncoder();
     m_drivingPIDController = m_drivingMotor.getPIDController();
-    m_drivingPIDController.setFeedbackDevice(m_drivingEncoder);
-    setDrivingMotorParams();
-    m_drivingMotor.burnFlash();
-    m_drivingEncoder.setPosition(0);
+    Utils.validateREVLib(m_drivingPIDController.setFeedbackDevice(m_drivingEncoder));
+    Utils.validateREVLib(m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionConversionFactor));
+    Utils.validateREVLib(m_drivingEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderVelocityConversionFactor));
+    Utils.validateREVLib(m_drivingPIDController.setP(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.P()));
+    Utils.validateREVLib(m_drivingPIDController.setI(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.I()));
+    Utils.validateREVLib(m_drivingPIDController.setD(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.D()));
+    Utils.validateREVLib(m_drivingPIDController.setFF(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.FF()));
+    Utils.validateREVLib(m_drivingPIDController.setOutputRange(Constants.Drive.SwerveModule.kDrivingMotorMaxReverseOutput, Constants.Drive.SwerveModule.kDrivingMotorMaxForwardOutput));
+    Utils.validateREVLib(m_drivingMotor.setIdleMode(Constants.Drive.SwerveModule.kDrivingMotorIdleMode));
+    Utils.validateREVLib(m_drivingMotor.setSmartCurrentLimit(Constants.Drive.SwerveModule.kDrivingMotorCurrentLimit));
+    Utils.validateREVLib(m_drivingMotor.burnFlash());
+    Utils.validateREVLib(m_drivingEncoder.setPosition(0));
 
     m_turningMotor = new CANSparkMax(turningMotorCanId, MotorType.kBrushless);
     m_turningMotor.setCANMaxRetries(10);
-    m_turningMotor.restoreFactoryDefaults();
+    Utils.validateREVLib(m_turningMotor.restoreFactoryDefaults());
     m_turningEncoder = m_turningMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     m_turningPIDController = m_turningMotor.getPIDController();
-    m_turningPIDController.setFeedbackDevice(m_turningEncoder);
-    setTurningMotorParams();
-    m_turningMotor.burnFlash();
+    Utils.validateREVLib(m_turningPIDController.setFeedbackDevice(m_turningEncoder));
+    Utils.validateREVLib(m_turningEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderPositionConversionFactor));
+    Utils.validateREVLib(m_turningEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderVelocityConversionFactor));
+    Utils.validateREVLib(m_turningEncoder.setInverted(Constants.Drive.SwerveModule.kTurningEncoderInverted));
+    Utils.validateREVLib(m_turningPIDController.setP(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.P()));
+    Utils.validateREVLib(m_turningPIDController.setI(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.I()));
+    Utils.validateREVLib(m_turningPIDController.setD(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.D()));
+    Utils.validateREVLib(m_turningPIDController.setFF(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.FF()));
+    Utils.validateREVLib(m_turningPIDController.setOutputRange(Constants.Drive.SwerveModule.kTurningMotorMaxReverseOutput, Constants.Drive.SwerveModule.kTurningMotorMaxForwardOutput));
+    Utils.validateREVLib(m_turningPIDController.setPositionPIDWrappingEnabled(true));
+    Utils.validateREVLib(m_turningPIDController.setPositionPIDWrappingMinInput(Constants.Drive.SwerveModule.kTurningEncoderPositionPIDMinInput));
+    Utils.validateREVLib(m_turningPIDController.setPositionPIDWrappingMaxInput(Constants.Drive.SwerveModule.kTurningEncoderPositionPIDMaxInput));
+    Utils.validateREVLib(m_turningMotor.setIdleMode(Constants.Drive.SwerveModule.kTurningMotorIdleMode));
+    Utils.validateREVLib(m_turningMotor.setSmartCurrentLimit(Constants.Drive.SwerveModule.kTurningMotorCurrentLimit));
+    Utils.validateREVLib(m_turningMotor.burnFlash());
     m_turningOffset = turningOffset;
-  }
-
-  private void setDrivingMotorParams() {
-    m_drivingEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderPositionConversionFactor);
-    m_drivingEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kDrivingEncoderVelocityConversionFactor);
-    m_drivingPIDController.setP(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.P());
-    m_drivingPIDController.setI(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.I());
-    m_drivingPIDController.setD(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.D());
-    m_drivingPIDController.setFF(Constants.Drive.SwerveModule.kDrivingMotorPIDConstants.FF());
-    m_drivingPIDController.setOutputRange(Constants.Drive.SwerveModule.kDrivingMotorMinOutput, Constants.Drive.SwerveModule.kDrivingMotorMaxOutput);
-    m_drivingMotor.setIdleMode(Constants.Drive.SwerveModule.kDrivingMotorIdleMode);
-    m_drivingMotor.setSmartCurrentLimit(Constants.Drive.SwerveModule.kDrivingMotorCurrentLimit);
-  }
-
-  private void setTurningMotorParams() {
-    m_turningEncoder.setPositionConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderPositionConversionFactor);
-    m_turningEncoder.setVelocityConversionFactor(Constants.Drive.SwerveModule.kTurningEncoderVelocityConversionFactor);
-    m_turningEncoder.setInverted(Constants.Drive.SwerveModule.kTurningEncoderInverted);
-    m_turningPIDController.setP(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.P());
-    m_turningPIDController.setI(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.I());
-    m_turningPIDController.setD(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.D());
-    m_turningPIDController.setFF(Constants.Drive.SwerveModule.kTurningMotorPIDConstants.FF());
-    m_turningPIDController.setOutputRange(Constants.Drive.SwerveModule.kTurningMotorMinOutput, Constants.Drive.SwerveModule.kTurningMotorMaxOutput);
-    m_turningPIDController.setPositionPIDWrappingEnabled(true);
-    m_turningPIDController.setPositionPIDWrappingMinInput(Constants.Drive.SwerveModule.kTurningEncoderPositionPIDMinInput);
-    m_turningPIDController.setPositionPIDWrappingMaxInput(Constants.Drive.SwerveModule.kTurningEncoderPositionPIDMaxInput);
-    m_turningMotor.setIdleMode(Constants.Drive.SwerveModule.kTurningMotorIdleMode);
-    m_turningMotor.setSmartCurrentLimit(Constants.Drive.SwerveModule.kTurningMotorCurrentLimit);
   }
 
   public void setTargetState(SwerveModuleState targetState) {

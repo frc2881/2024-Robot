@@ -87,6 +87,7 @@ public final class Constants {
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
 
+    // TODO: update velocity and accel constraints to faster drivetrain and adjust PID constants as well for max performance
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.5, 0, 0);
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.7, 0, 0);
     public static final PathConstraints kPathFindingConstraints = new PathConstraints(4.5, 3.5, 720.00, 960.00);
@@ -109,14 +110,14 @@ public final class Constants {
       public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionConversionFactor;
       
       public static final int kDrivingMotorCurrentLimit = 80;
-      public static final double kDrivingMotorMinOutput = -1;
-      public static final double kDrivingMotorMaxOutput = 1;
+      public static final double kDrivingMotorMaxReverseOutput = -1;
+      public static final double kDrivingMotorMaxForwardOutput = 1;
       public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
       public static final PIDConstants kDrivingMotorPIDConstants = new PIDConstants(0.04, 0, 0, 1 / kDriveWheelFreeSpeedRps);
 
       public static final int kTurningMotorCurrentLimit = 20;
-      public static final double kTurningMotorMinOutput = -1;
-      public static final double kTurningMotorMaxOutput = 1;
+      public static final double kTurningMotorMaxReverseOutput = -1;
+      public static final double kTurningMotorMaxForwardOutput = 1;
       public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
       public static final PIDConstants kTurningMotorPIDConstants = new PIDConstants(1, 0, 0, 0);
     }
@@ -128,21 +129,21 @@ public final class Constants {
     public static final int kRollerMotorCANId = 20;
 
     public static final int kTopBeltMotorCurrentLimit = 60;
-    public static final double kTopBeltMotorMinOutput = -0.6;
-    public static final double kTopBeltMotorMaxOutput = 0.6;
+    public static final double kTopBeltMotorMaxReverseOutput = -0.6;
+    public static final double kTopBeltMotorMaxForwardOutput = 0.6;
     public static final IdleMode kTopBeltMotorIdleMode = IdleMode.kBrake;
 
     public static final int kBottomBeltMotorCurrentLimit = 60;
-    public static final double kBottomBeltMotorMinOutput = -0.6;
-    public static final double kBottomBeltMotorMaxOutput = 0.6;
+    public static final double kBottomBeltMotorMaxReverseOutput = -0.6;
+    public static final double kBottomBeltMotorMaxForwardOutput = 0.6;
     public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kCoast;
 
     public static final double kIntakeBeltSpeeds = 0.70; //1.0
     public static final double kIntakeBeltWaitTime = 0.039; //0.05
 
     public static final int kRollerMotorCurrentLimit = 60;
-    public static final double kRollerMotorMinOutput = -0.6;
-    public static final double kRollerMotorMaxOutput = 0.6;
+    public static final double kRollerMotorMaxReverseOutput = -0.6;
+    public static final double kRollerMotorMaxForwardOutput = 0.6;
     public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
   }
 
@@ -152,8 +153,8 @@ public final class Constants {
     public static final int kBottomRollerMotorCANId = 13;
 
     public static final int kArmMotorCurrentLimit = 60;
-    public static final double kArmMotorMinOutput = -1.0;
-    public static final double kArmMotorMaxOutput = 1.0;
+    public static final double kArmMotorMaxReverseOutput = -1.0;
+    public static final double kArmMotorMaxForwardOutput = 1.0;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
     public static final double kArmMotorForwardSoftLimit = 14.5;
@@ -164,13 +165,13 @@ public final class Constants {
     public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
 
     public static final int kTopRollerMotorCurrentLimit = 100;
-    public static final double kTopRollerMotorMinOutput = -1.0; 
-    public static final double kTopRollerMotorMaxOutput = 1.0;
+    public static final double kTopRollerMotorMaxReverseOutput = -1.0; 
+    public static final double kTopRollerMotorMaxForwardOutput = 1.0;
     public static final IdleMode kTopRollerMotorIdleMode = IdleMode.kBrake;
 
     public static final int kBottomRollerMotorCurrentLimit = 100;
-    public static final double kBottomRollerMotorMinOutput = -1.0;
-    public static final double kBottomRollerMotorMaxOutput = 1.0;
+    public static final double kBottomRollerMotorMaxReverseOutput = -1.0;
+    public static final double kBottomRollerMotorMaxForwardOutput = 1.0;
     public static final IdleMode kBottomRollerMotorIdleMode = IdleMode.kBrake;
 
     public static final LauncherRollerSpeeds kDefaultLauncherSpeeds = new LauncherRollerSpeeds(0.8, 0.8);
@@ -204,8 +205,8 @@ public final class Constants {
     public static final int kRollerMotorCANId = 17;
 
     public static final int kArmMotorCurrentLimit = 60;
-    public static final double kArmMotorMinOutput = -1.0;
-    public static final double kArmMotorMaxOutput = 1.0;
+    public static final double kArmMotorMaxReverseOutput = -1.0;
+    public static final double kArmMotorMaxForwardOutput = 1.0;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
     public static final double kArmMotorForwardSoftLimit = 38.8;
@@ -216,8 +217,8 @@ public final class Constants {
     public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
 
     public static final int kRollerMotorCurrentLimit = 80;
-    public static final double kRollerMotorMinOutput = -0.85;
-    public static final double kRollerMotorMaxOutput = 0.85;
+    public static final double kRollerMotorMaxReverseOutput = -0.85;
+    public static final double kRollerMotorMaxForwardOutput = 0.85;
     public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
 
     public static final double kArmPositionForChainEngagement = 26.0;
