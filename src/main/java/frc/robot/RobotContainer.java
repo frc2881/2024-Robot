@@ -213,6 +213,9 @@ public class RobotContainer {
 
     // TODO: create additional 3-note, 4-note, and move out auto variations from all starting positions (e.g. 0145, 015, 038, 087, etc.)
 
+    m_autoChooser.addOption("TEST", m_autoCommands.testAuto());
+
+
     m_autoChooser.addOption("[ 1 ] 0", m_autoCommands.auto_0());
     m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands.auto_10_1());
     m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands.auto_1_0_1());

@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -51,7 +52,7 @@ public class AutoCommands {
     m_gameCommmands.runIntakeAutoCommand()
     .deadlineWith(move(path))
     // TODO: configure timeout length for real auto progression and simulated auto runs for testing paths
-    //.withTimeout(3.0)
+    .withTimeout(3.0)
     .withName("PickupWithPath");
   }
 
@@ -60,13 +61,13 @@ public class AutoCommands {
     m_gameCommmands.runIntakeAutoCommand()
     .deadlineWith(move(pose))
     // TODO: configure timeout length for real auto progression and simulated auto runs for testing paths
-    //.withTimeout(3.0)
+    .withTimeout(3.0)
     .withName("PickupAtPose");
   }
 
   private Command score() {
     return
-    m_gameCommmands.alignRobotToTargetCommand()
+    m_gameCommmands.alignRobotToTargetAutoCommand()
     .alongWith(m_gameCommmands.alignLauncherToTargetAutoCommand())
     .andThen(m_gameCommmands.runLauncherAutoCommand())
     .withName("ScoreDynamicPosition");
@@ -75,7 +76,7 @@ public class AutoCommands {
   // TODO: test that the predicate for subwoofer location only skips the robot alignment and not the launcher also
   public Command score(double launcherArmPosition) {
     return 
-    m_gameCommmands.alignRobotToTargetCommand()
+    m_gameCommmands.alignRobotToTargetAutoCommand()
     .onlyIf(() -> launcherArmPosition != Constants.Launcher.kArmPositionSubwoofer)
     .alongWith(m_gameCommmands.alignLauncherToPositionAutoCommand(launcherArmPosition))
     .andThen(m_gameCommmands.runLauncherAutoCommand())
@@ -93,6 +94,12 @@ public class AutoCommands {
    * ################################ AUTOS ###############################
    * ######################################################################
    */
+
+   public Command testAuto() {
+    return Commands.sequence(
+      move(new Pose2d(4.0, 5.5, Rotation2d.fromDegrees(0)))
+    );
+   }
 
   public Command auto_0() {
     return 
@@ -155,7 +162,7 @@ public class AutoCommands {
   public Command auto_2_0_2() {
     return 
     Commands.sequence(
-      move(pose(AutoPose.ScorePreload2)),
+      move(path(AutoPath.ScorePreload2)),
       score(),
       pickup(pose(AutoPose.Pickup2)),
       score()

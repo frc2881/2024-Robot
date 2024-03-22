@@ -56,7 +56,7 @@ public final class Constants {
     public static final double kWheelBase = Units.inchesToMeters(21.5);
     public static final double kDriveBaseRadius = new Translation2d().getDistance(new Translation2d(kWheelBase / 2, kTrackWidth / 2));
 
-    public static final double kMaxSpeedMetersPerSecond = 5.28;
+    public static final double kMaxSpeedMetersPerSecond = 6.32;
     public static final double kMaxAngularSpeed = 3 * Math.PI;
 
     public static final double kSwerveModuleFrontLeftOffset = -Math.PI / 2;
@@ -90,7 +90,7 @@ public final class Constants {
     // TODO: update velocity and accel constraints to faster drivetrain and adjust PID constants as well for max performance
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.5, 0, 0);
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.7, 0, 0);
-    public static final PathConstraints kPathFindingConstraints = new PathConstraints(4.5, 3.5, 720.00, 960.00);
+    public static final PathConstraints kPathFindingConstraints = new PathConstraints(5.5, 4.8, 720.00, 960.00);
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;
@@ -138,8 +138,8 @@ public final class Constants {
     public static final double kBottomBeltMotorMaxForwardOutput = 0.6;
     public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kCoast;
 
-    public static final double kIntakeBeltSpeeds = 0.70; //1.0
-    public static final double kIntakeBeltWaitTime = 0.039; //0.05
+    public static final double kIntakeBeltSpeeds = 0.65; //1.0
+    public static final double kIntakeBeltWaitTime = 0.038; //0.05
 
     public static final int kRollerMotorCurrentLimit = 60;
     public static final double kRollerMotorMaxReverseOutput = -0.6;
@@ -306,6 +306,7 @@ public final class Constants {
       );
 
       public static final Map<AutoPath, PathPlannerPath> kPaths = Map.ofEntries(
+        entry(AutoPath.ScorePreload2, PathPlannerPath.fromPathFile("ScorePreload2")),
         entry(AutoPath.Pickup1, PathPlannerPath.fromPathFile("Pickup1")), // TODO: validate/fix pickup 1 path
         entry(AutoPath.Pickup2, PathPlannerPath.fromPathFile("Pickup2")), // TODO: validate/fix pickup 2 path
         entry(AutoPath.Pickup3, PathPlannerPath.fromPathFile("Pickup3")), // TODO: validate/fix pickup 3 path

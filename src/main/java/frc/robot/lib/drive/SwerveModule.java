@@ -4,6 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkAbsoluteEncoder;
@@ -21,7 +22,7 @@ import frc.robot.Constants;
 public class SwerveModule implements Sendable {
   private final SwerveModuleLocation m_location;
 
-  private final CANSparkMax m_drivingMotor;
+  private final CANSparkFlex m_drivingMotor;
   private final CANSparkMax m_turningMotor;
   private final RelativeEncoder m_drivingEncoder;
   private final AbsoluteEncoder m_turningEncoder;
@@ -34,7 +35,7 @@ public class SwerveModule implements Sendable {
   public SwerveModule(SwerveModuleLocation location, int drivingMotorCanId, int turningMotorCanId, double turningOffset) {
     m_location = location;
 
-    m_drivingMotor = new CANSparkMax(drivingMotorCanId, MotorType.kBrushless);
+    m_drivingMotor = new CANSparkFlex(drivingMotorCanId, MotorType.kBrushless);
     m_drivingMotor.setCANMaxRetries(10);
     Utils.validateREVLib(m_drivingMotor.restoreFactoryDefaults());
     m_drivingEncoder = m_drivingMotor.getEncoder();

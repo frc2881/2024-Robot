@@ -27,6 +27,9 @@ public class Enums {
   }
   
   public static enum AutoPath {
+    ScorePreload1,
+    ScorePreload2,
+    ScorePreload3,
     Pickup1,
     Pickup2,
     Pickup3,
