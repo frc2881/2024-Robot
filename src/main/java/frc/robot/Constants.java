@@ -305,7 +305,9 @@ public final class Constants {
       );
 
       public static final Map<AutoPath, PathPlannerPath> kPaths = Map.ofEntries(
+        entry(AutoPath.ScorePreload1, PathPlannerPath.fromPathFile("ScorePreload1")),
         entry(AutoPath.ScorePreload2, PathPlannerPath.fromPathFile("ScorePreload2")),
+        entry(AutoPath.ScorePreload3, PathPlannerPath.fromPathFile("ScorePreload3")),
         entry(AutoPath.Pickup1, PathPlannerPath.fromPathFile("Pickup1")), // TODO: validate/fix pickup 1 path
         entry(AutoPath.Pickup2, PathPlannerPath.fromPathFile("Pickup2")), // TODO: validate/fix pickup 2 path
         entry(AutoPath.Pickup3, PathPlannerPath.fromPathFile("Pickup3")), // TODO: validate/fix pickup 3 path
@@ -317,8 +319,6 @@ public final class Constants {
         entry(AutoPath.ScoreStage1, PathPlannerPath.fromPathFile("ScoreStage1"))
         // entry(AutoPath.ScoreStage2, PathPlannerPath.fromPathFile("ScoreStage2")), // TODO: create score stage 2 path
         // entry(AutoPath.ScoreStage3, PathPlannerPath.fromPathFile("ScoreStage3")), // TODO: create score stage 3 path
-        // entry(AutoPath.MoveOut1, PathPlannerPath.fromPathFile("MoveOut1")), // TODO: create move out 1 path
-        // entry(AutoPath.MoveOut2, PathPlannerPath.fromPathFile("MoveOut2")), // TODO: create move out 2 path
         // entry(AutoPath.MoveOut3, PathPlannerPath.fromPathFile("MoveOut3")) // TODO: create move out 3 path
       );
     }
