@@ -171,10 +171,9 @@ public class RobotContainer {
   }
 
   private void configureTriggers() {
-    // TODO: implement "intake not ready" lighting pattern on coprocessor Python script
     new Trigger(
       () -> m_launcherBottomBeamBreakSensor.hasTarget())
-      .onTrue(Commands.runOnce(() -> { 
+      .whileTrue(Commands.run(() -> { 
         LightsMode lightsMode = LightsMode.IntakeReady;
         if (m_launcherTopBeamBreakSensor.hasTarget()) {
           lightsMode = LightsMode.IntakeNotReady;
