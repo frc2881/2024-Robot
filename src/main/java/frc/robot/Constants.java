@@ -87,10 +87,9 @@ public final class Constants {
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
 
-    // TODO: validate / test PID constants (might be blocking path finding for short distances) + validate path constraints parameters on field
-    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.5, 0, 0);
-    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.7, 0, 0);
-    public static final PathConstraints kPathFindingConstraints = new PathConstraints(5.5, 4.8, Units.degreesToRadians(720), Units.degreesToRadians(960));
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
+    public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
+    public static final PathConstraints kPathFindingConstraints = new PathConstraints(6.0, 3.6, Units.degreesToRadians(720), Units.degreesToRadians(960));
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;

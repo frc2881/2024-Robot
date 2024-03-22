@@ -97,7 +97,7 @@ public class AutoCommands {
 
    public Command auto_test() {
     return Commands.sequence(
-      move(new Pose2d(4.0, 5.5, Rotation2d.fromDegrees(0)))
+      move(new Pose2d(3.0, 5.5, Rotation2d.fromDegrees(0)))
     );
    }
 
