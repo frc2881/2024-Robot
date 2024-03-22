@@ -135,8 +135,7 @@ public class RobotContainer {
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
     m_driverController.leftTrigger().whileTrue(m_gameCommands.alignLauncherForShuttleCommand());
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand());
-    // TODO: [ DRIVE TEAM REQUEST ] add controller action for left bumper to do a short eject and reload intake action when note needs to be adjusted for the launcher
-    // m_driverController.leftBumper().whileTrue();
+    m_driverController.leftBumper().whileTrue(m_gameCommands.runReloadCommand());
     m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     m_driverController.rightStick().whileTrue(m_gameCommands.alignRobotToTargetCommand());

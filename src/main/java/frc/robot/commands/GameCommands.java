@@ -78,6 +78,14 @@ public class GameCommands {
     .withName("RunEject");
   }
 
+  public Command runReloadCommand() {
+    return Commands.sequence(
+      m_intakeSubsystem.runEjectCommand().withTimeout(0.23),
+      m_intakeSubsystem.runIntakeCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+    )
+    .withName("RunReload");
+  }
+
   public Command alignRobotToTargetCommand() {
     return
     m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, m_poseSubsystem::getTargetYaw)
