@@ -55,6 +55,8 @@ public class RobotContainer {
   private final SendableChooser<Command> m_autoChooser;
 
   public RobotContainer() {
+    System.out.println("############# " + Constants.Drive.kDriveBaseRadius);
+
     // HARDWARE ========================================
     m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
 
@@ -211,10 +213,7 @@ public class RobotContainer {
 
     m_autoChooser.setDefaultOption("None", Commands.none());
 
-    // TODO: create additional 3-note, 4-note, and move out auto variations from all starting positions (e.g. 0145, 015, 038, 087, etc.)
-
-    m_autoChooser.addOption("TEST", m_autoCommands.testAuto());
-
+    m_autoChooser.addOption("TEST", m_autoCommands.auto_test());
 
     m_autoChooser.addOption("[ 1 ] 0", m_autoCommands.auto_0());
     m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands.auto_10_1());

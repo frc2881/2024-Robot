@@ -57,7 +57,7 @@ public final class Constants {
     public static final double kDriveBaseRadius = new Translation2d().getDistance(new Translation2d(kWheelBase / 2, kTrackWidth / 2));
 
     public static final double kMaxSpeedMetersPerSecond = 6.32;
-    public static final double kMaxAngularSpeed = 3 * Math.PI;
+    public static final double kMaxAngularSpeed = 4 * Math.PI;
 
     public static final double kSwerveModuleFrontLeftOffset = -Math.PI / 2;
     public static final double kSwerveModuleFrontRightOffset = 0;
@@ -81,20 +81,20 @@ public final class Constants {
     public static final double kDriftCorrectionThetaControllerVelocityTolerance = 0.5;
 
     public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01, 0);
-    public static final double kTargetAlignmentThetaControllerPositionTolerance = 0.5;
-    public static final double kTargetAlignmentThetaControllerVelocityTolerance = 0.5;
+    public static final double kTargetAlignmentThetaControllerPositionTolerance = 1.0;
+    public static final double kTargetAlignmentThetaControllerVelocityTolerance = 1.0;
 
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
 
-    // TODO: update velocity and accel constraints to faster drivetrain and adjust PID constants as well for max performance
+    // TODO: validate / test PID constants (might be blocking path finding for short distances) + validate path constraints parameters on field
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.5, 0, 0);
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(0.7, 0, 0);
-    public static final PathConstraints kPathFindingConstraints = new PathConstraints(5.5, 4.8, 720.00, 960.00);
+    public static final PathConstraints kPathFindingConstraints = new PathConstraints(5.5, 4.8, Units.degreesToRadians(720), Units.degreesToRadians(960));
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;
-      public static final double kFreeSpeedRpm = 5676;
+      public static final double kFreeSpeedRpm = 6238.73054766;
       public static final double kWheelDiameterMeters = Units.inchesToMeters(3.0);
       public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
       public static final double kDrivingMotorReduction = (45.0 * 20) / (kDrivingMotorPinionTeeth * 15);

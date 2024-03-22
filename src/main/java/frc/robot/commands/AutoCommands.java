@@ -20,8 +20,8 @@ public class AutoCommands {
     m_gameCommmands = gameCommands;
   }
 
+  // TODO: create additional 3-note, 4-note, and move out auto variations from all starting positions (e.g. 0145, 015, 038, 087, etc.)
   // TODO: migate all note pickup paths to use pathFindThenFollowPath methods and only use pathFindToPose for initial move out and preload scoring
-  // TODO: add timeouts to note pickup/scoring sequences that allows to move on to next pickup/score option if the note pickup is missed
 
   private PathPlannerPath path(AutoPath autoPath) {
     return Constants.Game.Auto.kPaths.get(autoPath);
@@ -51,7 +51,7 @@ public class AutoCommands {
     return
     m_gameCommmands.runIntakeAutoCommand()
     .deadlineWith(move(path))
-    // TODO: configure timeout length for real auto progression and simulated auto runs for testing paths
+    // TODO: configure timeout length for real auto progression and simulated auto runs for testing paths (set timeout to account for longest possible path to pickup)
     .withTimeout(3.0)
     .withName("PickupWithPath");
   }
@@ -60,7 +60,7 @@ public class AutoCommands {
     return
     m_gameCommmands.runIntakeAutoCommand()
     .deadlineWith(move(pose))
-    // TODO: configure timeout length for real auto progression and simulated auto runs for testing paths
+    // TODO: configure timeout length for real auto progression and simulated auto runs for testing paths (set timeout to account for longest possible path to pickup)
     .withTimeout(3.0)
     .withName("PickupAtPose");
   }
@@ -95,7 +95,7 @@ public class AutoCommands {
    * ######################################################################
    */
 
-   public Command testAuto() {
+   public Command auto_test() {
     return Commands.sequence(
       move(new Pose2d(4.0, 5.5, Rotation2d.fromDegrees(0)))
     );

@@ -4,8 +4,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.lib.common.Enums.LightsMode;
 
 public class LightsController {
+
   public LightsController() {
-    SmartDashboard.putString("Robot/Lights/Mode", LightsMode.Default.toString());
+    setLightsMode(LightsMode.Default);
   }
 
   public void setLightsMode(LightsMode lightsMode) {
