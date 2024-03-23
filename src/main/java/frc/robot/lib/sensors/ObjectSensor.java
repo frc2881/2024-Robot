@@ -27,8 +27,14 @@ public class ObjectSensor {
     return result.hasTargets() ? result.getBestTarget().getYaw() : Double.NaN;
   }
 
+  public double getTargetArea() {
+    PhotonPipelineResult result = getLatestResult();
+    return result.hasTargets() ? result.getBestTarget().getArea() : Double.NaN;
+  }
+
   public void updateTelemetry() {
     SmartDashboard.putBoolean(m_topicName + "/HasTarget", hasTarget());
     SmartDashboard.putNumber(m_topicName + "/Target/Yaw", getTargetYaw());
+    SmartDashboard.putNumber(m_topicName + "/Target/Area", getTargetArea());
   }
 }
