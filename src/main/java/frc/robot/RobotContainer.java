@@ -218,14 +218,23 @@ public class RobotContainer {
     m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands.auto_10_1());
     m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands.auto_1_0_1());
     m_autoChooser.addOption("[ 1 ] _0_1_4", m_autoCommands.auto_1_0_1_4());
+    m_autoChooser.addOption("[ 1 ] _0_1_4_5", m_autoCommands.auto_1_0_1_4_5());
+    m_autoChooser.addOption("[ 1 ] _0_1_5", m_autoCommands.auto_1_0_1_5());
+    m_autoChooser.addOption("[ 1 ] _0_1_5_6", m_autoCommands.auto_1_0_1_5_6());
+
 
     m_autoChooser.addOption("[ 2 ] 0", m_autoCommands.auto_0());
     m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands.auto_20_2());
     m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands.auto_2_0_2());
+    m_autoChooser.addOption("[ 2 ] _0_2_6", m_autoCommands.auto_2_0_2_6());
+    m_autoChooser.addOption("[ 2 ] _0_2_6_7", m_autoCommands.auto_2_0_2_6_7());
+    m_autoChooser.addOption("[ 2 ] _0_2_7", m_autoCommands.auto_2_0_2_7());
 
     m_autoChooser.addOption("[ 3 ] 0", m_autoCommands.auto_0());
     m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands.auto_30_3());
     m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands.auto_3_0_3());
+    m_autoChooser.addOption("[ 3 ] _0_3_8", m_autoCommands.auto_3_0_3_8());
+    m_autoChooser.addOption("[ 3 ] _0_3_8_7", m_autoCommands.auto_3_0_3_8_7());
 
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }

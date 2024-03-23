@@ -89,7 +89,7 @@ public final class Constants {
 
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
-    public static final PathConstraints kPathFindingConstraints = new PathConstraints(6.0, 3.6, Units.degreesToRadians(720), Units.degreesToRadians(960));
+    public static final PathConstraints kPathFindingConstraints = new PathConstraints(1.0, 1.0, Units.degreesToRadians(720), Units.degreesToRadians(960));
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;
@@ -316,8 +316,8 @@ public final class Constants {
         entry(AutoPath.Pickup6, PathPlannerPath.fromPathFile("Pickup6")), // TODO: validate pickup 6 path
         // entry(AutoPath.Pickup7, PathPlannerPath.fromPathFile("Pickup7")), // TODO: create pickup 7 path
         entry(AutoPath.Pickup8, PathPlannerPath.fromPathFile("Pickup8")), // TODO: validate pickup 8 path
-        entry(AutoPath.ScoreStage1, PathPlannerPath.fromPathFile("ScoreStage1"))
-        // entry(AutoPath.ScoreStage2, PathPlannerPath.fromPathFile("ScoreStage2")), // TODO: create score stage 2 path
+        entry(AutoPath.ScoreStage1, PathPlannerPath.fromPathFile("ScoreStage1")),
+        entry(AutoPath.ScoreStage2, PathPlannerPath.fromPathFile("ScoreStage2"))
         // entry(AutoPath.ScoreStage3, PathPlannerPath.fromPathFile("ScoreStage3")), // TODO: create score stage 3 path
         // entry(AutoPath.MoveOut3, PathPlannerPath.fromPathFile("MoveOut3")) // TODO: create move out 3 path
       );

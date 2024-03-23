@@ -52,7 +52,7 @@ public class AutoCommands {
     m_gameCommmands.runIntakeAutoCommand()
     .deadlineWith(move(path))
     // TODO: configure timeout length for real auto progression and simulated auto runs for testing paths (set timeout to account for longest possible path to pickup)
-    .withTimeout(3.0)
+    .withTimeout(8.0)
     .withName("PickupWithPath");
   }
 
@@ -61,7 +61,7 @@ public class AutoCommands {
     m_gameCommmands.runIntakeAutoCommand()
     .deadlineWith(move(pose))
     // TODO: configure timeout length for real auto progression and simulated auto runs for testing paths (set timeout to account for longest possible path to pickup)
-    .withTimeout(3.0)
+    .withTimeout(8.0)
     .withName("PickupAtPose");
   }
 
@@ -148,6 +148,57 @@ public class AutoCommands {
     .withName("Auto_1_0_1_4");
   } 
 
+  public Command auto_1_0_1_4_5() {
+    return 
+    Commands.sequence(
+      move(pose(AutoPose.ScorePreload1)),
+      score(),
+      pickup(pose(AutoPose.Pickup1)),
+      score(), 
+      pickup(path(AutoPath.Pickup4)),
+      move(path(AutoPath.ScoreStage1)),
+      score(),
+      pickup(path(AutoPath.Pickup5)),
+      move(path(AutoPath.ScoreStage1)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto_1_0_1_4_5");
+  } 
+
+  public Command auto_1_0_1_5() {
+    return 
+    Commands.sequence(
+      move(pose(AutoPose.ScorePreload1)),
+      score(),
+      pickup(pose(AutoPose.Pickup1)),
+      score(), 
+      pickup(path(AutoPath.Pickup5)),
+      move(path(AutoPath.ScoreStage1)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto_1_0_1_5");
+  } 
+
+  public Command auto_1_0_1_5_6() {
+    return 
+    Commands.sequence(
+      move(pose(AutoPose.ScorePreload1)),
+      score(),
+      pickup(pose(AutoPose.Pickup1)),
+      score(), 
+      pickup(path(AutoPath.Pickup5)),
+      move(path(AutoPath.ScoreStage1)),
+      score(),
+      pickup(path(AutoPath.Pickup6)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto_1_0_1_5_6");
+  } 
+
   public Command auto_20_2() {
     return 
     Commands.sequence(
@@ -164,11 +215,59 @@ public class AutoCommands {
     Commands.sequence(
       move(path(AutoPath.ScorePreload2)),
       score(),
-      pickup(pose(AutoPose.Pickup2)),
+      pickup(path(AutoPath.Pickup2)),
       score()
     )
     .deadlineWith(start())
     .withName("Auto_2_0_2");
+  } 
+
+  public Command auto_2_0_2_6() {
+    return 
+    Commands.sequence(
+      move(pose(AutoPose.ScorePreload2)),
+      score(),
+      pickup(pose(AutoPose.Pickup2)),
+      score(), 
+      pickup(path(AutoPath.Pickup6)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto_2_0_2_6");
+  } 
+
+  public Command auto_2_0_2_6_7() {
+    return 
+    Commands.sequence(
+      move(pose(AutoPose.ScorePreload2)),
+      score(),
+      pickup(pose(AutoPose.Pickup2)),
+      score(), 
+      pickup(path(AutoPath.Pickup6)),
+      move(path(AutoPath.ScoreStage2)),
+      score(),
+      pickup(path(AutoPath.Pickup7)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto_2_0_2_6_7");
+  } 
+
+  public Command auto_2_0_2_7() {
+    return 
+    Commands.sequence(
+      move(pose(AutoPose.ScorePreload2)),
+      score(),
+      pickup(pose(AutoPose.Pickup2)),
+      score(), 
+      pickup(path(AutoPath.Pickup7)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto_2_0_2_7");
   } 
 
   public Command auto_30_3() {
@@ -179,7 +278,7 @@ public class AutoCommands {
       score()
     )
     .deadlineWith(start())
-    .withName("Auto_20_2");
+    .withName("Auto_30_3");
   }
 
   public Command auto_3_0_3() {
@@ -192,5 +291,38 @@ public class AutoCommands {
     )
     .deadlineWith(start())
     .withName("Auto_3_0_3");
+  } 
+
+  public Command auto_3_0_3_8() {
+    return 
+    Commands.sequence(
+      move(pose(AutoPose.ScorePreload3)),
+      score(),
+      pickup(pose(AutoPose.Pickup3)),
+      score(),
+      pickup(path(AutoPath.Pickup8)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto_3_0_3_8");
+  } 
+
+  public Command auto_3_0_3_8_7() {
+    return 
+    Commands.sequence(
+      move(pose(AutoPose.ScorePreload3)),
+      score(),
+      pickup(pose(AutoPose.Pickup3)),
+      score(),
+      pickup(path(AutoPath.Pickup8)),
+      move(path(AutoPath.ScoreStage2)),
+      score(),
+      pickup(path(AutoPath.Pickup7)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto_3_0_3_8_7");
   } 
 }
