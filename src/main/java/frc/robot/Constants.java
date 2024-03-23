@@ -308,18 +308,18 @@ public final class Constants {
         entry(AutoPath.ScorePreload1, PathPlannerPath.fromPathFile("ScorePreload1")),
         entry(AutoPath.ScorePreload2, PathPlannerPath.fromPathFile("ScorePreload2")),
         entry(AutoPath.ScorePreload3, PathPlannerPath.fromPathFile("ScorePreload3")),
-        entry(AutoPath.Pickup1, PathPlannerPath.fromPathFile("Pickup1")), // TODO: validate/fix pickup 1 path
-        entry(AutoPath.Pickup2, PathPlannerPath.fromPathFile("Pickup2")), // TODO: validate/fix pickup 2 path
-        entry(AutoPath.Pickup3, PathPlannerPath.fromPathFile("Pickup3")), // TODO: validate/fix pickup 3 path
+        entry(AutoPath.Pickup1, PathPlannerPath.fromPathFile("Pickup1")),
+        entry(AutoPath.Pickup2, PathPlannerPath.fromPathFile("Pickup2")),
+        entry(AutoPath.Pickup3, PathPlannerPath.fromPathFile("Pickup3")),
         entry(AutoPath.Pickup4, PathPlannerPath.fromPathFile("Pickup4")),
-        entry(AutoPath.Pickup5, PathPlannerPath.fromPathFile("Pickup5")), // TODO: validate pickup 5 path
-        entry(AutoPath.Pickup6, PathPlannerPath.fromPathFile("Pickup6")), // TODO: validate pickup 6 path
-        // entry(AutoPath.Pickup7, PathPlannerPath.fromPathFile("Pickup7")), // TODO: create pickup 7 path
-        entry(AutoPath.Pickup8, PathPlannerPath.fromPathFile("Pickup8")), // TODO: validate pickup 8 path
+        entry(AutoPath.Pickup5, PathPlannerPath.fromPathFile("Pickup5")),
+        entry(AutoPath.Pickup6, PathPlannerPath.fromPathFile("Pickup6")),
+        entry(AutoPath.Pickup72, PathPlannerPath.fromPathFile("Pickup72")),
+        entry(AutoPath.Pickup73, PathPlannerPath.fromPathFile("Pickup73")),
+        entry(AutoPath.Pickup8, PathPlannerPath.fromPathFile("Pickup8")),
         entry(AutoPath.ScoreStage1, PathPlannerPath.fromPathFile("ScoreStage1")),
-        entry(AutoPath.ScoreStage2, PathPlannerPath.fromPathFile("ScoreStage2"))
-        // entry(AutoPath.ScoreStage3, PathPlannerPath.fromPathFile("ScoreStage3")), // TODO: create score stage 3 path
-        // entry(AutoPath.MoveOut3, PathPlannerPath.fromPathFile("MoveOut3")) // TODO: create move out 3 path
+        entry(AutoPath.ScoreStage2, PathPlannerPath.fromPathFile("ScoreStage2")),
+        entry(AutoPath.ScoreStage3, PathPlannerPath.fromPathFile("ScoreStage3"))
       );
     }
   }

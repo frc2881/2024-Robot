@@ -36,13 +36,11 @@ public class Enums {
     Pickup4,
     Pickup5,
     Pickup6,
-    Pickup7,
+    Pickup72,
+    Pickup73,
     Pickup8,
     ScoreStage1,
     ScoreStage2,
-    ScoreStage3,
-    MoveOut1,
-    MoveOut2,
-    MoveOut3;
+    ScoreStage3;
   }
 }

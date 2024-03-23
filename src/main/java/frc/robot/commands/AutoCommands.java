@@ -247,7 +247,7 @@ public class AutoCommands {
       pickup(path(AutoPath.Pickup6)),
       move(path(AutoPath.ScoreStage2)),
       score(),
-      pickup(path(AutoPath.Pickup7)),
+      pickup(path(AutoPath.Pickup72)),
       move(path(AutoPath.ScoreStage2)),
       score()
     )
@@ -262,7 +262,7 @@ public class AutoCommands {
       score(),
       pickup(pose(AutoPose.Pickup2)),
       score(), 
-      pickup(path(AutoPath.Pickup7)),
+      pickup(path(AutoPath.Pickup72)),
       move(path(AutoPath.ScoreStage2)),
       score()
     )
@@ -318,7 +318,7 @@ public class AutoCommands {
       pickup(path(AutoPath.Pickup8)),
       move(path(AutoPath.ScoreStage2)),
       score(),
-      pickup(path(AutoPath.Pickup7)),
+      pickup(path(AutoPath.Pickup73)),
       move(path(AutoPath.ScoreStage2)),
       score()
     )
