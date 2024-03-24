@@ -253,7 +253,7 @@ public final class Constants {
       );
       public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
       public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
-      public static final double kMaxTargetPoseAmbiguity = 0.4;
+      public static final double kMaxTargetPoseAmbiguity = 0.2;
       public static final double kMaxTargetsAverageDistance = 4.0;
       public static final Matrix<N3, N1> kStateStandardDeviations = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
       public static final Matrix<N3, N1> kVisionStandardDeviations = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10));
