@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
+import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.sensors.BeamBreakSensor;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -12,6 +13,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
 import frc.robot.subsystems.LauncherRollerSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
+import frc.robot.subsystems.TrapBlowerSubsystem;
 
 public class GameCommands {  
   private final BeamBreakSensor m_launcherBottomBeamBreakSensor;
@@ -22,6 +24,7 @@ public class GameCommands {
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ClimberSubsystem m_climberSubsystem;
+  private final TrapBlowerSubsystem m_trapBlowerSubsytem;
   private final GameController m_driverController;
   private final GameController m_operatorControlller;
   
@@ -34,6 +37,7 @@ public class GameCommands {
     LauncherArmSubsystem launcherArmSubsystem,
     LauncherRollerSubsystem launcherRollerSubsystem,
     ClimberSubsystem climberSubsystem,
+    TrapBlowerSubsystem trapBlowerSubsystem,
     GameController driverController,
     GameController operatorControlller
   ) {
@@ -45,6 +49,7 @@ public class GameCommands {
     m_launcherArmSubsystem = launcherArmSubsystem;
     m_launcherRollerSubsystem = launcherRollerSubsystem;
     m_climberSubsystem = climberSubsystem;
+    m_trapBlowerSubsytem = trapBlowerSubsystem;
     m_driverController = driverController;
     m_operatorControlller = operatorControlller;
   }
@@ -81,7 +86,7 @@ public class GameCommands {
   public Command runReloadCommand() {
     return Commands.sequence(
       m_intakeSubsystem.runEjectCommand().withTimeout(0.23),
-      m_intakeSubsystem.runIntakeCommand(m_launcherTopBeamBreakSensor::hasTarget, m_launcherBottomBeamBreakSensor::hasTarget)
+      runIntakeCommand()
     )
     .withName("RunReload");
   }
@@ -89,7 +94,8 @@ public class GameCommands {
   public Command alignRobotToTargetCommand() {
     return
     m_driveSubsystem.alignToTargetCommand(m_poseSubsystem::getPose, m_poseSubsystem::getTargetYaw)
-    .andThen(rumbleControllersCommand(true, true))
+    .deadlineWith(rumbleControllersCommand(false, true))
+    .andThen(rumbleControllersCommand(true, false))
     .withName("AlignRobotToTarget");
   }
 
@@ -137,6 +143,16 @@ public class GameCommands {
   public Command alignLauncherToAmpCommand(boolean isRollersEnabled) {
     return
     m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionAmp)
+    .alongWith(
+      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kAmpLauncherSpeeds)
+      .onlyIf(() -> isRollersEnabled)
+    )
+    .withName("AlignLauncherToAmp");
+  }
+
+  public Command alignLauncherToTrapCommand(boolean isRollersEnabled) {
+    return
+    m_launcherArmSubsystem.alignToPositionCommand(13.3) // 13.42
     .alongWith(
       m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kAmpLauncherSpeeds)
       .onlyIf(() -> isRollersEnabled)
@@ -199,6 +215,17 @@ public class GameCommands {
       m_driveSubsystem.clearTargetAlignment();
       m_launcherArmSubsystem.clearTargetAlignment(); 
     })
+    .withName("RunLauncherForAmp");
+  }
+
+  public Command runLauncherForTrapCommand() {
+    return 
+    m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.6, 0.61)) //0.39, 0.41
+    .alongWith(
+      Commands.waitSeconds(0.5)
+      .andThen(m_intakeSubsystem.runLaunchCommand())
+    )
+    .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
     .withName("RunLauncherForAmp");
   }
 

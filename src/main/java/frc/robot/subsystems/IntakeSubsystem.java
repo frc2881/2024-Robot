@@ -70,13 +70,13 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command runIntakeAutoCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
-      runTopBelts(MotorDirection.Forward, 0.85); 
-      runBottomBelts(MotorDirection.Forward, 0.85);
+      runTopBelts(MotorDirection.Forward, 0.74); 
+      runBottomBelts(MotorDirection.Forward, 0.74);
       runRollers(MotorDirection.Reverse);
     }, () -> {})
     .onlyWhile(() -> !launcherBottomHasTarget.get())
     .andThen(
-      new WaitCommand(0.01)
+      new WaitCommand(0.019)
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None);

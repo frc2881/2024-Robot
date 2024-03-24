@@ -33,6 +33,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
 import frc.robot.subsystems.LauncherRollerSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
+import frc.robot.subsystems.TrapBlowerSubsystem;
 
 public class RobotContainer {
   private final PowerDistribution m_powerDistribution;
@@ -49,6 +50,7 @@ public class RobotContainer {
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ClimberSubsystem m_climberSubsystem;
+  private final TrapBlowerSubsystem m_trapBlowerSubsystem;
   private final LightsController m_lightsController;
   private final GameCommands m_gameCommands;
   private final AutoCommands m_autoCommands;
@@ -106,6 +108,7 @@ public class RobotContainer {
     m_launcherArmSubsystem = new LauncherArmSubsystem();
     m_launcherRollerSubsystem = new LauncherRollerSubsystem();
     m_driveSubsystem = new DriveSubsystem(m_gyroSensor::getHeading);
+    m_trapBlowerSubsystem = new TrapBlowerSubsystem();
     m_poseSubsystem = new PoseSubsystem(m_poseSensors, m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
     
     // COMMANDS ========================================
@@ -118,6 +121,7 @@ public class RobotContainer {
       m_launcherArmSubsystem, 
       m_launcherRollerSubsystem, 
       m_climberSubsystem, 
+      m_trapBlowerSubsystem,
       m_driverController, 
       m_operatorController
     );
@@ -145,7 +149,7 @@ public class RobotContainer {
     // m_driverController.povDown().whileTrue(Commands.none()); 
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     // m_driverController.b().whileTrue(Commands.none());
-    // m_driverController.y().whileTrue(Commands.none());
+    m_driverController.y().whileTrue(m_trapBlowerSubsystem.runCommand());
     m_driverController.x().whileTrue(m_gameCommands.runLauncherForShuttleCommand());
     m_driverController.start().onTrue(m_gyroSensor.calibrateCommand());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
@@ -154,7 +158,7 @@ public class RobotContainer {
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
-    // m_operatorController.rightBumper().whileTrue(Commands.none());
+    m_operatorController.rightBumper().whileTrue(m_gameCommands.runLauncherForTrapCommand());
     m_operatorController.leftTrigger().whileTrue(m_gameCommands.runLauncherForAmpCommand());
     m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(true));
     // m_operatorController.leftStick().whileTrue(Commands.none());
@@ -164,9 +168,9 @@ public class RobotContainer {
     m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionShortRange, true));  
     m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
     m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand(true)); 
-    m_operatorController.y().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
-    m_operatorController.b().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
-    // m_operatorController.x().whileTrue(Commands.none());
+    // m_operatorController.y().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
+    // m_operatorController.b().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
+    m_operatorController.x().whileTrue(m_gameCommands.alignLauncherToTrapCommand(false));
     m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.back().whileTrue(m_climberSubsystem.resetCommand());
   }
@@ -220,6 +224,7 @@ public class RobotContainer {
     m_autoChooser.addOption("[ 1 ] _0_1_4", m_autoCommands.auto_1_0_1_4());
     m_autoChooser.addOption("[ 1 ] _0_1_4_5", m_autoCommands.auto_1_0_1_4_5());
     m_autoChooser.addOption("[ 1 ] _0_1_5", m_autoCommands.auto_1_0_1_5());
+    m_autoChooser.addOption("[ 1 ] _0_1_5_4", m_autoCommands.auto_1_0_1_5_4());
     m_autoChooser.addOption("[ 1 ] _0_1_5_6", m_autoCommands.auto_1_0_1_5_6());
 
 
@@ -227,6 +232,7 @@ public class RobotContainer {
     m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands.auto_20_2());
     m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands.auto_2_0_2());
     m_autoChooser.addOption("[ 2 ] _0_2_6", m_autoCommands.auto_2_0_2_6());
+    m_autoChooser.addOption("[ 2 ] _0_2_6_5", m_autoCommands.auto_2_0_2_6_5());
     m_autoChooser.addOption("[ 2 ] _0_2_6_7", m_autoCommands.auto_2_0_2_6_7());
     m_autoChooser.addOption("[ 2 ] _0_2_7", m_autoCommands.auto_2_0_2_7());
 
@@ -235,6 +241,10 @@ public class RobotContainer {
     m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands.auto_3_0_3());
     m_autoChooser.addOption("[ 3 ] _0_3_8", m_autoCommands.auto_3_0_3_8());
     m_autoChooser.addOption("[ 3 ] _0_3_8_7", m_autoCommands.auto_3_0_3_8_7());
+    m_autoChooser.addOption("[ 3 ] 0_7", m_autoCommands.auto_30_7());
+    m_autoChooser.addOption("[ 3 ] 0_7_8", m_autoCommands.auto_30_7_8());
+    m_autoChooser.addOption("[ 3 ] 0_8", m_autoCommands.auto_30_8());
+    m_autoChooser.addOption("[ 3 ] 0_8_7", m_autoCommands.auto_30_8_7());
 
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }

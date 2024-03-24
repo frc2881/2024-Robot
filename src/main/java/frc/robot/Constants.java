@@ -89,7 +89,7 @@ public final class Constants {
 
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
-    public static final PathConstraints kPathFindingConstraints = new PathConstraints(1.0, 1.0, Units.degreesToRadians(720), Units.degreesToRadians(960));
+    public static final PathConstraints kPathFindingConstraints = new PathConstraints(6.0, 3.9, Units.degreesToRadians(540), Units.degreesToRadians(720));
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;
@@ -192,8 +192,8 @@ public final class Constants {
     public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
       new LauncherArmPosition(1.00, 13),
       new LauncherArmPosition(1.35, 12.7),
-      new LauncherArmPosition(2.3, 8.5),
-      new LauncherArmPosition(3.65, 6.24),
+      new LauncherArmPosition(2.3, 8.0), // 8.5
+      new LauncherArmPosition(3.65, 6.2),
       new LauncherArmPosition(5.0, 4.3),
       new LauncherArmPosition(6.2, 4.0)
     };
@@ -252,7 +252,7 @@ public final class Constants {
       );
       public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
       public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
-      public static final double kMaxTargetPoseAmbiguity = 0.2;
+      public static final double kMaxTargetPoseAmbiguity = 0.4;
       public static final double kMaxTargetsAverageDistance = 4.0;
       public static final Matrix<N3, N1> kStateStandardDeviations = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
       public static final Matrix<N3, N1> kVisionStandardDeviations = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10));
