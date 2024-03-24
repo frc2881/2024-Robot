@@ -66,17 +66,16 @@ public class IntakeSubsystem extends SubsystemBase {
     .withName("RunIntake");
   }
 
-  // TODO: validate that hard-coded 85% is correct vs. teleop setting of 70%
   public Command runIntakeAutoCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return
     startEnd(() -> {
-      runTopBelts(MotorDirection.Forward, 0.74); 
-      runBottomBelts(MotorDirection.Forward, 0.74);
+      runTopBelts(MotorDirection.Forward, 0.75); 
+      runBottomBelts(MotorDirection.Forward, 0.75);
       runRollers(MotorDirection.Reverse);
     }, () -> {})
     .onlyWhile(() -> !launcherBottomHasTarget.get())
     .andThen(
-      new WaitCommand(0.019)
+      new WaitCommand(0.02)
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None);

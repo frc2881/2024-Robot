@@ -15,10 +15,12 @@ public class TrapBlowerSubsystem extends SubsystemBase {
     m_blowerMotor = new CANSparkMax(14, MotorType.kBrushless);
     m_blowerMotor.restoreFactoryDefaults();
     m_blowerMotor.setIdleMode(IdleMode.kCoast); 
-    m_blowerMotor.setSmartCurrentLimit(40);
-    m_blowerMotor.setSecondaryCurrentLimit(40);
+    m_blowerMotor.setSmartCurrentLimit(60);
+    m_blowerMotor.setSecondaryCurrentLimit(60);
     m_blowerMotor.burnFlash();
   }
+
+  // TODO: Make an auto align for trap using last years node code
 
   public Command runCommand() {
     return 

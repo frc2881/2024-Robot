@@ -88,10 +88,10 @@ public class LauncherArmSubsystem extends SubsystemBase {
     .until(() -> m_isAlignedToTarget);
   }
   
-  public Command alignToTargetCommand(Supplier<Double> targetDistance) {
+  public Command alignToSpeakerCommand(Supplier<Double> targetDistance) {
     return
     run(() -> {
-      double position = calculatePositionForTarget(targetDistance.get()); 
+      double position = calculatePositionForSpeaker(targetDistance.get()); 
       m_armPIDController.setReference(position, ControlType.kSmartMotion);
       m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < Constants.Launcher.kArmTargetAlignmentPositionTolerance;
     })
@@ -100,13 +100,13 @@ public class LauncherArmSubsystem extends SubsystemBase {
     .withName("AlignLauncherArmToTarget");
   }
 
-  public Command alignToTargetAutoCommand(Supplier<Double> targetDistance) {
+  public Command alignToSpeakerAutoCommand(Supplier<Double> targetDistance) {
     return
-    alignToTargetCommand(targetDistance)
+    alignToSpeakerCommand(targetDistance)
     .until(() -> m_isAlignedToTarget);
   }
 
-  private double calculatePositionForTarget(double distance) {
+  private double calculatePositionForSpeaker(double distance) {
     double position = Utils.getLinearInterpolation(m_distances, m_positions, distance);
     SmartDashboard.putNumber("CalculatedLauncherPosition", position);
     return 

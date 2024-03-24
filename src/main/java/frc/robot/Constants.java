@@ -81,8 +81,8 @@ public final class Constants {
     public static final double kDriftCorrectionThetaControllerVelocityTolerance = 0.5;
 
     public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01, 0);
-    public static final double kTargetAlignmentThetaControllerPositionTolerance = 1.0;
-    public static final double kTargetAlignmentThetaControllerVelocityTolerance = 1.0;
+    public static final double kTargetAlignmentThetaControllerPositionTolerance = 0.5;
+    public static final double kTargetAlignmentThetaControllerVelocityTolerance = 0.5;
 
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
@@ -184,6 +184,7 @@ public final class Constants {
     // TODO: validate fixed distance position values based on event tuning of linear interpolation values
     public static final double kArmPositionIntake = 7.0;
     public static final double kArmPositionAmp = 13;
+    public static final double kArmPositionTrap = 13.3;
     public static final double kArmPositionSubwoofer = 12.9; // 1.35m
     public static final double kArmPositionShortRange = 10.35; // 1.84m
     public static final double kArmPositionMidRange = 7.3; // 2.78m
@@ -292,6 +293,11 @@ public final class Constants {
         public static final double kSpeakerTargetYawTransformX = Units.inchesToMeters(6);
         public static final double kSpeakerTargetPitchTransformZ = Units.inchesToMeters(24);
         public static final double kSpeakerTargetDistanceTransformX = Units.inchesToMeters(0);
+
+        // Trap Positions (BLUE)
+        // Right: 4.3, 3.0
+        // Left: 4.2, 5.1
+        // Middle: 6.1, 4.1
       }
     }
 

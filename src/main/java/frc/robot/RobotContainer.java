@@ -18,8 +18,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.GameCommands;
+import frc.robot.lib.common.Enums.LauncherAlignmentTarget;
 import frc.robot.lib.common.Enums.LightsMode;
-import frc.robot.lib.common.Enums.MotorDirection;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
@@ -137,8 +137,8 @@ public class RobotContainer {
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
     m_driverController.leftTrigger().whileTrue(m_gameCommands.alignLauncherForShuttleCommand());
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand());
-    m_driverController.leftBumper().whileTrue(m_gameCommands.runReloadCommand());
-    m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
+    m_driverController.leftBumper().whileTrue(m_gameCommands.runEjectCommand());
+    m_driverController.rightBumper().whileTrue(m_gameCommands.runLauncherForShuttleCommand());
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     m_driverController.rightStick().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     // m_driverController.povLeft().whileTrue(Commands.none());
@@ -146,31 +146,38 @@ public class RobotContainer {
     // m_driverController.povRight().whileTrue(Commands.none());
     // m_driverController.povDown().whileTrue(Commands.none()); 
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
-    // m_driverController.b().whileTrue(Commands.none());
-    m_driverController.y().whileTrue(m_trapBlowerSubsystem.runCommand());
-    m_driverController.x().whileTrue(m_gameCommands.runLauncherForShuttleCommand());
+    m_driverController.b().whileTrue(m_gameCommands.runReloadCommand());
+    // m_driverController.y().whileTrue(m_trapBlowerSubsystem.runCommand());
+    //m_driverController.x().whileTrue(m_gameCommands.runLauncherForShuttleCommand());
     m_driverController.start().onTrue(m_gyroSensor.calibrateCommand());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
-    m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
+    m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherForTargetCommand());
     m_operatorController.rightBumper().whileTrue(m_gameCommands.runLauncherForTrapCommand());
-    m_operatorController.leftTrigger().whileTrue(m_gameCommands.runLauncherForAmpCommand());
-    m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(true));
+    m_operatorController.leftTrigger().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand(true));
+    m_operatorController.leftBumper()
+      .whileTrue(m_gameCommands.alignLauncherToTrapOrAmpCommand())
+      .onTrue(m_gameCommands.setLauncherTarget(LauncherAlignmentTarget.Amp)
+        .onlyIf(() -> m_gameCommands.m_launcherTarget != LauncherAlignmentTarget.Trap))
+      .onFalse(m_gameCommands.setLauncherTarget(LauncherAlignmentTarget.Speaker));
     // m_operatorController.leftStick().whileTrue(Commands.none());
     // m_operatorController.rightStick().whileTrue(Commands.none());
     m_operatorController.povLeft().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionLongRange, true));
     m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true));  
     m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionShortRange, true));  
     m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
-    m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToTargetCommand(true)); 
-    // m_operatorController.y().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Forward));
-    // m_operatorController.b().whileTrue(m_climberSubsystem.runRollersCommand(MotorDirection.Reverse));
-    m_operatorController.x().whileTrue(m_gameCommands.alignLauncherToTrapCommand(false));
-    m_operatorController.start().whileTrue(m_launcherArmSubsystem.resetCommand());
-    m_operatorController.back().whileTrue(m_climberSubsystem.resetCommand());
+    //m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand(true)); 
+    // m_operatorController.y().whileTrue();
+    // m_operatorController.b().whileTrue();
+    m_operatorController.x().whileTrue(m_trapBlowerSubsystem.runCommand())
+      .onTrue(m_gameCommands.setLauncherTarget(LauncherAlignmentTarget.Trap))
+      .onFalse(m_gameCommands.setLauncherTarget(LauncherAlignmentTarget.Speaker));
+    // m_operatorController.x().whileTrue(m_gameCommands.alignLauncherToTrapCommand(false));
+    m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetCommand());
+    m_operatorController.start().whileTrue(m_climberSubsystem.resetCommand());
   }
 
   private void configureTriggers() {
@@ -214,35 +221,43 @@ public class RobotContainer {
 
     m_autoChooser.setDefaultOption("None", Commands.none());
 
-    m_autoChooser.addOption("TEST", m_autoCommands.auto_test());
+    //m_autoChooser.addOption("TEST", m_autoCommands.auto_test());
 
-    m_autoChooser.addOption("[ 1 ] 0", m_autoCommands.auto_0());
-    m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands.auto_10_1());
-    m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands.auto_1_0_1());
-    m_autoChooser.addOption("[ 1 ] _0_1_4", m_autoCommands.auto_1_0_1_4());
-    m_autoChooser.addOption("[ 1 ] _0_1_4_5", m_autoCommands.auto_1_0_1_4_5());
-    m_autoChooser.addOption("[ 1 ] _0_1_5", m_autoCommands.auto_1_0_1_5());
-    m_autoChooser.addOption("[ 1 ] _0_1_5_4", m_autoCommands.auto_1_0_1_5_4());
-    m_autoChooser.addOption("[ 1 ] _0_1_5_6", m_autoCommands.auto_1_0_1_5_6());
+    // m_autoChooser.addOption("[ 1 ] 0", m_autoCommands.auto_0());
+    // m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands.auto_10_1());
+    // m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands.auto_1_0_1());
+    // m_autoChooser.addOption("[ 1 ] _0_1_4", m_autoCommands.auto_1_0_1_4());
+    // m_autoChooser.addOption("[ 1 ] _0_1_4_5", m_autoCommands.auto_1_0_1_4_5());
+    // m_autoChooser.addOption("[ 1 ] _0_1_5", m_autoCommands.auto_1_0_1_5());
+    // m_autoChooser.addOption("[ 1 ] _0_1_5_4", m_autoCommands.auto_1_0_1_5_4());
+    // m_autoChooser.addOption("[ 1 ] _0_1_5_6", m_autoCommands.auto_1_0_1_5_6());
 
+    // m_autoChooser.addOption("[ 2 ] 0", m_autoCommands.auto_0());
+    // m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands.auto_20_2());
+    // m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands.auto_2_0_2());
+    // m_autoChooser.addOption("[ 2 ] _0_2_6", m_autoCommands.auto_2_0_2_6());
+    // m_autoChooser.addOption("[ 2 ] _0_2_6_5", m_autoCommands.auto_2_0_2_6_5());
+    // m_autoChooser.addOption("[ 2 ] _0_2_6_7", m_autoCommands.auto_2_0_2_6_7());
+    // m_autoChooser.addOption("[ 2 ] _0_2_7", m_autoCommands.auto_2_0_2_7());
+    // m_autoChooser.addOption("[ 2 ] _0_2_7_6", m_autoCommands.auto_2_0_2_7_6());
 
-    m_autoChooser.addOption("[ 2 ] 0", m_autoCommands.auto_0());
-    m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands.auto_20_2());
-    m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands.auto_2_0_2());
-    m_autoChooser.addOption("[ 2 ] _0_2_6", m_autoCommands.auto_2_0_2_6());
-    m_autoChooser.addOption("[ 2 ] _0_2_6_5", m_autoCommands.auto_2_0_2_6_5());
-    m_autoChooser.addOption("[ 2 ] _0_2_6_7", m_autoCommands.auto_2_0_2_6_7());
-    m_autoChooser.addOption("[ 2 ] _0_2_7", m_autoCommands.auto_2_0_2_7());
-
-    m_autoChooser.addOption("[ 3 ] 0", m_autoCommands.auto_0());
-    m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands.auto_30_3());
-    m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands.auto_3_0_3());
-    m_autoChooser.addOption("[ 3 ] _0_3_8", m_autoCommands.auto_3_0_3_8());
-    m_autoChooser.addOption("[ 3 ] _0_3_8_7", m_autoCommands.auto_3_0_3_8_7());
-    m_autoChooser.addOption("[ 3 ] 0_7", m_autoCommands.auto_30_7());
-    m_autoChooser.addOption("[ 3 ] 0_7_8", m_autoCommands.auto_30_7_8());
-    m_autoChooser.addOption("[ 3 ] 0_8", m_autoCommands.auto_30_8());
-    m_autoChooser.addOption("[ 3 ] 0_8_7", m_autoCommands.auto_30_8_7());
+    // m_autoChooser.addOption("[ 3 ] 0", m_autoCommands.auto_0());
+    // m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands.auto_30_3());
+    // m_autoChooser.addOption("[ 3 ] 0_7", m_autoCommands.auto_30_7());
+    // m_autoChooser.addOption("[ 3 ] 0_7_8", m_autoCommands.auto_30_7_8());
+    // m_autoChooser.addOption("[ 3 ] 0_8", m_autoCommands.auto_30_8());
+    // m_autoChooser.addOption("[ 3 ] 0_8_7", m_autoCommands.auto_30_8_7());
+    // m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands.auto_3_0_3());
+    // m_autoChooser.addOption("[ 3 ] _0_3_82", m_autoCommands.auto_3_0_3_82());
+    // m_autoChooser.addOption("[ 3 ] _0_3_83", m_autoCommands.auto_3_0_3_83());
+    // m_autoChooser.addOption("[ 3 ] _0_3_82_62", m_autoCommands.auto_3_0_3_82_62());
+    // // m_autoChooser.addOption("[ 3 ] _0_3_82_63", m_autoCommands.auto_3_0_3_82_63());
+    // m_autoChooser.addOption("[ 3 ] _0_3_82_72", m_autoCommands.auto_3_0_3_82_72());
+    // m_autoChooser.addOption("[ 3 ] _0_3_82_73", m_autoCommands.auto_3_0_3_82_73());
+    // m_autoChooser.addOption("[ 3 ] _0_3_83_62", m_autoCommands.auto_3_0_3_83_62());
+    // // m_autoChooser.addOption("[ 3 ] _0_3_83_63", m_autoCommands.auto_3_0_3_83_63());
+    m_autoChooser.addOption("[ 3 ] _0_3_83_72", m_autoCommands.auto_3_0_3_83_72());
+    // m_autoChooser.addOption("[ 3 ] _0_3_83_73", m_autoCommands.auto_3_0_3_83_73());
 
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }

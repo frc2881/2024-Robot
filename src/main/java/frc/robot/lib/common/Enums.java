@@ -9,6 +9,7 @@ public class Enums {
   public static enum DriveSpeedMode { Competition, Training; }
   public static enum DriveLockState { Unlocked, Locked; }
   public static enum DriveDriftCorrection { Enabled, Disabled; }
+  public static enum LauncherAlignmentTarget { Speaker, Amp, Trap; }
 
   public static enum LightsMode { 
     Default, 
