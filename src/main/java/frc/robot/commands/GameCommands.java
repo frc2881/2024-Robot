@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -24,10 +25,10 @@ public class GameCommands {
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ClimberSubsystem m_climberSubsystem;
-  private final TrapBlowerSubsystem m_trapBlowerSubsytem;
+  private final TrapBlowerSubsystem m_trapBlowerSubsystem;
   private final GameController m_driverController;
   private final GameController m_operatorControlller;
-  
+
   public GameCommands( 
     BeamBreakSensor launcherBottomBeamBreakSensor,
     BeamBreakSensor launcherTopBeamBreakSensor,
@@ -49,9 +50,14 @@ public class GameCommands {
     m_launcherArmSubsystem = launcherArmSubsystem;
     m_launcherRollerSubsystem = launcherRollerSubsystem;
     m_climberSubsystem = climberSubsystem;
-    m_trapBlowerSubsytem = trapBlowerSubsystem;
+    m_trapBlowerSubsystem = trapBlowerSubsystem;
     m_driverController = driverController;
     m_operatorControlller = operatorControlller;
+
+    SmartDashboard.putNumber("Robot/Launcher/Roller/Top/SpeedForAmp", Constants.Launcher.kAmpLauncherSpeeds.top());
+    SmartDashboard.putNumber("Robot/Launcher/Roller/Bottom/SpeedForAmp", Constants.Launcher.kAmpLauncherSpeeds.bottom());
+    SmartDashboard.putNumber("Robot/Launcher/Roller/Top/SpeedForTrap", Constants.Launcher.kTrapLauncherSpeeds.top());
+    SmartDashboard.putNumber("Robot/Launcher/Roller/Bottom/SpeedForTrap", Constants.Launcher.kTrapLauncherSpeeds.bottom());
   }
 
   public Command runIntakeCommand() {
@@ -203,9 +209,17 @@ public class GameCommands {
     .withName("RunLauncherAuto");
   }
 
+  public Command runLauncherForShuttleCommand() {
+    return runLauncherAutoCommand()
+    .withName("RunLauncherForShuttle");
+  }
+
   public Command runLauncherForAmpCommand() {
     return 
-    m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kAmpLauncherSpeeds)
+    m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(
+      SmartDashboard.getNumber("Robot/Launcher/Roller/Top/SpeedForAmp", Constants.Launcher.kAmpLauncherSpeeds.top()),
+      SmartDashboard.getNumber("Robot/Launcher/Roller/Bottom/SpeedForAmp", Constants.Launcher.kAmpLauncherSpeeds.bottom())
+    ))
     .alongWith(
       Commands.waitSeconds(0.5)
       .andThen(m_intakeSubsystem.runLaunchCommand())
@@ -220,18 +234,20 @@ public class GameCommands {
 
   public Command runLauncherForTrapCommand() {
     return 
-    m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(0.6, 0.61)) //0.39, 0.41
+    m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(
+      SmartDashboard.getNumber("Robot/Launcher/Roller/Top/SpeedForTrap", Constants.Launcher.kTrapLauncherSpeeds.top()),
+      SmartDashboard.getNumber("Robot/Launcher/Roller/Bottom/SpeedForTrap", Constants.Launcher.kTrapLauncherSpeeds.bottom())
+    ))
     .alongWith(
       Commands.waitSeconds(0.5)
       .andThen(m_intakeSubsystem.runLaunchCommand())
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
-    .withName("RunLauncherForAmp");
-  }
-
-  public Command runLauncherForShuttleCommand() {
-    return runLauncherAutoCommand()
-    .withName("RunLauncherForShuttle");
+    .finallyDo(() -> { 
+      m_driveSubsystem.clearTargetAlignment();
+      m_launcherArmSubsystem.clearTargetAlignment(); 
+    })
+    .withName("RunLauncherForTrap");
   }
 
   public Command rumbleControllersCommand(boolean isDriverRumbleEnabled, boolean isRumbleOperatorEnabled) {

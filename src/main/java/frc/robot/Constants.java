@@ -177,6 +177,7 @@ public final class Constants {
     public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.6, 0.6);
     public static final LauncherRollerSpeeds kShuttleLauncherSpeeds = new LauncherRollerSpeeds(0.6, 0.6);
     public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.26, 0.26);
+    public static final LauncherRollerSpeeds kTrapLauncherSpeeds = new LauncherRollerSpeeds(0.60, 0.61);
 
     public static final double kArmTargetAlignmentPositionTolerance = 0.1;
     

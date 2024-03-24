@@ -57,8 +57,6 @@ public class RobotContainer {
   private final SendableChooser<Command> m_autoChooser;
 
   public RobotContainer() {
-    System.out.println("############# " + Constants.Drive.kDriveBaseRadius);
-
     // HARDWARE ========================================
     m_powerDistribution = new PowerDistribution(1, ModuleType.kRev);
 

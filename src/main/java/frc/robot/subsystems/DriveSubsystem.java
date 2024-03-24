@@ -146,9 +146,6 @@ public class DriveSubsystem extends SubsystemBase {
           }
         }
       }
-      if (speedX > 0.0 || speedY > 0.0 || speedRotation > 0.0) {
-        clearTargetAlignment();
-      }
       drive(speedX, speedY, speedRotation);
     })
     .onlyIf(() -> m_lockState != DriveLockState.Locked)
