@@ -18,15 +18,6 @@ public class Enums {
     LaunchReady; 
   }
   
-  public static enum AutoPose {
-    ScorePreload1,
-    ScorePreload2,
-    ScorePreload3,
-    Pickup1,
-    Pickup2,
-    Pickup3
-  }
-  
   public static enum AutoPath {
     ScorePreload1,
     ScorePreload2,

@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
@@ -54,7 +55,7 @@ public class RobotContainer {
   private final LightsController m_lightsController;
   private final GameCommands m_gameCommands;
   private final AutoCommands m_autoCommands;
-  private final SendableChooser<Command> m_autoChooser;
+  private final SendableChooser<Supplier<Command>> m_autoChooser;
 
   public RobotContainer() {
     // HARDWARE ========================================
@@ -125,7 +126,7 @@ public class RobotContainer {
     );
 
     m_autoCommands = new AutoCommands(m_gameCommands);
-    m_autoChooser = new SendableChooser<Command>();
+    m_autoChooser = new SendableChooser<Supplier<Command>>();
 
     configureBindings();
     configureTriggers();
@@ -219,51 +220,50 @@ public class RobotContainer {
 
     PathfindingCommand.warmupCommand().schedule();
 
-    m_autoChooser.setDefaultOption("None", Commands.none());
+    m_autoChooser.setDefaultOption("None", Commands::none);
 
-    //m_autoChooser.addOption("TEST", m_autoCommands.auto_test());
+    m_autoChooser.addOption("[ 1 ] 0", m_autoCommands::auto0);
+    m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands::auto10_1);
+    m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands::auto1_0_1);
+    m_autoChooser.addOption("[ 1 ] _0_1_41", m_autoCommands::auto1_0_1_41);
+    m_autoChooser.addOption("[ 1 ] _0_1_41_51", m_autoCommands::auto1_0_1_41_51);
+    m_autoChooser.addOption("[ 1 ] _0_1_51", m_autoCommands::auto1_0_1_51);
+    m_autoChooser.addOption("[ 1 ] _0_1_51_41", m_autoCommands::auto1_0_1_51_41);
+    m_autoChooser.addOption("[ 1 ] _0_1_51_62", m_autoCommands::auto1_0_1_51_62);
 
-    // m_autoChooser.addOption("[ 1 ] 0", m_autoCommands.auto_0());
-    // m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands.auto_10_1());
-    // m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands.auto_1_0_1());
-    // m_autoChooser.addOption("[ 1 ] _0_1_4", m_autoCommands.auto_1_0_1_4());
-    // m_autoChooser.addOption("[ 1 ] _0_1_4_5", m_autoCommands.auto_1_0_1_4_5());
-    // m_autoChooser.addOption("[ 1 ] _0_1_5", m_autoCommands.auto_1_0_1_5());
-    // m_autoChooser.addOption("[ 1 ] _0_1_5_4", m_autoCommands.auto_1_0_1_5_4());
-    // m_autoChooser.addOption("[ 1 ] _0_1_5_6", m_autoCommands.auto_1_0_1_5_6());
+    m_autoChooser.addOption("[ 2 ] 0", m_autoCommands::auto0);
+    m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands::auto20_2);
+    m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands::auto2_0_2);
+    m_autoChooser.addOption("[ 2 ] _0_2_62", m_autoCommands::auto2_0_2_62);
+    m_autoChooser.addOption("[ 2 ] _0_2_62_51", m_autoCommands::auto2_0_2_62_51);
+    m_autoChooser.addOption("[ 2 ] _0_2_62_72", m_autoCommands::auto2_0_2_62_72);
+    m_autoChooser.addOption("[ 2 ] _0_2_72", m_autoCommands::auto2_0_2_72);
+    m_autoChooser.addOption("[ 2 ] _0_2_72_62", m_autoCommands::auto2_0_2_72_62);
 
-    // m_autoChooser.addOption("[ 2 ] 0", m_autoCommands.auto_0());
-    // m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands.auto_20_2());
-    // m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands.auto_2_0_2());
-    // m_autoChooser.addOption("[ 2 ] _0_2_6", m_autoCommands.auto_2_0_2_6());
-    // m_autoChooser.addOption("[ 2 ] _0_2_6_5", m_autoCommands.auto_2_0_2_6_5());
-    // m_autoChooser.addOption("[ 2 ] _0_2_6_7", m_autoCommands.auto_2_0_2_6_7());
-    // m_autoChooser.addOption("[ 2 ] _0_2_7", m_autoCommands.auto_2_0_2_7());
-    // m_autoChooser.addOption("[ 2 ] _0_2_7_6", m_autoCommands.auto_2_0_2_7_6());
-
-    // m_autoChooser.addOption("[ 3 ] 0", m_autoCommands.auto_0());
-    // m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands.auto_30_3());
-    // m_autoChooser.addOption("[ 3 ] 0_7", m_autoCommands.auto_30_7());
-    // m_autoChooser.addOption("[ 3 ] 0_7_8", m_autoCommands.auto_30_7_8());
-    // m_autoChooser.addOption("[ 3 ] 0_8", m_autoCommands.auto_30_8());
-    // m_autoChooser.addOption("[ 3 ] 0_8_7", m_autoCommands.auto_30_8_7());
-    // m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands.auto_3_0_3());
-    // m_autoChooser.addOption("[ 3 ] _0_3_82", m_autoCommands.auto_3_0_3_82());
-    // m_autoChooser.addOption("[ 3 ] _0_3_83", m_autoCommands.auto_3_0_3_83());
-    // m_autoChooser.addOption("[ 3 ] _0_3_82_62", m_autoCommands.auto_3_0_3_82_62());
-    // // m_autoChooser.addOption("[ 3 ] _0_3_82_63", m_autoCommands.auto_3_0_3_82_63());
-    // m_autoChooser.addOption("[ 3 ] _0_3_82_72", m_autoCommands.auto_3_0_3_82_72());
-    // m_autoChooser.addOption("[ 3 ] _0_3_82_73", m_autoCommands.auto_3_0_3_82_73());
-    // m_autoChooser.addOption("[ 3 ] _0_3_83_62", m_autoCommands.auto_3_0_3_83_62());
-    // // m_autoChooser.addOption("[ 3 ] _0_3_83_63", m_autoCommands.auto_3_0_3_83_63());
-    m_autoChooser.addOption("[ 3 ] _0_3_83_72", m_autoCommands.auto_3_0_3_83_72());
-    // m_autoChooser.addOption("[ 3 ] _0_3_83_73", m_autoCommands.auto_3_0_3_83_73());
+    m_autoChooser.addOption("[ 3 ] 0", m_autoCommands::auto0);
+    m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands::auto30_3);
+    m_autoChooser.addOption("[ 3 ] 0_73", m_autoCommands::auto30_73);
+    m_autoChooser.addOption("[ 3 ] 0_83", m_autoCommands::auto30_83);
+    m_autoChooser.addOption("[ 3 ] 0_73_83", m_autoCommands::auto30_73_83);
+    m_autoChooser.addOption("[ 3 ] 0_83_73", m_autoCommands::auto30_83_73);
+    m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands::auto3_0_3);
+    // TOOD: create auto3_0_3_72
+    // TODO: create auto3_0_3_73
+    // TODO: create auto3_0_3_72_62
+    // TODO: create auto3_0_3_73_83
+    m_autoChooser.addOption("[ 3 ] _0_3_82", m_autoCommands::auto3_0_3_82);
+    m_autoChooser.addOption("[ 3 ] _0_3_83", m_autoCommands::auto3_0_3_83);
+    m_autoChooser.addOption("[ 3 ] _0_3_82_62", m_autoCommands::auto3_0_3_82_62);
+    m_autoChooser.addOption("[ 3 ] _0_3_82_72", m_autoCommands::auto3_0_3_82_72);
+    m_autoChooser.addOption("[ 3 ] _0_3_83_62", m_autoCommands::auto3_0_3_83_62);
+    m_autoChooser.addOption("[ 3 ] _0_3_83_72", m_autoCommands::auto3_0_3_83_72);
+    m_autoChooser.addOption("[ 3 ] _0_3_83_73", m_autoCommands::auto3_0_3_83_73);
 
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }
 
   public Command getSelectedAutoCommand() {
-    return m_autoChooser.getSelected();
+    return m_autoChooser.getSelected().get();
   }
 
   public void resetRobot() {

@@ -14,9 +14,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -29,7 +27,6 @@ import edu.wpi.first.wpilibj.ADIS16470_IMU.CalibrationTime;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
 import edu.wpi.first.wpilibj.SPI;
 import frc.robot.lib.common.Enums.AutoPath;
-import frc.robot.lib.common.Enums.AutoPose;
 import frc.robot.lib.common.Records.LauncherArmPosition;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.common.Records.PIDConstants;
@@ -302,15 +299,6 @@ public final class Constants {
     }
 
     public static final class Auto {
-      public static final Map<AutoPose, Pose2d> kPoses = Map.ofEntries(
-        entry(AutoPose.ScorePreload1, new Pose2d(1.85, 6.70, Rotation2d.fromDegrees(0))),
-        entry(AutoPose.ScorePreload2, new Pose2d(1.85, 5.50, Rotation2d.fromDegrees(0))),
-        entry(AutoPose.ScorePreload3, new Pose2d(1.85, 3.8, Rotation2d.fromDegrees(0))),
-        entry(AutoPose.Pickup1, new Pose2d(3.30, 6.90, Rotation2d.fromDegrees(0))),
-        entry(AutoPose.Pickup2, new Pose2d(3.30, 5.50, Rotation2d.fromDegrees(0))),
-        entry(AutoPose.Pickup3, new Pose2d(2.80, 4.10, Rotation2d.fromDegrees(0)))
-      );
-
       public static final Map<AutoPath, PathPlannerPath> kPaths = Map.ofEntries(
         entry(AutoPath.ScorePreload1, PathPlannerPath.fromPathFile("ScorePreload1")),
         entry(AutoPath.ScorePreload2, PathPlannerPath.fromPathFile("ScorePreload2")),
