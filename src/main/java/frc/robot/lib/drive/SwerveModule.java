@@ -14,7 +14,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.lib.common.Enums.SwerveModuleLocation;
 import frc.robot.lib.common.Utils;
 import frc.robot.Constants;
@@ -93,17 +92,15 @@ public class SwerveModule implements Sendable {
     return new SwerveModulePosition(m_drivingEncoder.getPosition(), new Rotation2d(m_turningEncoder.getPosition() - m_turningOffset));
   }
 
-  public void updateTelemetry() {
-    SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Driving/Velocity", m_drivingEncoder.getVelocity());
-  }
+  public void updateTelemetry() {}
 
   @Override
   public void initSendable(SendableBuilder builder) {
     String location = m_location.toString() + "/";
-    builder.addDoubleProperty(location + "Turning/Position", () -> m_turningEncoder.getPosition(), null);
-    builder.addDoubleProperty(location + "Driving/Position", () -> m_drivingEncoder.getPosition(), null);
-    builder.addDoubleProperty(location + "Driving/Velocity", () -> m_drivingEncoder.getVelocity(), null);
+    builder.addDoubleProperty(location + "Driving/Position", m_drivingEncoder::getPosition, null);
+    builder.addDoubleProperty(location + "Driving/Velocity", m_drivingEncoder::getVelocity, null);
     builder.addDoubleProperty(location + "Driving/AppliedOutput", m_drivingMotor::getAppliedOutput, null);
     builder.addDoubleProperty(location + "Driving/SetSpeed", () -> m_setSpeed, null);
+    builder.addDoubleProperty(location + "Turning/Position", m_turningEncoder::getPosition, null);
   }
 }

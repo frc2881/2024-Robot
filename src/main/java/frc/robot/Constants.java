@@ -191,7 +191,7 @@ public final class Constants {
     public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
       new LauncherArmPosition(1.00, 13),
       new LauncherArmPosition(1.35, 12.7),
-      new LauncherArmPosition(2.3, 8.0), // 8.5
+      new LauncherArmPosition(2.3, 8.0),
       new LauncherArmPosition(3.65, 6.2),
       new LauncherArmPosition(5.0, 4.3),
       new LauncherArmPosition(6.2, 4.0)

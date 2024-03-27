@@ -54,6 +54,8 @@ public class LauncherArmSubsystem extends SubsystemBase {
       m_distances[i] = Constants.Launcher.kArmPositions[i].distance();
       m_positions[i] = Constants.Launcher.kArmPositions[i].position();
     }   
+
+    SmartDashboard.putString("Robot/Launcher/Arm/Positions", Utils.objectToJson(Constants.Launcher.kArmPositions));
   }
 
   @Override

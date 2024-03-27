@@ -153,6 +153,9 @@ public class RobotContainer {
     m_driverController.start().onTrue(m_gyroSensor.calibrateCommand());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
+    // TODO: update operator controls to match subsystem updates and use trigger chaining to combine multiple control actions together
+    // TODO: work with drive team operator to update POV position control options for manual target alignment
+
     // OPERATOR ========================================
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
     m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
@@ -229,6 +232,7 @@ public class RobotContainer {
     m_autoChooser.addOption("[ 1 ] _0_1_41_51", m_autoCommands::auto1_0_1_41_51);
     m_autoChooser.addOption("[ 1 ] _0_1_51", m_autoCommands::auto1_0_1_51);
     m_autoChooser.addOption("[ 1 ] _0_1_51_41", m_autoCommands::auto1_0_1_51_41);
+    // TODO: create auto1_0_1_51_61 (will need a Pickup61 / Pickup62 split for paths)
     m_autoChooser.addOption("[ 1 ] _0_1_51_62", m_autoCommands::auto1_0_1_51_62);
 
     m_autoChooser.addOption("[ 2 ] 0", m_autoCommands::auto0);
@@ -303,8 +307,7 @@ public class RobotContainer {
 
     SmartDashboard.putBoolean(
       "Robot/HasInitialReset", 
-      m_launcherArmSubsystem.hasInitialReset() &&
-      m_climberSubsystem.hasInitialReset()
+      m_launcherArmSubsystem.hasInitialReset() || Robot.isRunningMatch()
     );
   }
 }
