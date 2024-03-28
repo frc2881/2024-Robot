@@ -126,17 +126,18 @@ public class PoseSubsystem extends SubsystemBase {
 
   private void updateTelemetry() {
     Pose2d robotPose = getPose();
-    SmartDashboard.putNumberArray("Robot/Pose/Values", new double[] { robotPose.getX(), robotPose.getY(), robotPose.getRotation().getRadians() });
     SmartDashboard.putString("Robot/Pose", Utils.objectToJson(robotPose));
     SmartDashboard.putString("Robot/Pose/Target/Pose", Utils.objectToJson(getTargetPose()));
     SmartDashboard.putNumber("Robot/Pose/Target/Yaw", getTargetYaw());
     SmartDashboard.putNumber("Robot/Pose/Target/Pitch", getTargetPitch());
     SmartDashboard.putNumber("Robot/Pose/Target/Distance", getTargetDistance());
+    SmartDashboard.putNumberArray("Robot/Pose/Values", new double[] { robotPose.getX(), robotPose.getY(), robotPose.getRotation().getRadians() });
   }
 
   @Override
   public void initSendable(SendableBuilder builder) {
     super.initSendable(builder);
-    builder.addStringProperty("Pose", () -> Utils.objectToJson(getPose()), null);
+    Pose2d robotPose = getPose();
+    builder.addDoubleArrayProperty("Pose", () -> new double[] { robotPose.getX(), robotPose.getY(), robotPose.getRotation().getRadians() }, null);
   }
 }
