@@ -265,6 +265,10 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   private void updateTelemetry() {
+    m_swerveModuleFrontLeft.updateTelemetry();
+    m_swerveModuleFrontRight.updateTelemetry();
+    m_swerveModuleRearLeft.updateTelemetry();
+    m_swerveModuleRearRight.updateTelemetry();
     SmartDashboard.putString("Robot/Drive/LockState", m_lockState.toString());
     SmartDashboard.putBoolean("Robot/Drive/IsAlignedToTarget", m_isAlignedToTarget);
   }

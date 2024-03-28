@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.lib.common.Enums.SwerveModuleLocation;
 import frc.robot.lib.common.Utils;
 import frc.robot.Constants;
@@ -92,7 +93,11 @@ public class SwerveModule implements Sendable {
     return new SwerveModulePosition(m_drivingEncoder.getPosition(), new Rotation2d(m_turningEncoder.getPosition() - m_turningOffset));
   }
 
-  public void updateTelemetry() {}
+  public void updateTelemetry() {
+    SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Driving/Speed/Target", m_setSpeed);
+    SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Driving/Speed/Actual", m_drivingEncoder.getVelocity() * Constants.Drive.SwerveModule.kDrivingEncoderVelocityConversionFactor);
+    SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Turning/Position", m_turningEncoder.getPosition());
+  }
 
   @Override
   public void initSendable(SendableBuilder builder) {
