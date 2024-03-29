@@ -181,12 +181,10 @@ public final class Constants {
     // TODO: validate fixed distance position values based on event tuning of linear interpolation values
     public static final double kArmPositionIntake = 7.0;
     public static final double kArmPositionAmp = 13;
-    public static final double kArmPositionTrap = 13.3;
+    public static final double kArmPositionShuttle = 12.0;
+
     public static final double kArmPositionSubwoofer = 12.9; // 1.35m
     public static final double kArmPositionShortRange = 10.35; // 1.84m
-    public static final double kArmPositionMidRange = 7.3; // 2.78m
-    public static final double kArmPositionLongRange = 4.4; // 5.37m
-    public static final double kArmPositionShuttle = 12.0; // 1.35m
 
     public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
       new LauncherArmPosition(1.00, 13),
@@ -207,7 +205,7 @@ public final class Constants {
     public static final double kArmMotorMaxForwardOutput = 1.0;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
-    public static final double kArmMotorForwardSoftLimit = 38.8;
+    public static final double kArmMotorForwardSoftLimit = 10;
     public static final double kArmMotorReverseSoftLimit = 0.0; 
     public static final double kArmMotorPositionConversionFactor = 1.0 / 5.0; 
     public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
@@ -237,15 +235,15 @@ public final class Constants {
         entry(
           "Rear",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5.5), Units.inchesToMeters(-11), Units.inchesToMeters(15.00)),
-            new Rotation3d(Units.degreesToRadians(4.0), Units.degreesToRadians(-24.7), Units.degreesToRadians(183))
+            new Translation3d(Units.inchesToMeters(-3.25), Units.inchesToMeters(-10.75), Units.inchesToMeters(18.0)),
+            new Rotation3d(Units.degreesToRadians(0.0), Units.degreesToRadians(-24.0), Units.degreesToRadians(180))
           )
         ),
         entry(
           "Side",
           new Transform3d(
-            new Translation3d(Units.inchesToMeters(-5), Units.inchesToMeters(-12), Units.inchesToMeters(17.5)),
-            new Rotation3d(0, Units.degreesToRadians(-23.8), Units.degreesToRadians(-87))
+            new Translation3d(Units.inchesToMeters(-3.25), Units.inchesToMeters(-11.5), Units.inchesToMeters(15.5)),
+            new Rotation3d(0, Units.degreesToRadians(-28.4), Units.degreesToRadians(-90))
           )
         )
       );
@@ -267,6 +265,10 @@ public final class Constants {
       public static final class LauncherTop {
         public static final String kSensorName = "LauncherTop";
         public static final int kChannel = 5;
+      }
+      public static final class Climber {
+        public static final String kSensorName = "Climber";
+        public static final int kChannel = 0; // TODO: update
       }
     }
 
@@ -308,7 +310,9 @@ public final class Constants {
         entry(AutoPath.Pickup3, PathPlannerPath.fromPathFile("Pickup3")),
         entry(AutoPath.Pickup4, PathPlannerPath.fromPathFile("Pickup4")),
         entry(AutoPath.Pickup5, PathPlannerPath.fromPathFile("Pickup5")),
-        entry(AutoPath.Pickup6, PathPlannerPath.fromPathFile("Pickup6")),
+        entry(AutoPath.Pickup61, PathPlannerPath.fromPathFile("Pickup61")),
+        entry(AutoPath.Pickup62, PathPlannerPath.fromPathFile("Pickup62")),
+        entry(AutoPath.Pickup63, PathPlannerPath.fromPathFile("Pickup63")),
         entry(AutoPath.Pickup72, PathPlannerPath.fromPathFile("Pickup72")),
         entry(AutoPath.Pickup73, PathPlannerPath.fromPathFile("Pickup73")),
         entry(AutoPath.Pickup8, PathPlannerPath.fromPathFile("Pickup8")),

@@ -9,7 +9,6 @@ public class Enums {
   public static enum DriveSpeedMode { Competition, Training; }
   public static enum DriveLockState { Unlocked, Locked; }
   public static enum DriveDriftCorrection { Enabled, Disabled; }
-  public static enum LauncherAlignmentTarget { Speaker, Amp, Trap; }
 
   public static enum LightsMode { 
     Default, 
@@ -27,7 +26,9 @@ public class Enums {
     Pickup3,
     Pickup4,
     Pickup5,
-    Pickup6,
+    Pickup61,
+    Pickup62,
+    Pickup63,
     Pickup72,
     Pickup73,
     Pickup8,

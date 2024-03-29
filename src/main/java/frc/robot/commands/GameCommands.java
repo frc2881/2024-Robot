@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.lib.common.Enums.LauncherAlignmentTarget;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.sensors.BeamBreakSensor;
@@ -15,24 +14,22 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
 import frc.robot.subsystems.LauncherRollerSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
-import frc.robot.subsystems.TrapBlowerSubsystem;
 
 public class GameCommands {  
   private final BeamBreakSensor m_launcherBottomBeamBreakSensor;
   private final BeamBreakSensor m_launcherTopBeamBreakSensor; 
+  private final BeamBreakSensor m_climberBeamBreakSensor;
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
   private final IntakeSubsystem m_intakeSubsystem;
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ClimberSubsystem m_climberSubsystem;
-  private final TrapBlowerSubsystem m_trapBlowerSubsystem;
   private final GameController m_driverController;
   private final GameController m_operatorControlller;
 
-  public LauncherAlignmentTarget m_launcherTarget = LauncherAlignmentTarget.Speaker;
-
   public GameCommands( 
+    BeamBreakSensor climberBeamBreakSensor,
     BeamBreakSensor launcherBottomBeamBreakSensor,
     BeamBreakSensor launcherTopBeamBreakSensor,
     DriveSubsystem driveSubsystem, 
@@ -41,10 +38,10 @@ public class GameCommands {
     LauncherArmSubsystem launcherArmSubsystem,
     LauncherRollerSubsystem launcherRollerSubsystem,
     ClimberSubsystem climberSubsystem,
-    TrapBlowerSubsystem trapBlowerSubsystem,
     GameController driverController,
     GameController operatorControlller
   ) {
+    m_climberBeamBreakSensor = climberBeamBreakSensor;
     m_launcherBottomBeamBreakSensor = launcherBottomBeamBreakSensor;
     m_launcherTopBeamBreakSensor = launcherTopBeamBreakSensor;
     m_driveSubsystem = driveSubsystem;
@@ -53,14 +50,11 @@ public class GameCommands {
     m_launcherArmSubsystem = launcherArmSubsystem;
     m_launcherRollerSubsystem = launcherRollerSubsystem;
     m_climberSubsystem = climberSubsystem;
-    m_trapBlowerSubsystem = trapBlowerSubsystem;
     m_driverController = driverController;
     m_operatorControlller = operatorControlller;
 
     SmartDashboard.putNumber("Robot/Launcher/Roller/Top/SpeedForAmp", Constants.Launcher.kAmpLauncherSpeeds.top());
     SmartDashboard.putNumber("Robot/Launcher/Roller/Bottom/SpeedForAmp", Constants.Launcher.kAmpLauncherSpeeds.bottom());
-    SmartDashboard.putNumber("Robot/Launcher/Roller/Top/SpeedForTrap", Constants.Launcher.kTrapLauncherSpeeds.top());
-    SmartDashboard.putNumber("Robot/Launcher/Roller/Bottom/SpeedForTrap", Constants.Launcher.kTrapLauncherSpeeds.bottom());
   }
 
   public Command runIntakeCommand() {
@@ -115,22 +109,12 @@ public class GameCommands {
     .withName("AlignRobotToTargetAuto");
   }
 
-  public Command alignLauncherToTrapOrAmpCommand() {
-    return Commands.either(
-      alignLauncherToTrapCommand(false), 
-      alignLauncherToAmpCommand(true), 
-      () -> m_launcherTarget == LauncherAlignmentTarget.Trap);
-  }
-  
   public Command alignLauncherToSpeakerCommand(boolean isRollersEnabled) {
     return
     m_launcherArmSubsystem.alignToSpeakerCommand(m_poseSubsystem::getTargetDistance)
     .alongWith(
       m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kWarmupLauncherSpeeds)
       .onlyIf(() -> isRollersEnabled)
-    )
-    .beforeStarting(
-      setLauncherTarget(LauncherAlignmentTarget.Speaker)
     )
     .withName("AlignLauncherToTarget");
   }
@@ -171,18 +155,6 @@ public class GameCommands {
     .withName("AlignLauncherToAmp");
   }
 
-  public Command alignLauncherToTrapCommand(boolean isRollersEnabled) {
-    return
-    m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionTrap) // 13.42
-    .alongWith(
-      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kAmpLauncherSpeeds)
-      .onlyIf(() -> isRollersEnabled),
-      Commands.runOnce(
-        () -> System.out.println("%%%%%%%%%%%%%%% TRAP"))
-    )
-    .withName("AlignLauncherToAmp");
-  }
-
   public Command alignLauncherForShuttleCommand() {
     return Commands.parallel(
       m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kShuttleLauncherSpeeds),
@@ -197,19 +169,6 @@ public class GameCommands {
     return
     m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kDefaultLauncherSpeeds)
     .withName("StartLauncherRollersAuto");
-  }
-
-  public Command runLauncherForTargetCommand() {
-    switch (m_launcherTarget) {
-      case Speaker:
-        return runLauncherCommand();
-      case Amp:
-        return runLauncherForAmpCommand();
-      case Trap:
-        return runLauncherForTrapCommand();
-      default:
-        return Commands.none();
-    }
   }
 
   public Command runLauncherCommand() {
@@ -260,30 +219,6 @@ public class GameCommands {
       m_launcherArmSubsystem.clearTargetAlignment(); 
     })
     .withName("RunLauncherForAmp");
-  }
-
-  public Command runLauncherForTrapCommand() {
-    return 
-    m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(
-      SmartDashboard.getNumber("Robot/Launcher/Roller/Top/SpeedForTrap", Constants.Launcher.kTrapLauncherSpeeds.top()),
-      SmartDashboard.getNumber("Robot/Launcher/Roller/Bottom/SpeedForTrap", Constants.Launcher.kTrapLauncherSpeeds.bottom())
-    ))
-    .alongWith(
-      Commands.waitSeconds(0.5)
-      .andThen(m_intakeSubsystem.runLaunchCommand())
-    )
-    .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
-    .finallyDo(() -> { 
-      m_driveSubsystem.clearTargetAlignment();
-      m_launcherArmSubsystem.clearTargetAlignment(); 
-    })
-    .withName("RunLauncherForTrap");
-  }
-
-  public Command setLauncherTarget(LauncherAlignmentTarget alignmentTarget) {
-    return Commands.runOnce(
-      () -> m_launcherTarget = alignmentTarget
-      );
   }
 
   public Command rumbleControllersCommand(boolean isDriverRumbleEnabled, boolean isRumbleOperatorEnabled) {

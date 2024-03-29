@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.Supplier;
-
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -12,50 +10,62 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.lib.common.Enums.MotorDirection;
 import frc.robot.lib.common.Utils;
 
 public class ClimberSubsystem extends SubsystemBase {
-  private final CANSparkMax m_armMotor;
-  private final SparkPIDController m_armPIDController;
-  private final RelativeEncoder m_armEncoder;
-  private final CANSparkMax m_rollerMotor;
+  private final CANSparkMax m_armMotorLeft;
+  private final CANSparkMax m_armMotorRight;
 
-  private boolean m_isArmAlignedToPosition = false;
+  private final RelativeEncoder m_armLeftEncoder;
+  private final RelativeEncoder m_armRightEncoder;
+
+  private final SparkPIDController m_armLeftPIDController;
+  private final SparkPIDController m_armRightPIDController;
+
   private boolean m_hasInitialReset = false;
   
   public ClimberSubsystem() {
-    m_armMotor = new CANSparkMax(Constants.Climber.kArmMotorCANId, MotorType.kBrushless);
-    m_armMotor.restoreFactoryDefaults();
-    m_armMotor.setIdleMode(Constants.Climber.kArmMotorIdleMode); 
-    m_armMotor.setSmartCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
-    m_armMotor.setSecondaryCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
-    m_armMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-    m_armMotor.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Climber.kArmMotorForwardSoftLimit); 
-    m_armMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
-    m_armMotor.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Climber.kArmMotorReverseSoftLimit);
-    m_armEncoder = m_armMotor.getEncoder();
-    m_armEncoder.setPositionConversionFactor(Constants.Climber.kArmMotorPositionConversionFactor);
-    m_armEncoder.setVelocityConversionFactor(Constants.Climber.kArmMotorVelocityConversionFactor);
-    m_armPIDController = m_armMotor.getPIDController();
-    m_armPIDController.setFeedbackDevice(m_armEncoder);
-    m_armPIDController.setP(Constants.Climber.kArmMotorPIDConstants.P());
-    m_armPIDController.setD(Constants.Climber.kArmMotorPIDConstants.D());
-    m_armPIDController.setOutputRange(Constants.Climber.kArmMotorMaxReverseOutput, Constants.Climber.kArmMotorMaxForwardOutput);
-    m_armPIDController.setSmartMotionMaxVelocity(Constants.Climber.kArmMotorSmartMotionMaxVelocity, 0);
-    m_armPIDController.setSmartMotionMaxAccel(Constants.Climber.kArmMotorSmartMotionMaxAccel, 0);
+    m_armMotorLeft = new CANSparkMax(Constants.Climber.kArmMotorCANId, MotorType.kBrushless);
+    m_armMotorLeft.restoreFactoryDefaults();
+    m_armMotorLeft.setIdleMode(Constants.Climber.kArmMotorIdleMode); 
+    m_armMotorLeft.setSmartCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
+    m_armMotorLeft.setSecondaryCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
+    m_armMotorLeft.enableSoftLimit(SoftLimitDirection.kForward, true);
+    m_armMotorLeft.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Climber.kArmMotorForwardSoftLimit); 
+    m_armMotorLeft.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    m_armMotorLeft.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Climber.kArmMotorReverseSoftLimit);
 
-    m_armMotor.burnFlash();
+    m_armMotorLeft.burnFlash();
 
-    m_rollerMotor = new CANSparkMax(Constants.Climber.kRollerMotorCANId, MotorType.kBrushed);
-    // m_rollerMotor.restoreFactoryDefaults();
-    // m_rollerMotor.setIdleMode(Constants.Arm.kRollerMotorIdleMode); 
-    // m_rollerMotor.setSmartCurrentLimit(Constants.Arm.kRollerMotorCurrentLimit);
-    // m_rollerMotor.setSecondaryCurrentLimit(Constants.Arm.kRollerMotorCurrentLimit);
-    // m_rollerMotor.burnFlash();
+    m_armLeftEncoder = m_armMotorLeft.getEncoder();
+
+    m_armLeftPIDController = m_armMotorLeft.getPIDController();
+    m_armLeftPIDController.setP(Constants.Climber.kArmMotorPIDConstants.P());
+    m_armLeftPIDController.setD(Constants.Climber.kArmMotorPIDConstants.D());
+    m_armLeftPIDController.setOutputRange(Constants.Climber.kArmMotorMaxReverseOutput, Constants.Climber.kArmMotorMaxForwardOutput);
+
+    m_armMotorRight = new CANSparkMax(Constants.Climber.kRollerMotorCANId, MotorType.kBrushless);
+    m_armMotorRight.restoreFactoryDefaults();
+    m_armMotorRight.setIdleMode(Constants.Climber.kArmMotorIdleMode); 
+    m_armMotorRight.setSmartCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
+    m_armMotorRight.setSecondaryCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
+    m_armMotorRight.enableSoftLimit(SoftLimitDirection.kForward, true);
+    m_armMotorRight.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Climber.kArmMotorForwardSoftLimit); 
+    m_armMotorRight.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    m_armMotorRight.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Climber.kArmMotorReverseSoftLimit);
+    m_armMotorRight.setInverted(true);
+
+    m_armMotorRight.burnFlash();
+
+    m_armRightEncoder = m_armMotorRight.getEncoder();
+
+    m_armRightPIDController = m_armMotorLeft.getPIDController();
+    m_armRightPIDController.setP(Constants.Climber.kArmMotorPIDConstants.P());
+    m_armRightPIDController.setD(Constants.Climber.kArmMotorPIDConstants.D());
+    m_armRightPIDController.setOutputRange(Constants.Climber.kArmMotorMaxReverseOutput, Constants.Climber.kArmMotorMaxForwardOutput);
+
   }
 
   @Override
@@ -63,69 +73,58 @@ public class ClimberSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command moveArmManualCommand(Supplier<Double> speed) {
+  public Command moveArmOutCommand() {
     return 
     run(() -> {
-      m_armMotor.set(speed.get());
+      m_armLeftPIDController.setReference(Constants.Climber.kArmMotorForwardSoftLimit, ControlType.kPosition);
+      m_armRightPIDController.setReference(Constants.Climber.kArmMotorForwardSoftLimit, ControlType.kPosition);
     })
-    .finallyDo(() -> m_armMotor.set(0.0))
-    .withName("MoveClimberArmManual");
+    .withName("MoveClimberOut");
   }
 
-  public Command moveArmToPositionCommand(double position) {
+  public Command moveArmInCommand() {
+    return 
+    run(() -> {
+      m_armLeftPIDController.setReference(Constants.Climber.kArmMotorReverseSoftLimit, ControlType.kPosition);
+      m_armRightPIDController.setReference(Constants.Climber.kArmMotorReverseSoftLimit, ControlType.kPosition);
+    })
+    .withName("MoveClimberIn");
+  }
+
+  public Command resetCommand() {
     return
-    run(() -> {
-      m_armPIDController.setReference(position, ControlType.kSmartMotion);
-      m_isArmAlignedToPosition = Math.abs(m_armEncoder.getPosition() - position) < 0.1;
-    })
-    .beforeStarting(() -> m_isArmAlignedToPosition = false)
-    .until(() -> m_isArmAlignedToPosition)
-    .finallyDo(() -> m_armMotor.set(0.0))
-    .withName("MoveClimberArmToPosition");
-  }
-
-  public Command runRollersCommand(MotorDirection direction) {
-    return 
-    Commands.startEnd(() -> {
-      m_rollerMotor.set(
-        direction == MotorDirection.Forward ? 
-        Constants.Climber.kRollerMotorMaxForwardOutput : 
-        Constants.Climber.kRollerMotorMaxReverseOutput
-      ); 
+    startEnd(() -> {
+      Utils.enableSoftLimits(m_armMotorLeft, false);
+      Utils.enableSoftLimits(m_armMotorRight, false);
+      m_armMotorLeft.set(-0.1);
+      m_armMotorRight.set(-0.1);
     }, () -> {
-      m_rollerMotor.set(0.0);
+      m_armLeftEncoder.setPosition(0);
+      m_armRightEncoder.setPosition(0);
+      m_armMotorLeft.set(0.0);
+      m_armMotorRight.set(0.0);
+      Utils.enableSoftLimits(m_armMotorLeft, true);
+      Utils.enableSoftLimits(m_armMotorRight, true);
+      m_hasInitialReset = true;
     })
-    .withName("RunClimberArmRollers");
+    .withName("ResetClimb");
   }
 
   public boolean hasInitialReset() {
     return m_hasInitialReset;
   }
 
-  public Command resetCommand() {
-    return 
-    startEnd(() -> {
-      Utils.enableSoftLimits(m_armMotor, false);
-      m_armMotor.set(-0.1);
-    }, () -> {
-      m_armEncoder.setPosition(0);
-      m_armMotor.set(0.0);
-      Utils.enableSoftLimits(m_armMotor, true);
-      m_hasInitialReset = true;
-    })
-    .withName("ResetClimberArm");
-  }
-
   public void reset() {
-    m_armMotor.set(0.0);
-    m_rollerMotor.set(0.0);
+    m_armMotorLeft.set(0.0);
+    m_armMotorRight.set(0.0);
   }
 
   private void updateTelemetry() {
-    double armPosition = m_armEncoder.getPosition();
-    SmartDashboard.putNumber("Robot/Climber/Arm/Position", armPosition);
-    SmartDashboard.putBoolean("Robot/Climber/Arm/IsReadyForChainEngagement", armPosition >= Constants.Climber.kArmPositionForChainEngagement);
-    SmartDashboard.putBoolean("Robot/Climber/Arm/IsReadyForStageClimb", armPosition >= Constants.Climber.kArmPositionForStageClimb);
+    double armLeftPosition = m_armLeftEncoder.getPosition();
+    SmartDashboard.putNumber("Robot/Climber/ArmLeft/Position", armLeftPosition);
+
+    double armRightPosition = m_armRightEncoder.getPosition();
+    SmartDashboard.putNumber("Robot/Climber/ArmRight/Position", armRightPosition);
   }
 
   @Override

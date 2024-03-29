@@ -71,6 +71,12 @@ public class AutoCommands {
     .withName("Auto0");
   } 
 
+ /*
+   * ##################################
+   * ################ POSITION 1 ######
+   * ##################################
+   */
+
   public Command auto10_1() {
     return 
     Commands.sequence(
@@ -160,7 +166,23 @@ public class AutoCommands {
     .withName("Auto1_0_1_51_41");
   } 
 
-  // TODO: create auto1_0_1_51_61 (will need a Pickup61 / Pickup62 split for paths)
+  public Command auto1_0_1_51_61() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload1)),
+      score(),
+      pickup(path(AutoPath.Pickup1)),
+      score(), 
+      pickup(path(AutoPath.Pickup5)),
+      move(path(AutoPath.ScoreStage1)),
+      score(),
+      pickup(path(AutoPath.Pickup61)),
+      move(path(AutoPath.ScoreStage1)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto1_0_1_51_61");
+  } 
 
   public Command auto1_0_1_51_62() {
     return 
@@ -172,13 +194,19 @@ public class AutoCommands {
       pickup(path(AutoPath.Pickup5)),
       move(path(AutoPath.ScoreStage1)),
       score(),
-      pickup(path(AutoPath.Pickup6)),
+      pickup(path(AutoPath.Pickup62)),
       move(path(AutoPath.ScoreStage2)),
       score()
     )
     .deadlineWith(start())
     .withName("Auto1_0_1_51_62");
   } 
+
+   /*
+   * ##################################
+   * ################ POSITION 2 ######
+   * ##################################
+   */
 
   public Command auto20_2() {
     return 
@@ -210,7 +238,7 @@ public class AutoCommands {
       score(),
       pickup(path(AutoPath.Pickup2)),
       score(), 
-      pickup(path(AutoPath.Pickup6)),
+      pickup(path(AutoPath.Pickup62)),
       move(path(AutoPath.ScoreStage2)),
       score()
     )
@@ -225,7 +253,7 @@ public class AutoCommands {
       score(),
       pickup(path(AutoPath.Pickup2)),
       score(), 
-      pickup(path(AutoPath.Pickup6)),
+      pickup(path(AutoPath.Pickup62)),
       move(path(AutoPath.ScoreStage2)),
       score(),
       pickup(path(AutoPath.Pickup5)),
@@ -243,7 +271,7 @@ public class AutoCommands {
       score(),
       pickup(path(AutoPath.Pickup2)),
       score(), 
-      pickup(path(AutoPath.Pickup6)),
+      pickup(path(AutoPath.Pickup62)),
       move(path(AutoPath.ScoreStage2)),
       score(),
       pickup(path(AutoPath.Pickup72)),
@@ -279,13 +307,19 @@ public class AutoCommands {
       pickup(path(AutoPath.Pickup72)),
       move(path(AutoPath.ScoreStage2)),
       score(),
-      pickup(path(AutoPath.Pickup6)),
+      pickup(path(AutoPath.Pickup62)),
       move(path(AutoPath.ScoreStage2)),
       score()
     )
     .deadlineWith(start())
     .withName("Auto2_0_2_72_62");
   } 
+
+   /*
+   * ##################################
+   * ################ POSITION 3 ######
+   * ##################################
+   */
 
   public Command auto30_3() {
     return 
@@ -364,10 +398,104 @@ public class AutoCommands {
     .withName("Auto3_0_3");
   } 
 
-  // TOOD: create auto3_0_3_72
-  // TODO: create auto3_0_3_73
-  // TODO: create auto3_0_3_72_62
-  // TODO: create auto3_0_3_73_83
+  public Command auto3_0_3_62() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload3)),
+      score(),
+      pickup(path(AutoPath.Pickup3)),
+      score(),
+      pickup(path(AutoPath.Pickup62)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto3_0_3_62");
+  }
+
+  public Command auto3_0_3_62_72() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload3)),
+      score(),
+      pickup(path(AutoPath.Pickup3)),
+      score(),
+      pickup(path(AutoPath.Pickup62)),
+      move(path(AutoPath.ScoreStage2)),
+      score(),
+      pickup(path(AutoPath.Pickup72)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto3_0_3_62_72");
+  }
+
+  public Command auto3_0_3_72() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload3)),
+      score(),
+      pickup(path(AutoPath.Pickup3)),
+      score(),
+      pickup(path(AutoPath.Pickup73)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto3_0_3_72");
+  }
+
+  public Command auto3_0_3_72_62() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload3)),
+      score(),
+      pickup(path(AutoPath.Pickup3)),
+      score(),
+      pickup(path(AutoPath.Pickup73)),
+      move(path(AutoPath.ScoreStage2)),
+      score(),
+      pickup(path(AutoPath.Pickup62)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto3_0_3_72_62");
+  }
+
+  public Command auto3_0_3_73() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload3)),
+      score(),
+      pickup(path(AutoPath.Pickup3)),
+      score(),
+      pickup(path(AutoPath.Pickup73)),
+      move(path(AutoPath.ScoreStage3)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto3_0_3_73");
+  }
+
+  public Command auto3_0_3_73_83() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload3)),
+      score(),
+      pickup(path(AutoPath.Pickup3)),
+      score(),
+      pickup(path(AutoPath.Pickup73)),
+      move(path(AutoPath.ScoreStage3)),
+      score(),
+      pickup(path(AutoPath.Pickup8)),
+      move(path(AutoPath.ScoreStage3)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto3_0_3_73_83");
+  }
 
   public Command auto3_0_3_82() {
     return 
@@ -409,7 +537,7 @@ public class AutoCommands {
       pickup(path(AutoPath.Pickup8)),
       move(path(AutoPath.ScoreStage2)),
       score(),
-      pickup(path(AutoPath.Pickup6)),
+      pickup(path(AutoPath.Pickup62)),
       move(path(AutoPath.ScoreStage2)),
       score()
     )
@@ -445,7 +573,7 @@ public class AutoCommands {
       pickup(path(AutoPath.Pickup8)),
       move(path(AutoPath.ScoreStage3)),
       score(),
-      pickup(path(AutoPath.Pickup6)),
+      pickup(path(AutoPath.Pickup62)),
       move(path(AutoPath.ScoreStage2)),
       score()
     )

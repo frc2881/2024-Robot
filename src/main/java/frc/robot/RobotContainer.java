@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.GameCommands;
-import frc.robot.lib.common.Enums.LauncherAlignmentTarget;
 import frc.robot.lib.common.Enums.LightsMode;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.GameController;
@@ -34,7 +33,6 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherArmSubsystem;
 import frc.robot.subsystems.LauncherRollerSubsystem;
 import frc.robot.subsystems.PoseSubsystem;
-import frc.robot.subsystems.TrapBlowerSubsystem;
 
 public class RobotContainer {
   private final PowerDistribution m_powerDistribution;
@@ -44,6 +42,7 @@ public class RobotContainer {
   private final List<PoseSensor> m_poseSensors;
   private final BeamBreakSensor m_launcherBottomBeamBreakSensor;
   private final BeamBreakSensor m_launcherTopBeamBreakSensor;
+  private final BeamBreakSensor m_climberBeamBreakSensor;
   private final ObjectSensor m_objectSensor;
   private final DriveSubsystem m_driveSubsystem;
   private final PoseSubsystem m_poseSubsystem;
@@ -51,7 +50,6 @@ public class RobotContainer {
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
   private final ClimberSubsystem m_climberSubsystem;
-  private final TrapBlowerSubsystem m_trapBlowerSubsystem;
   private final LightsController m_lightsController;
   private final GameCommands m_gameCommands;
   private final AutoCommands m_autoCommands;
@@ -96,6 +94,10 @@ public class RobotContainer {
       Constants.Sensors.BeamBreak.LauncherTop.kSensorName,
       Constants.Sensors.BeamBreak.LauncherTop.kChannel
     );
+    m_climberBeamBreakSensor = new BeamBreakSensor(
+      Constants.Sensors.BeamBreak.Climber.kSensorName,
+      Constants.Sensors.BeamBreak.Climber.kChannel
+    );
     m_objectSensor = new ObjectSensor(
       Constants.Sensors.Object.kCameraName,
       Constants.Sensors.Object.kObjectName
@@ -107,11 +109,11 @@ public class RobotContainer {
     m_launcherArmSubsystem = new LauncherArmSubsystem();
     m_launcherRollerSubsystem = new LauncherRollerSubsystem();
     m_driveSubsystem = new DriveSubsystem(m_gyroSensor::getHeading);
-    m_trapBlowerSubsystem = new TrapBlowerSubsystem();
     m_poseSubsystem = new PoseSubsystem(m_poseSensors, m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
     
     // COMMANDS ========================================
     m_gameCommands = new GameCommands(
+      m_climberBeamBreakSensor,
       m_launcherBottomBeamBreakSensor, 
       m_launcherTopBeamBreakSensor,  
       m_driveSubsystem, 
@@ -120,7 +122,6 @@ public class RobotContainer {
       m_launcherArmSubsystem, 
       m_launcherRollerSubsystem, 
       m_climberSubsystem, 
-      m_trapBlowerSubsystem,
       m_driverController, 
       m_operatorController
     );
@@ -148,38 +149,27 @@ public class RobotContainer {
     // m_driverController.povDown().whileTrue(Commands.none()); 
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     m_driverController.b().whileTrue(m_gameCommands.runReloadCommand());
-    // m_driverController.y().whileTrue(m_trapBlowerSubsystem.runCommand());
-    //m_driverController.x().whileTrue(m_gameCommands.runLauncherForShuttleCommand());
+    // m_driverController.y().whileTrue();
+    //m_driverController.x().whileTrue();
     m_driverController.start().onTrue(m_gyroSensor.calibrateCommand());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
-    // TODO: update operator controls to match subsystem updates and use trigger chaining to combine multiple control actions together
-    // TODO: work with drive team operator to update POV position control options for manual target alignment
-
     // OPERATOR ========================================
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
-    m_climberSubsystem.setDefaultCommand(m_climberSubsystem.moveArmManualCommand(m_operatorController::getRightY));
-    m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherForTargetCommand());
-    m_operatorController.rightBumper().whileTrue(m_gameCommands.runLauncherForTrapCommand());
+    m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
+    m_operatorController.rightBumper().whileTrue(m_gameCommands.runLauncherForAmpCommand());
     m_operatorController.leftTrigger().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand(true));
-    m_operatorController.leftBumper()
-      .whileTrue(m_gameCommands.alignLauncherToTrapOrAmpCommand())
-      .onTrue(m_gameCommands.setLauncherTarget(LauncherAlignmentTarget.Amp)
-        .onlyIf(() -> m_gameCommands.m_launcherTarget != LauncherAlignmentTarget.Trap))
-      .onFalse(m_gameCommands.setLauncherTarget(LauncherAlignmentTarget.Speaker));
-    // m_operatorController.leftStick().whileTrue(Commands.none());
-    // m_operatorController.rightStick().whileTrue(Commands.none());
-    m_operatorController.povLeft().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionLongRange, true));
-    m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionMidRange, true));  
+    m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(false));
+    // m_operatorController.leftStick().whileTrue();
+    // m_operatorController.rightStick().whileTrue();
+    m_operatorController.povLeft().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
+    m_operatorController.povUp().whileTrue(m_climberSubsystem.moveArmInCommand());  
     m_operatorController.povRight().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionShortRange, true));  
-    m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
-    //m_operatorController.a().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand(true)); 
+    m_operatorController.povDown().whileTrue(m_climberSubsystem.moveArmOutCommand());
+    // m_operatorController.a().whileTrue(); 
     // m_operatorController.y().whileTrue();
     // m_operatorController.b().whileTrue();
-    m_operatorController.x().whileTrue(m_trapBlowerSubsystem.runCommand())
-      .onTrue(m_gameCommands.setLauncherTarget(LauncherAlignmentTarget.Trap))
-      .onFalse(m_gameCommands.setLauncherTarget(LauncherAlignmentTarget.Speaker));
-    // m_operatorController.x().whileTrue(m_gameCommands.alignLauncherToTrapCommand(false));
+    // m_operatorController.x().whileTrue();
     m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.start().whileTrue(m_climberSubsystem.resetCommand());
   }
@@ -232,7 +222,7 @@ public class RobotContainer {
     m_autoChooser.addOption("[ 1 ] _0_1_41_51", m_autoCommands::auto1_0_1_41_51);
     m_autoChooser.addOption("[ 1 ] _0_1_51", m_autoCommands::auto1_0_1_51);
     m_autoChooser.addOption("[ 1 ] _0_1_51_41", m_autoCommands::auto1_0_1_51_41);
-    // TODO: create auto1_0_1_51_61 (will need a Pickup61 / Pickup62 split for paths)
+    m_autoChooser.addOption("[ 1 ] _0_1_51_61", m_autoCommands::auto1_0_1_51_61);
     m_autoChooser.addOption("[ 1 ] _0_1_51_62", m_autoCommands::auto1_0_1_51_62);
 
     m_autoChooser.addOption("[ 2 ] 0", m_autoCommands::auto0);
@@ -250,11 +240,14 @@ public class RobotContainer {
     m_autoChooser.addOption("[ 3 ] 0_83", m_autoCommands::auto30_83);
     m_autoChooser.addOption("[ 3 ] 0_73_83", m_autoCommands::auto30_73_83);
     m_autoChooser.addOption("[ 3 ] 0_83_73", m_autoCommands::auto30_83_73);
+
     m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands::auto3_0_3);
-    // TOOD: create auto3_0_3_72
-    // TODO: create auto3_0_3_73
-    // TODO: create auto3_0_3_72_62
-    // TODO: create auto3_0_3_73_83
+    m_autoChooser.addOption("[ 3 ] _0_3_62", m_autoCommands::auto3_0_3_62);
+    m_autoChooser.addOption("[ 3 ] _0_3_62_72", m_autoCommands::auto3_0_3_62_72);
+    m_autoChooser.addOption("[ 3 ] _0_3_72", m_autoCommands::auto3_0_3_72);
+    m_autoChooser.addOption("[ 3 ] _0_3_72_62", m_autoCommands::auto3_0_3_72_62);
+    m_autoChooser.addOption("[ 3 ] _0_3_73", m_autoCommands::auto3_0_3_73);
+    m_autoChooser.addOption("[ 3 ] _0_3_73_83", m_autoCommands::auto3_0_3_83_73);
     m_autoChooser.addOption("[ 3 ] _0_3_82", m_autoCommands::auto3_0_3_82);
     m_autoChooser.addOption("[ 3 ] _0_3_83", m_autoCommands::auto3_0_3_83);
     m_autoChooser.addOption("[ 3 ] _0_3_82_62", m_autoCommands::auto3_0_3_82_62);

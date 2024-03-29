@@ -38,13 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup6"
+            "pathName": "Pickup61"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "ScoreStage2"
+            "pathName": "ScoreStage1"
           }
         }
       ]
