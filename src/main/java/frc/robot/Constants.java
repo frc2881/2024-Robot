@@ -178,13 +178,12 @@ public final class Constants {
 
     public static final double kArmTargetAlignmentPositionTolerance = 0.1;
     
-    // TODO: validate fixed distance position values based on event tuning of linear interpolation values
     public static final double kArmPositionIntake = 7.0;
     public static final double kArmPositionAmp = 13;
     public static final double kArmPositionShuttle = 12.0;
 
-    public static final double kArmPositionSubwoofer = 12.9; // 1.35m
-    public static final double kArmPositionShortRange = 10.35; // 1.84m
+    public static final double kArmPositionSubwoofer = 12.9;
+    public static final double kArmPositionPodium = 10.35; // TODO: Tune
 
     public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
       new LauncherArmPosition(1.00, 13),
@@ -268,7 +267,7 @@ public final class Constants {
       }
       public static final class Climber {
         public static final String kSensorName = "Climber";
-        public static final int kChannel = 0; // TODO: update
+        public static final int kChannel = 3; // TODO: update
       }
     }
 

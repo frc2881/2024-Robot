@@ -73,7 +73,7 @@ public class ClimberSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public Command moveArmOutCommand() {
+  public Command moveArmUpCommand() {
     return 
     run(() -> {
       m_armLeftPIDController.setReference(Constants.Climber.kArmMotorForwardSoftLimit, ControlType.kPosition);
@@ -82,7 +82,7 @@ public class ClimberSubsystem extends SubsystemBase {
     .withName("MoveClimberOut");
   }
 
-  public Command moveArmInCommand() {
+  public Command moveArmDownCommand() {
     return 
     run(() -> {
       m_armLeftPIDController.setReference(Constants.Climber.kArmMotorReverseSoftLimit, ControlType.kPosition);
