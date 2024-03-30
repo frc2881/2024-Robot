@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.83,
-      "y": 6.619306005373106
+      "x": 1.3,
+      "y": 5.5
     },
-    "rotation": 59.93
+    "rotation": 0
   },
   "command": {
     "type": "sequential",
@@ -14,31 +14,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "ScorePreload1"
+            "pathName": "ScorePreload2"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Pickup1"
+            "pathName": "Pickup2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup62"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreStage2"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "Pickup5"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "ScoreStage1"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Pickup61"
           }
         },
         {

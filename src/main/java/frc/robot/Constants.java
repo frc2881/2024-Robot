@@ -199,25 +199,13 @@ public final class Constants {
     public static final int kArmMotorCANId = 16;
     public static final int kRollerMotorCANId = 17;
 
-    public static final int kArmMotorCurrentLimit = 60;
+    public static final int kArmMotorCurrentLimit = 100;
     public static final double kArmMotorMaxReverseOutput = -1.0;
     public static final double kArmMotorMaxForwardOutput = 1.0;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
-    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.0003, 0, 0.00015, 1 / 16.8);
-    public static final double kArmMotorForwardSoftLimit = 10;
+    public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.05, 0, 0, 0);
+    public static final double kArmMotorForwardSoftLimit = 30.0;
     public static final double kArmMotorReverseSoftLimit = 0.0; 
-    public static final double kArmMotorPositionConversionFactor = 1.0 / 5.0; 
-    public static final double kArmMotorVelocityConversionFactor = kArmMotorPositionConversionFactor / 60.0;
-    public static final double kArmMotorSmartMotionMaxVelocity = (33.0 / kArmMotorPositionConversionFactor) * 60;
-    public static final double kArmMotorSmartMotionMaxAccel = 100.0 / kArmMotorVelocityConversionFactor;
-
-    public static final int kRollerMotorCurrentLimit = 80;
-    public static final double kRollerMotorMaxReverseOutput = -0.85;
-    public static final double kRollerMotorMaxForwardOutput = 0.85;
-    public static final IdleMode kRollerMotorIdleMode = IdleMode.kBrake;
-
-    public static final double kArmPositionForChainEngagement = 26.0;
-    public static final double kArmPositionForStageClimb = 38.7;
   }
 
   public static final class Sensors {
@@ -267,7 +255,7 @@ public final class Constants {
       }
       public static final class Climber {
         public static final String kSensorName = "Climber";
-        public static final int kChannel = 3; // TODO: update
+        public static final int kChannel = 3;
       }
     }
 

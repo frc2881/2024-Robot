@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -8,8 +9,10 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.lib.common.Utils;
@@ -18,6 +21,8 @@ public class ClimberSubsystem extends SubsystemBase {
   private final CANSparkMax m_armMotorLeft;
   private final CANSparkMax m_armMotorRight;
 
+  private final Servo m_brakeServo;
+
   private final RelativeEncoder m_armLeftEncoder;
   private final RelativeEncoder m_armRightEncoder;
 
@@ -25,6 +30,8 @@ public class ClimberSubsystem extends SubsystemBase {
   private final SparkPIDController m_armRightPIDController;
 
   private boolean m_hasInitialReset = false;
+  public boolean m_isBrakeApplied = false;
+  public boolean m_isBeamBreakTriggered = false;
   
   public ClimberSubsystem() {
     m_armMotorLeft = new CANSparkMax(Constants.Climber.kArmMotorCANId, MotorType.kBrushless);
@@ -36,6 +43,7 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armMotorLeft.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Climber.kArmMotorForwardSoftLimit); 
     m_armMotorLeft.enableSoftLimit(SoftLimitDirection.kReverse, true);
     m_armMotorLeft.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Climber.kArmMotorReverseSoftLimit);
+    m_armMotorLeft.setInverted(true);
 
     m_armMotorLeft.burnFlash();
 
@@ -55,7 +63,7 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armMotorRight.setSoftLimit(SoftLimitDirection.kForward, (float)Constants.Climber.kArmMotorForwardSoftLimit); 
     m_armMotorRight.enableSoftLimit(SoftLimitDirection.kReverse, true);
     m_armMotorRight.setSoftLimit(SoftLimitDirection.kReverse, (float)Constants.Climber.kArmMotorReverseSoftLimit);
-    m_armMotorRight.setInverted(true);
+    m_armMotorRight.follow(m_armMotorLeft, true);
 
     m_armMotorRight.burnFlash();
 
@@ -66,6 +74,7 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armRightPIDController.setD(Constants.Climber.kArmMotorPIDConstants.D());
     m_armRightPIDController.setOutputRange(Constants.Climber.kArmMotorMaxReverseOutput, Constants.Climber.kArmMotorMaxForwardOutput);
 
+    m_brakeServo = new Servo(0); // update
   }
 
   @Override
@@ -74,35 +83,67 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command moveArmUpCommand() {
-    return 
-    run(() -> {
-      m_armLeftPIDController.setReference(Constants.Climber.kArmMotorForwardSoftLimit, ControlType.kPosition);
-      m_armRightPIDController.setReference(Constants.Climber.kArmMotorForwardSoftLimit, ControlType.kPosition);
-    })
-    .withName("MoveClimberOut");
+    return startEnd(
+      () ->  m_armMotorLeft.set(0.5), 
+      () ->  m_armMotorLeft.set(0.0)
+    )
+    .withName("moveArmTest");
+  }
+
+  public Command moveArmToTopCommand() {
+    return moveArmUpCommand()
+    .until(() -> m_armLeftEncoder.getPosition() >= Constants.Climber.kArmMotorForwardSoftLimit);
   }
 
   public Command moveArmDownCommand() {
-    return 
-    run(() -> {
-      m_armLeftPIDController.setReference(Constants.Climber.kArmMotorReverseSoftLimit, ControlType.kPosition);
-      m_armRightPIDController.setReference(Constants.Climber.kArmMotorReverseSoftLimit, ControlType.kPosition);
-    })
-    .withName("MoveClimberIn");
+    return startEnd(
+      () ->  m_armMotorLeft.set(-0.5), 
+      () ->  m_armMotorLeft.set(0.0)
+    )
+    .withName("moveArmTest");
   }
 
+  public Command moveArmToDownCommand() {
+    return moveArmDownCommand()
+    .until(() -> m_armLeftEncoder.getPosition() <= Constants.Climber.kArmMotorMaxReverseOutput);
+  }
+
+  public Command lockArmCommand() {
+    return runOnce(
+      () -> {
+        m_brakeServo.setAngle(90.0);
+        m_isBrakeApplied = true;
+      }
+    );
+  }
+
+  public Command unlockArmCommand() {
+    return runOnce(
+      () -> {
+        m_brakeServo.setAngle(0.0);
+        m_isBrakeApplied = false;
+      }
+    );
+  }
+
+  public Command testArmCommand() {
+    return Commands.sequence(
+      unlockArmCommand(),
+      resetCommand()
+    );
+  }
+
+  // TODO: Add unlocking to reset
   public Command resetCommand() {
     return
     startEnd(() -> {
       Utils.enableSoftLimits(m_armMotorLeft, false);
       Utils.enableSoftLimits(m_armMotorRight, false);
       m_armMotorLeft.set(-0.1);
-      m_armMotorRight.set(-0.1);
     }, () -> {
       m_armLeftEncoder.setPosition(0);
       m_armRightEncoder.setPosition(0);
       m_armMotorLeft.set(0.0);
-      m_armMotorRight.set(0.0);
       Utils.enableSoftLimits(m_armMotorLeft, true);
       Utils.enableSoftLimits(m_armMotorRight, true);
       m_hasInitialReset = true;
@@ -117,6 +158,9 @@ public class ClimberSubsystem extends SubsystemBase {
   public void reset() {
     m_armMotorLeft.set(0.0);
     m_armMotorRight.set(0.0);
+
+    m_isBrakeApplied = false;
+    m_isBeamBreakTriggered = false;
   }
 
   private void updateTelemetry() {
@@ -125,6 +169,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
     double armRightPosition = m_armRightEncoder.getPosition();
     SmartDashboard.putNumber("Robot/Climber/ArmRight/Position", armRightPosition);
+
+    SmartDashboard.putNumber("Robot/Climber/Servo/Angle", m_brakeServo.getAngle());
   }
 
   @Override

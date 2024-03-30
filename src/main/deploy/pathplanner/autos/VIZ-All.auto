@@ -1,0 +1,115 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.83,
+      "y": 6.62
+    },
+    "rotation": 59.93
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScorePreload1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScorePreload2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScorePreload3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup8"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreStage3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup73"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreStage2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup62"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreStage2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup5"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreStage1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreStage1"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

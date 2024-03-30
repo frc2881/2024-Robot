@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.controllers.GameController;
@@ -219,6 +220,16 @@ public class GameCommands {
       m_launcherArmSubsystem.clearTargetAlignment(); 
     })
     .withName("RunLauncherForAmp");
+  }
+
+  public Command climbCommand() {
+    return Commands.sequence(
+      m_climberSubsystem.moveArmUpCommand()
+        .until(() -> m_climberBeamBreakSensor.hasTarget()),
+      m_climberSubsystem.moveArmToDownCommand(),
+      m_climberSubsystem.lockArmCommand()
+    )
+    .withName("Climb");
   }
 
   public Command rumbleControllersCommand(boolean isDriverRumbleEnabled, boolean isRumbleOperatorEnabled) {

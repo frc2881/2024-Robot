@@ -10,6 +10,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -167,9 +168,9 @@ public class RobotContainer {
     // m_operatorController.povRight().whileTrue();  
     m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
     m_operatorController.a().whileTrue(m_climberSubsystem.moveArmDownCommand()); 
-    m_operatorController.y().whileTrue(m_climberSubsystem.moveArmUpCommand());
-    // m_operatorController.b().whileTrue();
-    // m_operatorController.x().whileTrue();
+    m_operatorController.y().whileTrue(m_climberSubsystem.unlockArmCommand());
+    m_operatorController.b().whileTrue(m_climberSubsystem.lockArmCommand());
+    m_operatorController.x().whileTrue(m_gameCommands.climbCommand());
     m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetCommand());
     m_operatorController.start().whileTrue(m_climberSubsystem.resetCommand());
   }
@@ -192,6 +193,9 @@ public class RobotContainer {
         m_lightsController.setLightsMode(LightsMode.Default); 
       }).ignoringDisable(true)
     );
+
+    new Trigger(() -> DriverStation.getMatchTime() < 1.5)
+      .whileTrue(m_climberSubsystem.lockArmCommand());
   }
 
   private void configureAutos() {
@@ -294,6 +298,7 @@ public class RobotContainer {
     m_poseSensors.forEach(poseSensor -> poseSensor.updateTelemetry());
     m_launcherBottomBeamBreakSensor.updateTelemetry();
     m_launcherTopBeamBreakSensor.updateTelemetry();
+    m_climberBeamBreakSensor.updateTelemetry();
     m_objectSensor.updateTelemetry();
 
     SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
