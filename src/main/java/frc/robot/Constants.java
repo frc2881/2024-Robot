@@ -204,8 +204,10 @@ public final class Constants {
     public static final double kArmMotorMaxForwardOutput = 1.0;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.05, 0, 0, 0);
-    public static final double kArmMotorForwardSoftLimit = 30.0;
+    public static final double kArmMotorForwardSoftLimit = 25.0;
     public static final double kArmMotorReverseSoftLimit = 0.0; 
+
+    public static final double kArmPositionStarting = 9.8;
   }
 
   public static final class Sensors {

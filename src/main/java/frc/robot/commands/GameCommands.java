@@ -222,12 +222,19 @@ public class GameCommands {
     .withName("RunLauncherForAmp");
   }
 
+  public Command lockArmCommand() {
+    return Commands.parallel(
+      m_climberSubsystem.lockArmCommand(),
+      rumbleControllersCommand(true, false));
+  }
+
   public Command climbCommand() {
     return Commands.sequence(
       m_climberSubsystem.moveArmUpCommand()
         .until(() -> m_climberBeamBreakSensor.hasTarget()),
-      m_climberSubsystem.moveArmToDownCommand(),
-      m_climberSubsystem.lockArmCommand()
+      m_climberSubsystem.moveArmToDownCommand().withTimeout(3.0),
+      new WaitCommand(0.1),
+      lockArmCommand()
     )
     .withName("Climb");
   }

@@ -27,7 +27,6 @@ public class ClimberSubsystem extends SubsystemBase {
   private final RelativeEncoder m_armRightEncoder;
 
   private final SparkPIDController m_armLeftPIDController;
-  private final SparkPIDController m_armRightPIDController;
 
   private boolean m_hasInitialReset = false;
   public boolean m_isBrakeApplied = false;
@@ -69,12 +68,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
     m_armRightEncoder = m_armMotorRight.getEncoder();
 
-    m_armRightPIDController = m_armMotorLeft.getPIDController();
-    m_armRightPIDController.setP(Constants.Climber.kArmMotorPIDConstants.P());
-    m_armRightPIDController.setD(Constants.Climber.kArmMotorPIDConstants.D());
-    m_armRightPIDController.setOutputRange(Constants.Climber.kArmMotorMaxReverseOutput, Constants.Climber.kArmMotorMaxForwardOutput);
-
-    m_brakeServo = new Servo(0); // update
+    m_brakeServo = new Servo(9); // update
   }
 
   @Override
@@ -84,7 +78,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public Command moveArmUpCommand() {
     return startEnd(
-      () ->  m_armMotorLeft.set(0.5), 
+      () ->  m_armMotorLeft.set(0.6), 
       () ->  m_armMotorLeft.set(0.0)
     )
     .withName("moveArmTest");
@@ -97,7 +91,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public Command moveArmDownCommand() {
     return startEnd(
-      () ->  m_armMotorLeft.set(-0.5), 
+      () ->  m_armMotorLeft.set(-0.4), 
       () ->  m_armMotorLeft.set(0.0)
     )
     .withName("moveArmTest");
@@ -108,19 +102,19 @@ public class ClimberSubsystem extends SubsystemBase {
     .until(() -> m_armLeftEncoder.getPosition() <= Constants.Climber.kArmMotorMaxReverseOutput);
   }
 
-  public Command lockArmCommand() {
+  public Command unlockArmCommand() {
     return runOnce(
       () -> {
-        m_brakeServo.setAngle(90.0);
+        m_brakeServo.setPosition(1.0);
         m_isBrakeApplied = true;
       }
     );
   }
 
-  public Command unlockArmCommand() {
+  public Command lockArmCommand() {
     return runOnce(
       () -> {
-        m_brakeServo.setAngle(0.0);
+        m_brakeServo.setPosition(0);
         m_isBrakeApplied = false;
       }
     );
@@ -131,6 +125,10 @@ public class ClimberSubsystem extends SubsystemBase {
       unlockArmCommand(),
       resetCommand()
     );
+  }
+  
+  public void moveArmToStartingPosition() {
+    m_armLeftPIDController.setReference(Constants.Climber.kArmPositionStarting, ControlType.kPosition);
   }
 
   // TODO: Add unlocking to reset
@@ -161,6 +159,8 @@ public class ClimberSubsystem extends SubsystemBase {
 
     m_isBrakeApplied = false;
     m_isBeamBreakTriggered = false;
+
+    moveArmToStartingPosition();
   }
 
   private void updateTelemetry() {
