@@ -24,7 +24,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
   private double[] m_distances;
   private double[] m_positions;
   private boolean m_isAlignedToTarget = false;
-  private boolean m_hasInitialReset = false;
+  private boolean m_hasInitialZeroReset = false;
 
   public LauncherArmSubsystem() {
     m_armMotor = new CANSparkMax(Constants.Launcher.kArmMotorCANId, MotorType.kBrushless);
@@ -129,11 +129,11 @@ public class LauncherArmSubsystem extends SubsystemBase {
     m_isAlignedToTarget = false;
   }
 
-  public boolean hasInitialReset() {
-    return m_hasInitialReset;
+  public boolean hasInitialZeroReset() {
+    return m_hasInitialZeroReset;
   }
 
-  public Command resetCommand() {
+  public Command resetZeroCommand() {
     return 
     startEnd(
       () -> {
@@ -144,7 +144,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
         m_armEncoder.setPosition(0);
         m_armMotor.set(0.0);
         Utils.enableSoftLimits(m_armMotor, true);
-        m_hasInitialReset = true;
+        m_hasInitialZeroReset = true;
       }
     )
     .withName("ResetLauncherArm");

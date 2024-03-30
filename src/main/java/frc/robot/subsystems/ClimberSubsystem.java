@@ -28,7 +28,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private final SparkPIDController m_armLeftPIDController;
 
-  private boolean m_hasInitialReset = false;
+  private boolean m_hasInitialZeroReset = false;
   public boolean m_isBrakeApplied = false;
   public boolean m_isBeamBreakTriggered = false;
   
@@ -123,7 +123,7 @@ public class ClimberSubsystem extends SubsystemBase {
   public Command testArmCommand() {
     return Commands.sequence(
       unlockArmCommand(),
-      resetCommand()
+      resetZeroCommand()
     );
   }
   
@@ -132,7 +132,7 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   // TODO: Add unlocking to reset
-  public Command resetCommand() {
+  public Command resetZeroCommand() {
     return
     startEnd(() -> {
       Utils.enableSoftLimits(m_armMotorLeft, false);
@@ -144,13 +144,13 @@ public class ClimberSubsystem extends SubsystemBase {
       m_armMotorLeft.set(0.0);
       Utils.enableSoftLimits(m_armMotorLeft, true);
       Utils.enableSoftLimits(m_armMotorRight, true);
-      m_hasInitialReset = true;
+      m_hasInitialZeroReset = true;
     })
     .withName("ResetClimb");
   }
 
-  public boolean hasInitialReset() {
-    return m_hasInitialReset;
+  public boolean hasInitialZeroReset() {
+    return m_hasInitialZeroReset;
   }
 
   public void reset() {

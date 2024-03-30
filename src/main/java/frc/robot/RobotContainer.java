@@ -171,8 +171,8 @@ public class RobotContainer {
     // m_operatorController.y().whileTrue(m_climberSubsystem.lockArmCommand());
     // m_operatorController.b().whileTrue(m_climberSubsystem.unlockArmCommand());
     // m_operatorController.x().whileTrue(m_gameCommands.climbCommand());
-    m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetCommand());
-    m_operatorController.start().whileTrue(m_climberSubsystem.resetCommand());
+    m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetZeroCommand());
+    m_operatorController.start().whileTrue(m_climberSubsystem.resetZeroCommand());
   }
 
   private void configureTriggers() {
@@ -304,8 +304,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("Robot/Power/TotalCurrent", m_powerDistribution.getTotalCurrent());
 
     SmartDashboard.putBoolean(
-      "Robot/HasInitialReset", 
-      m_launcherArmSubsystem.hasInitialReset() || Robot.isRunningMatch()
+      "Robot/HasInitialZeroResets", 
+      (m_launcherArmSubsystem.hasInitialZeroReset() && m_climberSubsystem.hasInitialZeroReset()) || Robot.isRunningMatch()
     );
   }
 }
