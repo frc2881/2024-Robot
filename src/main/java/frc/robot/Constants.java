@@ -173,7 +173,7 @@ public final class Constants {
     public static final LauncherRollerSpeeds kDefaultLauncherSpeeds = new LauncherRollerSpeeds(0.8, 0.8);
     public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.6, 0.6);
     public static final LauncherRollerSpeeds kShuttleLauncherSpeeds = new LauncherRollerSpeeds(0.6, 0.6);
-    public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.26, 0.26);
+    public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.27, 0.27);
     public static final LauncherRollerSpeeds kTrapLauncherSpeeds = new LauncherRollerSpeeds(0.60, 0.61);
 
     public static final double kArmTargetAlignmentPositionTolerance = 0.1;
@@ -183,13 +183,13 @@ public final class Constants {
     public static final double kArmPositionShuttle = 12.0;
 
     public static final double kArmPositionSubwoofer = 12.9;
-    public static final double kArmPositionPodium = 10.35; // TODO: Tune
+    public static final double kArmPositionPodium = 10.35;
 
     public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
       new LauncherArmPosition(1.00, 13),
       new LauncherArmPosition(1.35, 12.7),
       new LauncherArmPosition(2.3, 8.0),
-      new LauncherArmPosition(3.65, 6.2),
+      new LauncherArmPosition(3.65, 5.8), // 6.2
       new LauncherArmPosition(5.0, 4.3),
       new LauncherArmPosition(6.2, 4.0)
     };
@@ -204,10 +204,10 @@ public final class Constants {
     public static final double kArmMotorMaxForwardOutput = 1.0;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.05, 0, 0, 0);
-    public static final double kArmMotorForwardSoftLimit = 25.0;
+    public static final double kArmMotorForwardSoftLimit = 28.0;
     public static final double kArmMotorReverseSoftLimit = 0.0; 
 
-    public static final double kArmPositionStarting = 9.8;
+    public static final double kArmPositionStarting = 9.3;
   }
 
   public static final class Sensors {
@@ -278,14 +278,11 @@ public final class Constants {
         public static final Pose3d kBlueAmp = kAprilTagFieldLayout.getTagPose(5).orElse(new Pose3d());
         public static final Pose3d kRedAmp = kAprilTagFieldLayout.getTagPose(6).orElse(new Pose3d());
 
-        public static final double kSpeakerTargetYawTransformX = Units.inchesToMeters(6);
+        public static final double kSpeakerTargetYawTransformX = Units.inchesToMeters(6.0); // If we change this, retune launcher arm 
+        public static final double kSpeakerTargetYTransform = Units.inchesToMeters(-4.5);
         public static final double kSpeakerTargetPitchTransformZ = Units.inchesToMeters(24);
         public static final double kSpeakerTargetDistanceTransformX = Units.inchesToMeters(0);
 
-        // Trap Positions (BLUE)
-        // Right: 4.3, 3.0
-        // Left: 4.2, 5.1
-        // Middle: 6.1, 4.1
       }
     }
 
@@ -295,8 +292,12 @@ public final class Constants {
         entry(AutoPath.ScorePreload2, PathPlannerPath.fromPathFile("ScorePreload2")),
         entry(AutoPath.ScorePreload3, PathPlannerPath.fromPathFile("ScorePreload3")),
         entry(AutoPath.Pickup1, PathPlannerPath.fromPathFile("Pickup1")),
+        entry(AutoPath.Pickup13, PathPlannerPath.fromPathFile("Pickup13")),
         entry(AutoPath.Pickup2, PathPlannerPath.fromPathFile("Pickup2")),
+        entry(AutoPath.Pickup21, PathPlannerPath.fromPathFile("Pickup21")),
+        entry(AutoPath.Pickup23, PathPlannerPath.fromPathFile("Pickup23")),
         entry(AutoPath.Pickup3, PathPlannerPath.fromPathFile("Pickup3")),
+        entry(AutoPath.Pickup31, PathPlannerPath.fromPathFile("Pickup3")),
         entry(AutoPath.Pickup4, PathPlannerPath.fromPathFile("Pickup4")),
         entry(AutoPath.Pickup5, PathPlannerPath.fromPathFile("Pickup5")),
         entry(AutoPath.Pickup61, PathPlannerPath.fromPathFile("Pickup61")),

@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -91,7 +90,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public Command moveArmDownCommand() {
     return startEnd(
-      () ->  m_armMotorLeft.set(-0.4), 
+      () ->  m_armMotorLeft.set(-0.5), 
       () ->  m_armMotorLeft.set(0.0)
     )
     .withName("moveArmTest");
@@ -103,19 +102,19 @@ public class ClimberSubsystem extends SubsystemBase {
   }
 
   public Command unlockArmCommand() {
-    return runOnce(
+    return Commands.runOnce(
       () -> {
         m_brakeServo.setPosition(1.0);
-        m_isBrakeApplied = true;
+        m_isBrakeApplied = false;
       }
     );
   }
 
   public Command lockArmCommand() {
-    return runOnce(
+    return Commands.runOnce(
       () -> {
         m_brakeServo.setPosition(0);
-        m_isBrakeApplied = false;
+        m_isBrakeApplied = true;
       }
     );
   }
@@ -131,7 +130,12 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armLeftPIDController.setReference(Constants.Climber.kArmPositionStarting, ControlType.kPosition);
   }
 
-  // TODO: Add unlocking to reset
+  public Command moveArmToStartingPositionCommand() {
+    return Commands.runOnce(
+      () -> m_armLeftPIDController.setReference(Constants.Climber.kArmPositionStarting, ControlType.kPosition));
+     
+  }
+
   public Command resetZeroCommand() {
     return
     startEnd(() -> {
@@ -157,6 +161,8 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armMotorLeft.set(0.0);
     m_armMotorRight.set(0.0);
 
+    m_brakeServo.setPosition(1.0);
+
     m_isBrakeApplied = false;
     m_isBeamBreakTriggered = false;
 
@@ -170,7 +176,7 @@ public class ClimberSubsystem extends SubsystemBase {
     double armRightPosition = m_armRightEncoder.getPosition();
     SmartDashboard.putNumber("Robot/Climber/ArmRight/Position", armRightPosition);
 
-    SmartDashboard.putNumber("Robot/Climber/Servo/Angle", m_brakeServo.getAngle());
+    SmartDashboard.putNumber("Robot/Climber/Servo/Position", m_brakeServo.getPosition());
   }
 
   @Override

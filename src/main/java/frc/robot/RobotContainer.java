@@ -50,7 +50,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem;
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
-  private final ClimberSubsystem m_climberSubsystem;
+  // private final ClimberSubsystem m_climberSubsystem;
   private final LightsController m_lightsController;
   private final GameCommands m_gameCommands;
   private final AutoCommands m_autoCommands;
@@ -105,7 +105,7 @@ public class RobotContainer {
     );
 
     // SUBSYSTEMS ========================================
-    m_climberSubsystem = new ClimberSubsystem();
+    // m_climberSubsystem = new ClimberSubsystem();
     m_intakeSubsystem = new IntakeSubsystem();
     m_launcherArmSubsystem = new LauncherArmSubsystem();
     m_launcherRollerSubsystem = new LauncherRollerSubsystem();
@@ -122,7 +122,7 @@ public class RobotContainer {
       m_intakeSubsystem, 
       m_launcherArmSubsystem, 
       m_launcherRollerSubsystem, 
-      m_climberSubsystem, 
+      // m_climberSubsystem, 
       m_driverController, 
       m_operatorController
     );
@@ -144,14 +144,17 @@ public class RobotContainer {
     m_driverController.leftBumper().whileTrue(m_gameCommands.runLauncherForShuttleCommand());
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     m_driverController.rightStick().whileTrue(m_gameCommands.alignRobotToTargetCommand());
-    // m_driverController.povLeft().whileTrue(Commands.none());
-    m_driverController.povUp().whileTrue(m_climberSubsystem.moveArmUpCommand()); 
-    // m_driverController.povRight().whileTrue(Commands.none());
-    m_driverController.povDown().whileTrue(m_climberSubsystem.moveArmDownCommand()); 
+
+    // m_driverController.povLeft().whileTrue(m_climberSubsystem.moveArmToStartingPositionCommand());
+    // m_driverController.povUp().whileTrue(m_climberSubsystem.moveArmUpCommand()); 
+    // m_driverController.povRight().whileTrue(m_climberSubsystem.unlockArmCommand());
+    // m_driverController.povDown().whileTrue(m_climberSubsystem.moveArmDownCommand()); 
+
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     m_driverController.y().whileTrue(m_gameCommands.runReloadCommand());
     // m_driverController.b().whileTrue();
-    m_driverController.x().whileTrue(m_gameCommands.climbCommand());
+    // m_driverController.x().whileTrue(m_gameCommands.climbCommand());
+
     m_driverController.start().onTrue(m_gyroSensor.calibrateCommand());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
@@ -163,16 +166,18 @@ public class RobotContainer {
     m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(false));
     // m_operatorController.leftStick().whileTrue();
     // m_operatorController.rightStick().whileTrue();
+
     // m_operatorController.povLeft().whileTrue();
     m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionPodium, true));  
     // m_operatorController.povRight().whileTrue();  
     m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
-    // m_operatorController.a().whileTrue(m_climberSubsystem.moveArmDownCommand()); 
-    // m_operatorController.y().whileTrue(m_climberSubsystem.lockArmCommand());
-    // m_operatorController.b().whileTrue(m_climberSubsystem.unlockArmCommand());
-    // m_operatorController.x().whileTrue(m_gameCommands.climbCommand());
+
+    // m_operatorController.a().whileTrue(); 
+    // m_operatorController.y().whileTrue();
+    // m_operatorController.b().whileTrue();
+    // m_operatorController.x().whileTrue();
     m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetZeroCommand());
-    m_operatorController.start().whileTrue(m_climberSubsystem.resetZeroCommand());
+    // m_operatorController.start().whileTrue(m_climberSubsystem.resetZeroCommand());
   }
 
   private void configureTriggers() {
@@ -194,8 +199,8 @@ public class RobotContainer {
       }).ignoringDisable(true)
     );
 
-    new Trigger(() -> DriverStation.getMatchTime() < 1.0)
-      .onTrue(m_climberSubsystem.lockArmCommand());
+    // new Trigger(() -> Utils.isValueBetween(DriverStation.getMatchTime(), 0.1, 1.0))
+    //   .onTrue(m_climberSubsystem.lockArmCommand().withTimeout(3.0));
   }
 
   private void configureAutos() {
@@ -222,6 +227,7 @@ public class RobotContainer {
     m_autoChooser.addOption("[ 1 ] 0", m_autoCommands::auto0);
     m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands::auto10_1);
     m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands::auto1_0_1);
+    m_autoChooser.addOption("[ 1 ] _0_1_2_3", m_autoCommands::auto1_0_1_2_3);
     m_autoChooser.addOption("[ 1 ] _0_1_41", m_autoCommands::auto1_0_1_41);
     m_autoChooser.addOption("[ 1 ] _0_1_41_51", m_autoCommands::auto1_0_1_41_51);
     m_autoChooser.addOption("[ 1 ] _0_1_51", m_autoCommands::auto1_0_1_51);
@@ -232,6 +238,8 @@ public class RobotContainer {
     m_autoChooser.addOption("[ 2 ] 0", m_autoCommands::auto0);
     m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands::auto20_2);
     m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands::auto2_0_2);
+    m_autoChooser.addOption("[ 2 ] _0_2_1_3", m_autoCommands::auto2_0_2_1_3);
+    m_autoChooser.addOption("[ 2 ] _0_2_3_1", m_autoCommands::auto2_0_2_3_1);
     m_autoChooser.addOption("[ 2 ] _0_2_62", m_autoCommands::auto2_0_2_62);
     m_autoChooser.addOption("[ 2 ] _0_2_62_51", m_autoCommands::auto2_0_2_62_51);
     m_autoChooser.addOption("[ 2 ] _0_2_62_72", m_autoCommands::auto2_0_2_62_72);
@@ -246,12 +254,15 @@ public class RobotContainer {
     m_autoChooser.addOption("[ 3 ] 0_83_73", m_autoCommands::auto30_83_73);
 
     m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands::auto3_0_3);
+    m_autoChooser.addOption("[ 3 ] _0_3_2_1", m_autoCommands::auto3_0_3_2_1);
+    m_autoChooser.addOption("[ 3 ] _0_3_2_1_41", m_autoCommands::auto3_0_3_2_1_41);
+    m_autoChooser.addOption("[ 3 ] _0_3_2_1_51", m_autoCommands::auto3_0_3_2_1_51);
     m_autoChooser.addOption("[ 3 ] _0_3_62", m_autoCommands::auto3_0_3_62);
     m_autoChooser.addOption("[ 3 ] _0_3_62_72", m_autoCommands::auto3_0_3_62_72);
     m_autoChooser.addOption("[ 3 ] _0_3_72", m_autoCommands::auto3_0_3_72);
     m_autoChooser.addOption("[ 3 ] _0_3_72_62", m_autoCommands::auto3_0_3_72_62);
     m_autoChooser.addOption("[ 3 ] _0_3_73", m_autoCommands::auto3_0_3_73);
-    m_autoChooser.addOption("[ 3 ] _0_3_73_83", m_autoCommands::auto3_0_3_83_73);
+    m_autoChooser.addOption("[ 3 ] _0_3_73_83", m_autoCommands::auto3_0_3_73_83);
     m_autoChooser.addOption("[ 3 ] _0_3_82", m_autoCommands::auto3_0_3_82);
     m_autoChooser.addOption("[ 3 ] _0_3_83", m_autoCommands::auto3_0_3_83);
     m_autoChooser.addOption("[ 3 ] _0_3_82_62", m_autoCommands::auto3_0_3_82_62);
@@ -272,17 +283,18 @@ public class RobotContainer {
     m_intakeSubsystem.reset();
     m_launcherRollerSubsystem.reset();
     m_launcherArmSubsystem.reset();
-    m_climberSubsystem.reset();
+    // m_climberSubsystem.reset();
   }
 
   public void autonomousInit() {
     resetRobot();
-    m_gyroSensor.calibrate();
+    //m_gyroSensor.calibrate();
   }
 
   public void teleopInit() {
     resetRobot();
-    m_gyroSensor.reset(Utils.wrapAngle(m_poseSubsystem.getPose().getRotation().getDegrees()));
+    double degrees = m_poseSubsystem.getPose().getRotation().getDegrees() + Utils.getValueForAlliance(0, 180);
+    m_gyroSensor.reset(Utils.wrapAngle(degrees));
   }
 
   public void testInit() {
@@ -305,7 +317,7 @@ public class RobotContainer {
 
     SmartDashboard.putBoolean(
       "Robot/HasInitialZeroResets", 
-      (m_launcherArmSubsystem.hasInitialZeroReset() && m_climberSubsystem.hasInitialZeroReset()) || Robot.isRunningMatch()
+      (m_launcherArmSubsystem.hasInitialZeroReset()) || Robot.isRunningMatch() // && m_climberSubsystem.hasInitialZeroReset()) 
     );
   }
 }

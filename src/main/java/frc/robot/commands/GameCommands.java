@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.lib.common.Records.LauncherRollerSpeeds;
 import frc.robot.lib.controllers.GameController;
@@ -25,7 +24,7 @@ public class GameCommands {
   private final IntakeSubsystem m_intakeSubsystem;
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
-  private final ClimberSubsystem m_climberSubsystem;
+  // private final ClimberSubsystem m_climberSubsystem;
   private final GameController m_driverController;
   private final GameController m_operatorControlller;
 
@@ -38,7 +37,7 @@ public class GameCommands {
     IntakeSubsystem intakeSubsystem,
     LauncherArmSubsystem launcherArmSubsystem,
     LauncherRollerSubsystem launcherRollerSubsystem,
-    ClimberSubsystem climberSubsystem,
+    // ClimberSubsystem climberSubsystem,
     GameController driverController,
     GameController operatorControlller
   ) {
@@ -50,7 +49,7 @@ public class GameCommands {
     m_intakeSubsystem = intakeSubsystem;
     m_launcherArmSubsystem = launcherArmSubsystem;
     m_launcherRollerSubsystem = launcherRollerSubsystem;
-    m_climberSubsystem = climberSubsystem;
+    // m_climberSubsystem = climberSubsystem;
     m_driverController = driverController;
     m_operatorControlller = operatorControlller;
 
@@ -211,7 +210,7 @@ public class GameCommands {
       SmartDashboard.getNumber("Robot/Launcher/Roller/Bottom/SpeedForAmp", Constants.Launcher.kAmpLauncherSpeeds.bottom())
     ))
     .alongWith(
-      Commands.waitSeconds(0.5)
+      Commands.waitSeconds(0.75)
       .andThen(m_intakeSubsystem.runLaunchCommand())
     )
     .onlyIf(() -> m_launcherBottomBeamBreakSensor.hasTarget())
@@ -222,22 +221,26 @@ public class GameCommands {
     .withName("RunLauncherForAmp");
   }
 
-  public Command lockArmCommand() {
-    return Commands.parallel(
-      m_climberSubsystem.lockArmCommand(),
-      rumbleControllersCommand(true, false));
-  }
-
-  public Command climbCommand() {
-    return Commands.sequence(
-      m_climberSubsystem.moveArmUpCommand()
-        .until(() -> m_climberBeamBreakSensor.hasTarget()),
-      m_climberSubsystem.moveArmToDownCommand().withTimeout(3.0),
-      new WaitCommand(0.1),
-      lockArmCommand()
-    )
-    .withName("Climb");
-  }
+  // public Command climbCommand() {
+  //   return Commands.sequence(
+  //     Commands.runOnce(
+  //       () -> m_climberBeamBreakSensor.clearInitialTarget()),
+  //     Commands.parallel(
+  //       m_launcherArmSubsystem.alignToPositionAutoCommand(1.0),
+  //       m_climberSubsystem.moveArmUpCommand()
+  //         .until(() -> m_climberBeamBreakSensor.hasInitialTarget())
+  //     ),
+  //     Commands.race(
+  //       m_climberSubsystem.moveArmDownCommand(),
+  //       Commands.sequence(
+  //         new WaitCommand(2.5),
+  //         m_climberSubsystem.lockArmCommand().withTimeout(3.0),
+  //         rumbleControllersCommand(true, false)
+  //       )
+  //     )
+  //   )
+  //   .withName("Climb");
+  // }
 
   public Command rumbleControllersCommand(boolean isDriverRumbleEnabled, boolean isRumbleOperatorEnabled) {
     return Commands.parallel(

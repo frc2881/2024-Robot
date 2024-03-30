@@ -85,7 +85,8 @@ public class PoseSubsystem extends SubsystemBase {
           Constants.Game.Field.Targets.kSpeakerTargetYawTransformX, 
           -Constants.Game.Field.Targets.kSpeakerTargetYawTransformX
         ), 
-        0.0, Rotation2d.fromDegrees(0.0)
+        Constants.Game.Field.Targets.kSpeakerTargetYTransform, 
+        Rotation2d.fromDegrees(0.0)
       )
     );
     Translation2d targetTranslation = targetPose.relativeTo(robotPose).getTranslation();
