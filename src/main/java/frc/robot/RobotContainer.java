@@ -50,7 +50,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_intakeSubsystem;
   private final LauncherArmSubsystem m_launcherArmSubsystem;
   private final LauncherRollerSubsystem m_launcherRollerSubsystem;
-  // private final ClimberSubsystem m_climberSubsystem;
+  private final ClimberSubsystem m_climberSubsystem;
   private final LightsController m_lightsController;
   private final GameCommands m_gameCommands;
   private final AutoCommands m_autoCommands;
@@ -105,7 +105,7 @@ public class RobotContainer {
     );
 
     // SUBSYSTEMS ========================================
-    // m_climberSubsystem = new ClimberSubsystem();
+    m_climberSubsystem = new ClimberSubsystem();
     m_intakeSubsystem = new IntakeSubsystem();
     m_launcherArmSubsystem = new LauncherArmSubsystem();
     m_launcherRollerSubsystem = new LauncherRollerSubsystem();
@@ -122,7 +122,7 @@ public class RobotContainer {
       m_intakeSubsystem, 
       m_launcherArmSubsystem, 
       m_launcherRollerSubsystem, 
-      // m_climberSubsystem, 
+      m_climberSubsystem, 
       m_driverController, 
       m_operatorController
     );
@@ -145,15 +145,15 @@ public class RobotContainer {
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     m_driverController.rightStick().whileTrue(m_gameCommands.alignRobotToTargetCommand());
 
-    // m_driverController.povLeft().whileTrue(m_climberSubsystem.moveArmToStartingPositionCommand());
-    // m_driverController.povUp().whileTrue(m_climberSubsystem.moveArmUpCommand()); 
-    // m_driverController.povRight().whileTrue(m_climberSubsystem.unlockArmCommand());
-    // m_driverController.povDown().whileTrue(m_climberSubsystem.moveArmDownCommand()); 
+    m_driverController.povLeft().whileTrue(m_climberSubsystem.moveArmToStartingPositionCommand());
+    m_driverController.povUp().whileTrue(m_climberSubsystem.moveArmUpCommand()); 
+    m_driverController.povRight().whileTrue(m_climberSubsystem.unlockArmCommand());
+    m_driverController.povDown().whileTrue(m_climberSubsystem.moveArmDownCommand()); 
 
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     m_driverController.y().whileTrue(m_gameCommands.runReloadCommand());
     // m_driverController.b().whileTrue();
-    // m_driverController.x().whileTrue(m_gameCommands.climbCommand());
+    m_driverController.x().whileTrue(m_gameCommands.climbCommand());
 
     m_driverController.start().onTrue(m_gyroSensor.calibrateCommand());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
@@ -163,7 +163,7 @@ public class RobotContainer {
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
     m_operatorController.rightBumper().whileTrue(m_gameCommands.runLauncherForAmpCommand());
     m_operatorController.leftTrigger().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand(true));
-    m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(false));
+    m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(true));
     // m_operatorController.leftStick().whileTrue();
     // m_operatorController.rightStick().whileTrue();
 
@@ -177,7 +177,7 @@ public class RobotContainer {
     // m_operatorController.b().whileTrue();
     // m_operatorController.x().whileTrue();
     m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetZeroCommand());
-    // m_operatorController.start().whileTrue(m_climberSubsystem.resetZeroCommand());
+    m_operatorController.start().whileTrue(m_climberSubsystem.resetZeroCommand());
   }
 
   private void configureTriggers() {
@@ -199,8 +199,8 @@ public class RobotContainer {
       }).ignoringDisable(true)
     );
 
-    // new Trigger(() -> Utils.isValueBetween(DriverStation.getMatchTime(), 0.1, 1.0))
-    //   .onTrue(m_climberSubsystem.lockArmCommand().withTimeout(3.0));
+    new Trigger(() -> Utils.isValueBetween(DriverStation.getMatchTime(), 0.1, 1.0))
+      .onTrue(m_climberSubsystem.lockArmCommand().withTimeout(3.0));
   }
 
   private void configureAutos() {
@@ -224,52 +224,52 @@ public class RobotContainer {
 
     m_autoChooser.setDefaultOption("None", Commands::none);
 
-    m_autoChooser.addOption("[ 1 ] 0", m_autoCommands::auto0);
-    m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands::auto10_1);
-    m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands::auto1_0_1);
-    m_autoChooser.addOption("[ 1 ] _0_1_2_3", m_autoCommands::auto1_0_1_2_3);
-    m_autoChooser.addOption("[ 1 ] _0_1_41", m_autoCommands::auto1_0_1_41);
-    m_autoChooser.addOption("[ 1 ] _0_1_41_51", m_autoCommands::auto1_0_1_41_51);
-    m_autoChooser.addOption("[ 1 ] _0_1_51", m_autoCommands::auto1_0_1_51);
-    m_autoChooser.addOption("[ 1 ] _0_1_51_41", m_autoCommands::auto1_0_1_51_41);
+    m_autoChooser.addOption("[ 1 ] 0", m_autoCommands::auto0); // TESTED
+    m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands::auto10_1); // TESTED
+    m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands::auto1_0_1); // TESTED
+    m_autoChooser.addOption("[ 1 ] _0_1_2_3", m_autoCommands::auto1_0_1_2_3); // TESTED
+    m_autoChooser.addOption("[ 1 ] _0_1_41", m_autoCommands::auto1_0_1_41); // TESTED
+    m_autoChooser.addOption("[ 1 ] _0_1_41_51", m_autoCommands::auto1_0_1_41_51); // TESTED
+    m_autoChooser.addOption("[ 1 ] _0_1_51", m_autoCommands::auto1_0_1_51); // TESTED
+    m_autoChooser.addOption("[ 1 ] _0_1_51_41", m_autoCommands::auto1_0_1_51_41); // TESTED
     m_autoChooser.addOption("[ 1 ] _0_1_51_61", m_autoCommands::auto1_0_1_51_61);
     m_autoChooser.addOption("[ 1 ] _0_1_51_62", m_autoCommands::auto1_0_1_51_62);
 
-    m_autoChooser.addOption("[ 2 ] 0", m_autoCommands::auto0);
-    m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands::auto20_2);
-    m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands::auto2_0_2);
+    m_autoChooser.addOption("[ 2 ] 0", m_autoCommands::auto0); // TESTED
+    m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands::auto20_2); // TESTED
+    m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands::auto2_0_2); // TESTED
     m_autoChooser.addOption("[ 2 ] _0_2_1_3", m_autoCommands::auto2_0_2_1_3);
     m_autoChooser.addOption("[ 2 ] _0_2_3_1", m_autoCommands::auto2_0_2_3_1);
-    m_autoChooser.addOption("[ 2 ] _0_2_62", m_autoCommands::auto2_0_2_62);
+    m_autoChooser.addOption("[ 2 ] _0_2_62", m_autoCommands::auto2_0_2_62); // TESTED
     m_autoChooser.addOption("[ 2 ] _0_2_62_51", m_autoCommands::auto2_0_2_62_51);
-    m_autoChooser.addOption("[ 2 ] _0_2_62_72", m_autoCommands::auto2_0_2_62_72);
-    m_autoChooser.addOption("[ 2 ] _0_2_72", m_autoCommands::auto2_0_2_72);
-    m_autoChooser.addOption("[ 2 ] _0_2_72_62", m_autoCommands::auto2_0_2_72_62);
+    m_autoChooser.addOption("[ 2 ] _0_2_62_72", m_autoCommands::auto2_0_2_62_72); // TESTED
+    m_autoChooser.addOption("[ 2 ] _0_2_72", m_autoCommands::auto2_0_2_72); // TESTED
+    m_autoChooser.addOption("[ 2 ] _0_2_72_62", m_autoCommands::auto2_0_2_72_62); // TESTED
 
-    m_autoChooser.addOption("[ 3 ] 0", m_autoCommands::auto0);
-    m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands::auto30_3);
-    m_autoChooser.addOption("[ 3 ] 0_73", m_autoCommands::auto30_73);
-    m_autoChooser.addOption("[ 3 ] 0_83", m_autoCommands::auto30_83);
-    m_autoChooser.addOption("[ 3 ] 0_73_83", m_autoCommands::auto30_73_83);
-    m_autoChooser.addOption("[ 3 ] 0_83_73", m_autoCommands::auto30_83_73);
+    m_autoChooser.addOption("[ 3 ] 0", m_autoCommands::auto0); // TESTED
+    m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands::auto30_3); // TESTED
+    m_autoChooser.addOption("[ 3 ] 0_73", m_autoCommands::auto30_73); // TESTED
+    m_autoChooser.addOption("[ 3 ] 0_83", m_autoCommands::auto30_83); // TESTED
+    m_autoChooser.addOption("[ 3 ] 0_73_83", m_autoCommands::auto30_73_83); // TESTED
+    m_autoChooser.addOption("[ 3 ] 0_83_73", m_autoCommands::auto30_83_73); // TESTED
 
-    m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands::auto3_0_3);
-    m_autoChooser.addOption("[ 3 ] _0_3_2_1", m_autoCommands::auto3_0_3_2_1);
+    m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands::auto3_0_3); // TESTED
+    m_autoChooser.addOption("[ 3 ] _0_3_2_1", m_autoCommands::auto3_0_3_2_1); // TESTED
     m_autoChooser.addOption("[ 3 ] _0_3_2_1_41", m_autoCommands::auto3_0_3_2_1_41);
     m_autoChooser.addOption("[ 3 ] _0_3_2_1_51", m_autoCommands::auto3_0_3_2_1_51);
     m_autoChooser.addOption("[ 3 ] _0_3_62", m_autoCommands::auto3_0_3_62);
     m_autoChooser.addOption("[ 3 ] _0_3_62_72", m_autoCommands::auto3_0_3_62_72);
-    m_autoChooser.addOption("[ 3 ] _0_3_72", m_autoCommands::auto3_0_3_72);
-    m_autoChooser.addOption("[ 3 ] _0_3_72_62", m_autoCommands::auto3_0_3_72_62);
-    m_autoChooser.addOption("[ 3 ] _0_3_73", m_autoCommands::auto3_0_3_73);
-    m_autoChooser.addOption("[ 3 ] _0_3_73_83", m_autoCommands::auto3_0_3_73_83);
+    m_autoChooser.addOption("[ 3 ] _0_3_72", m_autoCommands::auto3_0_3_72); // TESTED
+    m_autoChooser.addOption("[ 3 ] _0_3_72_62", m_autoCommands::auto3_0_3_72_62); // TESTED
+    m_autoChooser.addOption("[ 3 ] _0_3_73", m_autoCommands::auto3_0_3_73); // TESTED
+    m_autoChooser.addOption("[ 3 ] _0_3_73_83", m_autoCommands::auto3_0_3_73_83);  // TESTED
     m_autoChooser.addOption("[ 3 ] _0_3_82", m_autoCommands::auto3_0_3_82);
-    m_autoChooser.addOption("[ 3 ] _0_3_83", m_autoCommands::auto3_0_3_83);
+    m_autoChooser.addOption("[ 3 ] _0_3_83", m_autoCommands::auto3_0_3_83); // TESTED
     m_autoChooser.addOption("[ 3 ] _0_3_82_62", m_autoCommands::auto3_0_3_82_62);
     m_autoChooser.addOption("[ 3 ] _0_3_82_72", m_autoCommands::auto3_0_3_82_72);
-    m_autoChooser.addOption("[ 3 ] _0_3_83_62", m_autoCommands::auto3_0_3_83_62);
-    m_autoChooser.addOption("[ 3 ] _0_3_83_72", m_autoCommands::auto3_0_3_83_72);
-    m_autoChooser.addOption("[ 3 ] _0_3_83_73", m_autoCommands::auto3_0_3_83_73);
+    m_autoChooser.addOption("[ 3 ] _0_3_83_62", m_autoCommands::auto3_0_3_83_62); // TESTED
+    m_autoChooser.addOption("[ 3 ] _0_3_83_72", m_autoCommands::auto3_0_3_83_72); // TESTED
+    m_autoChooser.addOption("[ 3 ] _0_3_83_73", m_autoCommands::auto3_0_3_83_73); // TESTED
 
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }
@@ -283,12 +283,11 @@ public class RobotContainer {
     m_intakeSubsystem.reset();
     m_launcherRollerSubsystem.reset();
     m_launcherArmSubsystem.reset();
-    // m_climberSubsystem.reset();
+    m_climberSubsystem.reset();
   }
 
   public void autonomousInit() {
     resetRobot();
-    //m_gyroSensor.calibrate();
   }
 
   public void teleopInit() {
@@ -317,7 +316,7 @@ public class RobotContainer {
 
     SmartDashboard.putBoolean(
       "Robot/HasInitialZeroResets", 
-      (m_launcherArmSubsystem.hasInitialZeroReset()) || Robot.isRunningMatch() // && m_climberSubsystem.hasInitialZeroReset()) 
+      (m_launcherArmSubsystem.hasInitialZeroReset() &&  m_climberSubsystem.hasInitialZeroReset()) || Robot.isRunningMatch()
     );
   }
 }

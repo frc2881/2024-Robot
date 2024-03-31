@@ -161,12 +161,12 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armMotorLeft.set(0.0);
     m_armMotorRight.set(0.0);
 
-    m_brakeServo.setPosition(1.0);
-
     m_isBrakeApplied = false;
     m_isBeamBreakTriggered = false;
 
-    moveArmToStartingPosition();
+    m_brakeServo.setPosition(1.0);
+
+    m_armLeftPIDController.setReference(Constants.Climber.kArmPositionStarting, ControlType.kPosition);
   }
 
   private void updateTelemetry() {
@@ -177,6 +177,8 @@ public class ClimberSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Robot/Climber/ArmRight/Position", armRightPosition);
 
     SmartDashboard.putNumber("Robot/Climber/Servo/Position", m_brakeServo.getPosition());
+    SmartDashboard.putNumber("Robot/Climber/Servo/Angle", m_brakeServo.getAngle());
+    SmartDashboard.putNumber("Robot/Climber/Servo/Speed", m_brakeServo.getSpeed());
   }
 
   @Override

@@ -116,6 +116,25 @@ public class AutoCommands {
     .withName("Auto1_0_1_2_3");
   }  
 
+  public Command auto1_0_1_2_3_83() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload1)),
+      score(),
+      pickup(path(AutoPath.Pickup1)),
+      score(), 
+      pickup(path(AutoPath.Pickup21)),
+      score(),
+      pickup(path(AutoPath.Pickup31)),
+      score(),
+      pickup(path(AutoPath.Pickup8)),
+      move(path(AutoPath.ScoreStage3)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto1_0_1_2_3_83");
+  }  
+
   public Command auto1_0_1_41() {
     return 
     Commands.sequence(
@@ -507,7 +526,7 @@ public class AutoCommands {
       score(),
       pickup(path(AutoPath.Pickup3)),
       score(),
-      pickup(path(AutoPath.Pickup62)),
+      pickup(path(AutoPath.Pickup63)),
       move(path(AutoPath.ScoreStage2)),
       score()
     )
@@ -522,7 +541,7 @@ public class AutoCommands {
       score(),
       pickup(path(AutoPath.Pickup3)),
       score(),
-      pickup(path(AutoPath.Pickup62)),
+      pickup(path(AutoPath.Pickup63)),
       move(path(AutoPath.ScoreStage2)),
       score(),
       pickup(path(AutoPath.Pickup72)),

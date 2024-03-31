@@ -60,7 +60,8 @@ public class PoseSubsystem extends SubsystemBase {
         m_poseEstimator.addVisionMeasurement(
           pose, 
           globalPose.timestampSeconds, 
-          poseSensor.getEstimatedStandardDeviations(pose)
+          Constants.Sensors.Pose.kSingleTagStandardDeviations
+          // poseSensor.getEstimatedStandardDeviations(pose)
         );
       });
     });

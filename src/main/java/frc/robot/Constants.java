@@ -78,8 +78,8 @@ public final class Constants {
     public static final double kDriftCorrectionThetaControllerVelocityTolerance = 0.5;
 
     public static final PIDConstants kTargetAlignmentThetaControllerPIDConstants = new PIDConstants(0.1, 0, 0.01, 0);
-    public static final double kTargetAlignmentThetaControllerPositionTolerance = 0.5;
-    public static final double kTargetAlignmentThetaControllerVelocityTolerance = 0.5;
+    public static final double kTargetAlignmentThetaControllerPositionTolerance = 1.0;
+    public static final double kTargetAlignmentThetaControllerVelocityTolerance = 1.0;
 
     public static final double kDriveInputLimiter = 0.6;
     public static final double kDriveInputRateLimit = 0.5;
@@ -189,9 +189,9 @@ public final class Constants {
       new LauncherArmPosition(1.00, 13),
       new LauncherArmPosition(1.35, 12.7),
       new LauncherArmPosition(2.3, 8.0),
-      new LauncherArmPosition(3.65, 5.8), // 6.2
-      new LauncherArmPosition(5.0, 4.3),
-      new LauncherArmPosition(6.2, 4.0)
+      new LauncherArmPosition(3.65, 5.9), // 6.2
+      new LauncherArmPosition(5.0, 4.4),
+      new LauncherArmPosition(6.2, 4.0) // 4.0 (3/31)
     };
   }
 
@@ -204,10 +204,10 @@ public final class Constants {
     public static final double kArmMotorMaxForwardOutput = 1.0;
     public static final IdleMode kArmMotorIdleMode = IdleMode.kBrake;
     public static final PIDConstants kArmMotorPIDConstants = new PIDConstants(0.05, 0, 0, 0);
-    public static final double kArmMotorForwardSoftLimit = 28.0;
+    public static final double kArmMotorForwardSoftLimit = 33.0;
     public static final double kArmMotorReverseSoftLimit = 0.0; 
 
-    public static final double kArmPositionStarting = 9.3;
+    public static final double kArmPositionStarting = 8.2;
   }
 
   public static final class Sensors {
@@ -279,7 +279,7 @@ public final class Constants {
         public static final Pose3d kRedAmp = kAprilTagFieldLayout.getTagPose(6).orElse(new Pose3d());
 
         public static final double kSpeakerTargetYawTransformX = Units.inchesToMeters(6.0); // If we change this, retune launcher arm 
-        public static final double kSpeakerTargetYTransform = Units.inchesToMeters(-4.5);
+        public static final double kSpeakerTargetYTransform = Units.inchesToMeters(-6.0);
         public static final double kSpeakerTargetPitchTransformZ = Units.inchesToMeters(24);
         public static final double kSpeakerTargetDistanceTransformX = Units.inchesToMeters(0);
 

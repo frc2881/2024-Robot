@@ -34,6 +34,18 @@
           "data": {
             "pathName": "Pickup31"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup8"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreStage3"
+          }
         }
       ]
     }
