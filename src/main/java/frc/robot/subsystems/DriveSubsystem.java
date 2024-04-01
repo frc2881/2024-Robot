@@ -276,6 +276,7 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public void reset() {
+    setIdleMode(IdleMode.kBrake);
     drive(0.0, 0.0, 0.0);
   }
 
