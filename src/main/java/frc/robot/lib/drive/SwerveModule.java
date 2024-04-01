@@ -2,6 +2,7 @@ package frc.robot.lib.drive;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkFlex;
@@ -91,6 +92,11 @@ public class SwerveModule implements Sendable {
 
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(m_drivingEncoder.getPosition(), new Rotation2d(m_turningEncoder.getPosition() - m_turningOffset));
+  }
+
+  public void setIdleMode(IdleMode mode){
+    m_drivingMotor.setIdleMode(mode);
+    m_turningMotor.setIdleMode(mode);
   }
 
   public void updateTelemetry() {

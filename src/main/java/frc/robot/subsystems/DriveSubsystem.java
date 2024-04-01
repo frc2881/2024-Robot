@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -99,6 +101,12 @@ public class DriveSubsystem extends SubsystemBase {
     driveDriftCorrectionChooser.addOption(DriveDriftCorrection.Disabled.toString(), DriveDriftCorrection.Disabled);
     driveDriftCorrectionChooser.onChange(driftCorrection -> setDriftCorrection(driftCorrection));
     SmartDashboard.putData("Robot/Drive/DriftCorrection", driveDriftCorrectionChooser);
+
+    SendableChooser<IdleMode> idleModeChooser = new SendableChooser<IdleMode>();
+    idleModeChooser.setDefaultOption("Break", IdleMode.kBrake);
+    idleModeChooser.addOption("Coast", IdleMode.kCoast);
+    idleModeChooser.onChange(idleMode -> setIdleMode(idleMode));
+    SmartDashboard.putData("Robot/Drive/IdleMode", idleModeChooser);
   }
 
   @Override
@@ -228,6 +236,13 @@ public class DriveSubsystem extends SubsystemBase {
     )
     .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
     .withName("SetDriveLockedState");
+  }
+
+  public void setIdleMode(IdleMode idleMode) {
+    m_swerveModuleFrontLeft.setIdleMode(idleMode);
+    m_swerveModuleFrontRight.setIdleMode(idleMode);
+    m_swerveModuleRearLeft.setIdleMode(idleMode);
+    m_swerveModuleRearRight.setIdleMode(idleMode);
   }
 
   public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Supplier<Double> targetYaw) {
