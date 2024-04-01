@@ -110,7 +110,6 @@ public class LauncherArmSubsystem extends SubsystemBase {
 
   private double calculatePositionForSpeaker(double distance) {
     double position = Utils.getLinearInterpolation(m_distances, m_positions, distance);
-    SmartDashboard.putNumber("CalculatedLauncherPosition", position);
     return 
     Utils.isValueBetween(position, Constants.Launcher.kArmMotorReverseSoftLimit, Constants.Launcher.kArmMotorForwardSoftLimit) 
       ? position 

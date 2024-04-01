@@ -16,7 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.lib.logging.Logger;
 
@@ -65,10 +65,6 @@ public final class Utils {
 
   public static double getDistanceToPose(Pose2d robotPose, Pose2d targetPose) {
     return robotPose.getTranslation().getDistance(targetPose.getTranslation());
-  }
-
-  public static boolean isPoseInBounds(Pose2d robotPose, Pose2d minPose, Pose2d maxPose) {
-    return isValueBetween(robotPose.getX(), minPose.getX(), maxPose.getX()) && isValueBetween(robotPose.getY(), minPose.getY(), maxPose.getY());
   }
 
   public static double getLinearInterpolation(double[] xs, double[] ys, double x) {

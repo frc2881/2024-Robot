@@ -169,6 +169,7 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armLeftPIDController.setReference(Constants.Climber.kArmPositionStarting, ControlType.kPosition);
   }
 
+  // TODO: clean up unused telemetry for competition mode
   private void updateTelemetry() {
     double armLeftPosition = m_armLeftEncoder.getPosition();
     SmartDashboard.putNumber("Robot/Climber/ArmLeft/Position", armLeftPosition);

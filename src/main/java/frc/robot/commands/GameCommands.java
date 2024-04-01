@@ -224,11 +224,11 @@ public class GameCommands {
   public Command climbCommand() {
     return Commands.sequence(
       Commands.runOnce(
-        () -> m_climberBeamBreakSensor.clearInitialTarget()),
+        () -> m_climberBeamBreakSensor.resetTrigger()),
       Commands.parallel(
         m_launcherArmSubsystem.alignToPositionAutoCommand(1.0),
         m_climberSubsystem.moveArmUpCommand()
-          .until(() -> m_climberBeamBreakSensor.hasInitialTarget())
+          .until(() -> m_climberBeamBreakSensor.isTriggered())
       ),
       Commands.race(
         m_climberSubsystem.moveArmDownCommand(),

@@ -82,8 +82,6 @@ public class RobotContainer {
         cameraTransform, 
         Constants.Sensors.Pose.kPoseStrategy, 
         Constants.Sensors.Pose.kFallbackPoseStrategy, 
-        Constants.Sensors.Pose.kSingleTagStandardDeviations, 
-        Constants.Sensors.Pose.kMultiTagStandardDeviations, 
         Constants.Game.Field.kAprilTagFieldLayout
       ));
     });
@@ -214,7 +212,7 @@ public class RobotContainer {
         Constants.Drive.kPathFollowerRotationPIDConstants,
         Constants.Drive.kMaxSpeedMetersPerSecond, 
         Constants.Drive.kDriveBaseRadius, 
-        new ReplanningConfig()
+        new ReplanningConfig(true, true)
       ),
       () -> Robot.getAlliance() == Alliance.Red,
       m_driveSubsystem
@@ -292,8 +290,7 @@ public class RobotContainer {
 
   public void teleopInit() {
     resetRobot();
-    double degrees = m_poseSubsystem.getPose().getRotation().getDegrees() + Utils.getValueForAlliance(0, 180);
-    m_gyroSensor.reset(Utils.wrapAngle(degrees));
+    m_gyroSensor.reset(Utils.wrapAngle(m_poseSubsystem.getPose().getRotation().getDegrees() + Utils.getValueForAlliance(0, 180)));
   }
 
   public void testInit() {

@@ -39,7 +39,8 @@ public class PoseSubsystem extends SubsystemBase {
       m_swerveModulePositions.get(),
       new Pose2d(),
       Constants.Sensors.Pose.kStateStandardDeviations,
-      Constants.Sensors.Pose.kVisionStandardDeviations);
+      Constants.Sensors.Pose.kVisionStandardDeviations
+    );
   }
 
   @Override
@@ -55,21 +56,24 @@ public class PoseSubsystem extends SubsystemBase {
   public void updatePose() {
     m_poseEstimator.update(m_gyroRotation.get(), m_swerveModulePositions.get());
     m_poseSensors.forEach(poseSensor -> {
-      poseSensor.getEstimatedGlobalPose().ifPresent(globalPose -> {
-        Pose2d pose = globalPose.estimatedPose.toPose2d();
-        m_poseEstimator.addVisionMeasurement(
-          pose, 
-          globalPose.timestampSeconds, 
-          Constants.Sensors.Pose.kSingleTagStandardDeviations
-          // poseSensor.getEstimatedStandardDeviations(pose)
-        );
+      poseSensor.getEstimatedRobotPose().ifPresent(estimatedRobotPose -> {
+        Pose2d pose = estimatedRobotPose.estimatedPose.toPose2d();
+        if (isPoseInBounds(pose)) {
+          m_poseEstimator.addVisionMeasurement(pose, estimatedRobotPose.timestampSeconds);
+        }
       });
     });
   }
 
+  private boolean isPoseInBounds(Pose2d robotPose) {
+    double x = robotPose.getX();
+    double y = robotPose.getY();
+    return (x >= 0.0 && x <= Constants.Game.Field.kAprilTagFieldLayout.getFieldLength()) && (y >= 0.0 && y <= Constants.Game.Field.kAprilTagFieldLayout.getFieldWidth());
+  }
+
   public void resetPose(Pose2d pose) {
     // NO-OP as current pose is always maintained by pose sensors in the configuration for this robot
-    // m_poseEstimator.resetPosition(m_gyroRotation.get(), m_swerveModulePosition.get(), pose);
+    // m_poseEstimator.resetPosition(m_gyroRotation.get(), m_swerveModulePositions.get(), pose);
   }
 
   public Pose3d getTargetPose() {

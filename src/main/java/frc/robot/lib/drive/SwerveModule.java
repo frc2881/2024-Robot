@@ -96,6 +96,7 @@ public class SwerveModule implements Sendable {
   public void updateTelemetry() {
     SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Driving/Speed/Target", m_setSpeed);
     SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Driving/Speed/Actual", m_drivingEncoder.getVelocity());
+    SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Driving/Position/Actual", m_drivingEncoder.getPosition());
     SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Turning/Position", m_turningEncoder.getPosition());
   }
 

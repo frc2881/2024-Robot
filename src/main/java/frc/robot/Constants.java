@@ -238,12 +238,8 @@ public final class Constants {
       );
       public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
       public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
-      public static final double kMaxTargetPoseAmbiguity = 0.2;
-      public static final double kMaxTargetsAverageDistance = 4.0;
-      public static final Matrix<N3, N1> kStateStandardDeviations = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
-      public static final Matrix<N3, N1> kVisionStandardDeviations = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(10));
-      public static final Matrix<N3, N1> kSingleTagStandardDeviations = VecBuilder.fill(1, 1, 2);
-      public static final Matrix<N3, N1> kMultiTagStandardDeviations = VecBuilder.fill(0.5, 0.5, 1);
+      public static final Matrix<N3, N1> kStateStandardDeviations = VecBuilder.fill(0.1, 0.1, 0.1);
+      public static final Matrix<N3, N1> kVisionStandardDeviations = VecBuilder.fill(0.3, 0.3, 0.3);
     }
 
     public static final class BeamBreak {
@@ -278,11 +274,10 @@ public final class Constants {
         public static final Pose3d kBlueAmp = kAprilTagFieldLayout.getTagPose(5).orElse(new Pose3d());
         public static final Pose3d kRedAmp = kAprilTagFieldLayout.getTagPose(6).orElse(new Pose3d());
 
-        public static final double kSpeakerTargetYawTransformX = Units.inchesToMeters(6.0); // If we change this, retune launcher arm 
+        public static final double kSpeakerTargetYawTransformX = Units.inchesToMeters(6.0); // NOTE: If we change this, retune launcher arm 
         public static final double kSpeakerTargetYTransform = Units.inchesToMeters(-6.0);
         public static final double kSpeakerTargetPitchTransformZ = Units.inchesToMeters(24);
         public static final double kSpeakerTargetDistanceTransformX = Units.inchesToMeters(0);
-
       }
     }
 
