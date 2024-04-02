@@ -1,5 +1,6 @@
 package frc.robot.lib.sensors;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
@@ -41,6 +42,10 @@ public class GyroSensor extends ADIS16470_IMU {
 
   public void reset(double value) {
     setGyroAngle(getYawAxis(), value);
+  }
+
+  public void resetRobotToField(Pose2d robotPose) {
+    reset(Utils.wrapAngle(robotPose.getRotation().getDegrees() + Utils.getValueForAlliance(0, 180)));
   }
 
   public Command resetCommand() {

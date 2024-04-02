@@ -57,18 +57,20 @@ public class PoseSubsystem extends SubsystemBase {
     m_poseEstimator.update(m_gyroRotation.get(), m_swerveModulePositions.get());
     m_poseSensors.forEach(poseSensor -> {
       poseSensor.getEstimatedRobotPose().ifPresent(estimatedRobotPose -> {
-        Pose2d pose = estimatedRobotPose.estimatedPose.toPose2d();
-        if (isPoseInBounds(pose)) {
-          m_poseEstimator.addVisionMeasurement(pose, estimatedRobotPose.timestampSeconds);
+        if (Utils.isValueInRange(poseSensor.getLatestResultPoseAmbiguity(), 0.0, Constants.Sensors.Pose.kVisionMaxPoseAmbiguity)) {
+          Pose2d pose = estimatedRobotPose.estimatedPose.toPose2d();
+          if (isPoseOnField(pose)) {
+            m_poseEstimator.addVisionMeasurement(pose, estimatedRobotPose.timestampSeconds);
+          }
         }
       });
     });
   }
 
-  private boolean isPoseInBounds(Pose2d robotPose) {
-    double x = robotPose.getX();
-    double y = robotPose.getY();
-    return (x >= 0.0 && x <= Constants.Game.Field.kAprilTagFieldLayout.getFieldLength()) && (y >= 0.0 && y <= Constants.Game.Field.kAprilTagFieldLayout.getFieldWidth());
+  private boolean isPoseOnField(Pose2d pose) {
+    double x = pose.getX();
+    double y = pose.getY();
+    return (x > 0.0 && x < Constants.Game.Field.kAprilTagFieldLayout.getFieldLength()) && (y > 0.0 && y < Constants.Game.Field.kAprilTagFieldLayout.getFieldWidth());
   }
 
   public void resetPose(Pose2d pose) {

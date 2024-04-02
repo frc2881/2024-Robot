@@ -21,7 +21,7 @@ public class DistanceSensor {
   }
 
   public boolean hasTarget() {
-    return Utils.isValueBetween(getDistance(), m_minTargetDistance, m_maxTargetDistance);
+    return Utils.isValueInRange(getDistance(), m_minTargetDistance, m_maxTargetDistance);
   }
 
   public void updateTelemetry() {

@@ -19,6 +19,7 @@ public class AutoCommands {
     return Constants.Game.Auto.kPaths.get(autoPath);
   }
 
+  // TODO: consider adding small rotation delay distance value to pathfinding method call to account for tight egress from stage/3 pickup location
   private Command move(PathPlannerPath path) {
     return
     AutoBuilder.pathfindThenFollowPath(path, Constants.Drive.kPathFindingConstraints)

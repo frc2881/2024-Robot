@@ -128,31 +128,28 @@ public class RobotContainer {
     m_autoCommands = new AutoCommands(m_gameCommands);
     m_autoChooser = new SendableChooser<Supplier<Command>>();
 
-    configureBindings();
+    configureControllers();
     configureTriggers();
     configureAutos();
   }
 
-  private void configureBindings() {
+  private void configureControllers() {
     // DRIVER ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
-    m_driverController.leftTrigger().whileTrue(m_gameCommands.alignLauncherForShuttleCommand());
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand());
     m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
+    m_driverController.leftTrigger().whileTrue(m_gameCommands.alignLauncherForShuttleCommand());
     m_driverController.leftBumper().whileTrue(m_gameCommands.runLauncherForShuttleCommand());
-    m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     m_driverController.rightStick().whileTrue(m_gameCommands.alignRobotToTargetCommand());
-
-    m_driverController.povLeft().whileTrue(m_climberSubsystem.moveArmToStartingPositionCommand());
+    m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     m_driverController.povUp().whileTrue(m_climberSubsystem.moveArmUpCommand()); 
-    m_driverController.povRight().whileTrue(m_climberSubsystem.unlockArmCommand());
     m_driverController.povDown().whileTrue(m_climberSubsystem.moveArmDownCommand()); 
-
+    m_driverController.povLeft().whileTrue(m_climberSubsystem.moveArmToStartingPositionCommand());
+    m_driverController.povRight().whileTrue(m_climberSubsystem.unlockArmCommand());
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
+    // m_driverController.b().whileTrue(Commands.none());
     m_driverController.y().whileTrue(m_gameCommands.runReloadCommand());
-    // m_driverController.b().whileTrue();
     m_driverController.x().whileTrue(m_gameCommands.climbCommand());
-
     m_driverController.start().onTrue(m_gyroSensor.calibrateCommand());
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
@@ -162,18 +159,16 @@ public class RobotContainer {
     m_operatorController.rightBumper().whileTrue(m_gameCommands.runLauncherForAmpCommand());
     m_operatorController.leftTrigger().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand(true));
     m_operatorController.leftBumper().whileTrue(m_gameCommands.alignLauncherToAmpCommand(true));
-    // m_operatorController.leftStick().whileTrue();
-    // m_operatorController.rightStick().whileTrue();
-
-    // m_operatorController.povLeft().whileTrue();
+    // m_operatorController.rightStick().whileTrue(Commands.none());
+    // m_operatorController.leftStick().whileTrue(Commands.none());
     m_operatorController.povUp().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionPodium, true));  
-    // m_operatorController.povRight().whileTrue();  
     m_operatorController.povDown().whileTrue(m_gameCommands.alignLauncherToPositionCommand(Constants.Launcher.kArmPositionSubwoofer, true));
-
-    // m_operatorController.a().whileTrue(); 
-    // m_operatorController.y().whileTrue();
-    // m_operatorController.b().whileTrue();
-    // m_operatorController.x().whileTrue();
+    // m_operatorController.povLeft().whileTrue(Commands.none());
+    // m_operatorController.povRight().whileTrue(Commands.none()); 
+    // m_operatorController.a().whileTrue(Commands.none()); 
+    // m_operatorController.b().whileTrue(Commands.none());
+    // m_operatorController.y().whileTrue(Commands.none());
+    // m_operatorController.x().whileTrue(Commands.none());
     m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetZeroCommand());
     m_operatorController.start().whileTrue(m_climberSubsystem.resetZeroCommand());
   }
@@ -197,7 +192,7 @@ public class RobotContainer {
       }).ignoringDisable(true)
     );
 
-    new Trigger(() -> Utils.isValueBetween(DriverStation.getMatchTime(), 0.1, 1.0))
+    new Trigger(() -> Utils.isValueInRange(DriverStation.getMatchTime(), 0.1, 1.0))
       .onTrue(m_climberSubsystem.lockArmCommand().withTimeout(3.0));
   }
 
@@ -290,7 +285,7 @@ public class RobotContainer {
 
   public void teleopInit() {
     resetRobot();
-    m_gyroSensor.reset(Utils.wrapAngle(m_poseSubsystem.getPose().getRotation().getDegrees() + Utils.getValueForAlliance(0, 180)));
+    m_gyroSensor.resetRobotToField(m_poseSubsystem.getPose());
   }
 
   public void testInit() {

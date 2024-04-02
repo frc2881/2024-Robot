@@ -37,7 +37,7 @@ public final class Utils {
     return Robot.getAlliance() == Alliance.Blue ? blueValue : redValue;
   }
 
-  public static boolean isValueBetween(double value, double minValue, double maxValue) {
+  public static boolean isValueInRange(double value, double minValue, double maxValue) {
     return value >= minValue && value <= maxValue;
   }
 

@@ -111,7 +111,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
   private double calculatePositionForSpeaker(double distance) {
     double position = Utils.getLinearInterpolation(m_distances, m_positions, distance);
     return 
-    Utils.isValueBetween(position, Constants.Launcher.kArmMotorReverseSoftLimit, Constants.Launcher.kArmMotorForwardSoftLimit) 
+    Utils.isValueInRange(position, Constants.Launcher.kArmMotorReverseSoftLimit, Constants.Launcher.kArmMotorForwardSoftLimit) 
       ? position 
       : Constants.Launcher.kArmPositionSubwoofer;
   }
