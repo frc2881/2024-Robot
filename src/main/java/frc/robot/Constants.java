@@ -86,8 +86,7 @@ public final class Constants {
 
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
-    // TODO: consider slight reduction in acceleration and top speed to account for wheel slippage affecting odometry calculations in between valid vision measurement periods ( 5.6 / 3.8 ) ???
-    public static final PathConstraints kPathFindingConstraints = new PathConstraints(6.0, 3.9, Units.degreesToRadians(540), Units.degreesToRadians(720));
+    public static final PathConstraints kPathFindingConstraints = new PathConstraints(5.8, 3.7, Units.degreesToRadians(540), Units.degreesToRadians(720));
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;
@@ -240,7 +239,7 @@ public final class Constants {
       public static final PoseStrategy kPoseStrategy = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
       public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
       public static final Matrix<N3, N1> kStateStandardDeviations = VecBuilder.fill(0.1, 0.1, 0.1);
-      public static final Matrix<N3, N1> kVisionStandardDeviations = VecBuilder.fill(0.1, 0.1, 0.1);
+      public static final Matrix<N3, N1> kVisionStandardDeviations = VecBuilder.fill(0.9, 0.9, 0.9);
       public static final double kVisionMaxPoseAmbiguity = 0.2;
     }
 
