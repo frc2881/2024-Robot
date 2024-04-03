@@ -80,7 +80,7 @@ public class PoseSubsystem extends SubsystemBase {
   private boolean isPoseOnField(Pose2d pose) {
     double x = pose.getX();
     double y = pose.getY();
-    return (x >= 0.0 && x < Constants.Game.Field.kAprilTagFieldLayout.getFieldLength()) && (y >= 0.0 && y < Constants.Game.Field.kAprilTagFieldLayout.getFieldWidth());
+    return (x >= 0.0 && x <= Constants.Game.Field.kAprilTagFieldLayout.getFieldLength()) && (y >= 0.0 && y <= Constants.Game.Field.kAprilTagFieldLayout.getFieldWidth());
   }
 
   public void resetPose(Pose2d pose) {
