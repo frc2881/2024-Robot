@@ -103,7 +103,7 @@ public class DriveSubsystem extends SubsystemBase {
     SmartDashboard.putData("Robot/Drive/DriftCorrection", driveDriftCorrectionChooser);
 
     SendableChooser<IdleMode> idleModeChooser = new SendableChooser<IdleMode>();
-    idleModeChooser.setDefaultOption("Break", IdleMode.kBrake);
+    idleModeChooser.setDefaultOption("Brake", IdleMode.kBrake);
     idleModeChooser.addOption("Coast", IdleMode.kCoast);
     idleModeChooser.onChange(idleMode -> setIdleMode(idleMode));
     SmartDashboard.putData("Robot/Drive/IdleMode", idleModeChooser);
@@ -243,6 +243,7 @@ public class DriveSubsystem extends SubsystemBase {
     m_swerveModuleFrontRight.setIdleMode(idleMode);
     m_swerveModuleRearLeft.setIdleMode(idleMode);
     m_swerveModuleRearRight.setIdleMode(idleMode);
+    SmartDashboard.putString("Robot/Drive/IdleMode/selected", idleMode == IdleMode.kBrake ? "Brake" : "Coast");
   }
 
   public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Supplier<Double> targetYaw) {
