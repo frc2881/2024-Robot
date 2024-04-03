@@ -240,6 +240,8 @@ public final class Constants {
       public static final PoseStrategy kFallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
       public static final Matrix<N3, N1> kStateStandardDeviations = VecBuilder.fill(0.1, 0.1, 0.1);
       public static final Matrix<N3, N1> kVisionStandardDeviations = VecBuilder.fill(0.9, 0.9, 0.9);
+      public static final Matrix<N3, N1> kVisionSingleTagStandardDeviations = VecBuilder.fill(1, 1, 2); 
+      public static final Matrix<N3, N1> kVisionMultiTagStandardDeviations = VecBuilder.fill(0.5, 0.5, 1); 
       public static final double kVisionMaxPoseAmbiguity = 0.2;
     }
 

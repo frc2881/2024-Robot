@@ -3,6 +3,9 @@ package frc.robot.subsystems;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -57,10 +60,17 @@ public class PoseSubsystem extends SubsystemBase {
     m_poseEstimator.update(m_gyroRotation.get(), m_swerveModulePositions.get());
     m_poseSensors.forEach(poseSensor -> {
       poseSensor.getEstimatedRobotPose().ifPresent(estimatedRobotPose -> {
-        if (Utils.isValueInRange(poseSensor.getLatestResultPoseAmbiguity(), 0.0, Constants.Sensors.Pose.kVisionMaxPoseAmbiguity)) {
-          Pose2d pose = estimatedRobotPose.estimatedPose.toPose2d();
-          if (isPoseOnField(pose)) {
-            m_poseEstimator.addVisionMeasurement(pose, estimatedRobotPose.timestampSeconds);
+        Pose2d pose = estimatedRobotPose.estimatedPose.toPose2d();
+        if (isPoseOnField(pose)) {
+          if (estimatedRobotPose.strategy == PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR) {
+            m_poseEstimator.addVisionMeasurement(pose, estimatedRobotPose.timestampSeconds, Constants.Sensors.Pose.kVisionMultiTagStandardDeviations);
+          } else {
+            for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
+              if (Utils.isValueInRange(target.getPoseAmbiguity(), 0.0, Constants.Sensors.Pose.kVisionMaxPoseAmbiguity)) {
+                m_poseEstimator.addVisionMeasurement(pose, estimatedRobotPose.timestampSeconds, Constants.Sensors.Pose.kVisionSingleTagStandardDeviations);
+                break;
+              }
+            }
           }
         }
       });
