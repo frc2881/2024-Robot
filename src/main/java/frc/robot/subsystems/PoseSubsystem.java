@@ -40,9 +40,7 @@ public class PoseSubsystem extends SubsystemBase {
       Constants.Drive.kSwerveDriveKinematics,
       m_gyroRotation.get(),
       m_swerveModulePositions.get(),
-      new Pose2d(),
-      Constants.Sensors.Pose.kStateStandardDeviations,
-      Constants.Sensors.Pose.kVisionStandardDeviations
+      new Pose2d()
     );
   }
 
