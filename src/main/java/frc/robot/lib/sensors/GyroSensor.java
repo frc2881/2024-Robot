@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.common.Enums.RobotState;
@@ -24,15 +26,44 @@ public class GyroSensor extends ADIS16470_IMU {
     super(imuAxisYaw, imuAxisPitch, imuAxisRoll, port, calibrationTime);
   }
 
-  public Command calibrateCommand() {
+  public Command calibrateShortCommand() {
     return Commands.runOnce(
     () -> {
-      configCalTime(CalibrationTime._2s);
+      SmartDashboard.putBoolean("Robot/Sensor/Gyro/IsCalibrating", true);
+      configCalTime(CalibrationTime._4s);
       calibrate();
     })
+    .andThen(
+      new WaitCommand(4.0)
+    )
+    .andThen(Commands.runOnce(
+      () -> {
+        SmartDashboard.putBoolean("Robot/Sensor/Gyro/IsCalibrating", false);
+      })
+    )
     .onlyIf(() -> Robot.getState() == RobotState.Disabled)
     .ignoringDisable(true)
-    .withName("CalibrateGyro");
+    .withName("CalibrateGyroShort");
+  }
+
+  public Command calibrateLongCommand() {
+    return Commands.runOnce(
+    () -> {
+      SmartDashboard.putBoolean("Robot/Sensor/Gyro/IsCalibrating", true);
+      configCalTime(Constants.Sensors.Gyro.kCalibrationTime);
+      calibrate();
+    })
+    .andThen(
+      new WaitCommand(8.0)
+    )
+    .andThen(Commands.runOnce(
+      () -> {
+        SmartDashboard.putBoolean("Robot/Sensor/Gyro/IsCalibrating", false);
+      })
+    )
+    .onlyIf(() -> Robot.getState() == RobotState.Disabled)
+    .ignoringDisable(true)
+    .withName("CalibrateGyroLong");
   }
 
   @Override

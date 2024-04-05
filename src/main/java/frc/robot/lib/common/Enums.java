@@ -14,7 +14,8 @@ public class Enums {
     Default, 
     IntakeReady, 
     IntakeNotReady, 
-    LaunchReady; 
+    LaunchReady,
+    VisionNotReady;
   }
   
   public static enum AutoPath {

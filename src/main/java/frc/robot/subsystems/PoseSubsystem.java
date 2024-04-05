@@ -140,6 +140,15 @@ public class PoseSubsystem extends SubsystemBase {
     );
   }
 
+  public boolean hasVisionTargets() {
+    for (PoseSensor poseSensor : m_poseSensors) {
+      if(poseSensor.hasTarget()){
+        return true;
+      }
+    }
+    return false;
+  }
+
   private void updateTelemetry() {
     Pose2d robotPose = getPose();
     SmartDashboard.putString("Robot/Pose", Utils.objectToJson(robotPose));

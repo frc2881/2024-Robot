@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoCommands;
 import frc.robot.commands.GameCommands;
 import frc.robot.lib.common.Enums.LightsMode;
+import frc.robot.lib.common.Enums.RobotState;
 import frc.robot.lib.common.Utils;
 import frc.robot.lib.controllers.GameController;
 import frc.robot.lib.controllers.LightsController;
@@ -136,10 +137,11 @@ public class RobotContainer {
   private void configureControllers() {
     // DRIVER ========================================
     m_driveSubsystem.setDefaultCommand(m_driveSubsystem.driveWithControllerCommand(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
+  
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand());
     m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
     m_driverController.leftTrigger().whileTrue(m_gameCommands.alignLauncherForShuttleCommand());
-    m_driverController.leftBumper().whileTrue(m_gameCommands.runLauncherForShuttleCommand());
+    m_driverController.leftBumper().whileTrue(m_gameCommands.climbCommand());
     m_driverController.rightStick().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     m_driverController.povUp().whileTrue(m_climberSubsystem.moveArmUpCommand()); 
@@ -147,14 +149,15 @@ public class RobotContainer {
     m_driverController.povLeft().whileTrue(m_climberSubsystem.moveArmToStartingPositionCommand());
     m_driverController.povRight().whileTrue(m_climberSubsystem.unlockArmCommand());
     m_driverController.a().whileTrue(m_gameCommands.alignRobotToTargetCommand());
-    // m_driverController.b().whileTrue(Commands.none());
+    // m_driverController.b().whileTrue();
     m_driverController.y().whileTrue(m_gameCommands.runReloadCommand());
-    m_driverController.x().whileTrue(m_gameCommands.climbCommand());
-    m_driverController.start().onTrue(m_gyroSensor.calibrateCommand());
+    m_driverController.x().whileTrue(m_gameCommands.runLauncherForShuttleCommand());
+    // m_driverController.start().onTrue();
     m_driverController.back().onTrue(m_gyroSensor.resetCommand());
 
     // OPERATOR ========================================
     m_launcherArmSubsystem.setDefaultCommand(m_launcherArmSubsystem.alignManualCommand(m_operatorController::getLeftY));
+
     m_operatorController.rightTrigger().whileTrue(m_gameCommands.runLauncherCommand());
     m_operatorController.rightBumper().whileTrue(m_gameCommands.runLauncherForAmpCommand());
     m_operatorController.leftTrigger().whileTrue(m_gameCommands.alignLauncherToSpeakerCommand(true));
@@ -166,9 +169,9 @@ public class RobotContainer {
     // m_operatorController.povLeft().whileTrue(Commands.none());
     // m_operatorController.povRight().whileTrue(Commands.none()); 
     // m_operatorController.a().whileTrue(Commands.none()); 
-    // m_operatorController.b().whileTrue(Commands.none());
+    m_operatorController.b().onTrue(m_gyroSensor.calibrateLongCommand());
     // m_operatorController.y().whileTrue(Commands.none());
-    // m_operatorController.x().whileTrue(Commands.none());
+    m_operatorController.x().onTrue(m_gyroSensor.calibrateShortCommand());
     m_operatorController.back().whileTrue(m_launcherArmSubsystem.resetZeroCommand());
     m_operatorController.start().whileTrue(m_climberSubsystem.resetZeroCommand());
   }
@@ -181,8 +184,15 @@ public class RobotContainer {
         if (m_launcherTopBeamBreakSensor.hasTarget()) {
           lightsMode = LightsMode.IntakeNotReady;
         } else {
-          if (m_driveSubsystem.isAlignedToTarget() && m_launcherArmSubsystem.isAlignedToTarget()) {
-            lightsMode = LightsMode.LaunchReady;
+          if(Robot.getState() == RobotState.Disabled){
+            if(!m_poseSubsystem.hasVisionTargets()){
+              lightsMode = LightsMode.VisionNotReady;
+            }
+          }
+          else {
+            if (m_driveSubsystem.isAlignedToTarget() && m_launcherArmSubsystem.isAlignedToTarget()) {
+              lightsMode = LightsMode.LaunchReady;
+            }
           }
         }
         m_lightsController.setLightsMode(lightsMode);        

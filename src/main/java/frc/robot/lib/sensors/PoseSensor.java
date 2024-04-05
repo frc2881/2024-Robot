@@ -35,6 +35,10 @@ public class PoseSensor {
     return m_photonPoseEstimator.update();
   }
 
+  public boolean hasTarget() {
+    return m_photonCamera.getLatestResult().hasTargets();
+  }
+
   public void updateTelemetry() {
     SmartDashboard.putBoolean("Robot/Sensor/Pose/" + m_photonCamera.getName() + "/HasTargets", m_photonCamera.getLatestResult().hasTargets());
   }
