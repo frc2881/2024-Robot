@@ -134,7 +134,7 @@ public final class Constants {
     public static final double kBottomBeltMotorMaxForwardOutput = 0.6;
     public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kCoast;
 
-    public static final double kIntakeBeltSpeeds = 0.65;
+    public static final double kIntakeBeltSpeeds = 0.75;
     public static final double kIntakeBeltWaitTime = 0.033;
 
     public static final int kRollerMotorCurrentLimit = 60;
@@ -188,10 +188,10 @@ public final class Constants {
     public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
       new LauncherArmPosition(1.00, 13),
       new LauncherArmPosition(1.35, 12.7),
-      new LauncherArmPosition(2.3, 8.0),
-      new LauncherArmPosition(3.65, 5.7), // 6.2
-      new LauncherArmPosition(5.0, 4.3),
-      new LauncherArmPosition(6.2, 4.0) // 4.0 (3/31)
+      new LauncherArmPosition(2.3, 8.2),
+      new LauncherArmPosition(3.65, 5.8), // 6.2
+      new LauncherArmPosition(5.0, 4.19), // 4.3
+      new LauncherArmPosition(6.2, 3.94) // 4.0 (3/31)
     };
   }
 

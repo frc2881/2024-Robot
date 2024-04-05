@@ -135,6 +135,23 @@ public class AutoCommands {
     .withName("Auto1_0_1_2_3_83");
   }  
 
+  public Command auto1_0_1_2_62() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload1)),
+      score(),
+      pickup(path(AutoPath.Pickup1)),
+      score(), 
+      pickup(path(AutoPath.Pickup21)),
+      score(),
+      pickup(path(AutoPath.Pickup62)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto1_0_1_2_3");
+  }  
+
   public Command auto1_0_1_41() {
     return 
     Commands.sequence(
@@ -266,6 +283,20 @@ public class AutoCommands {
     .withName("Auto2_0_2");
   } 
 
+  public Command auto2_0_2_1() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload2)),
+      score(),
+      pickup(path(AutoPath.Pickup2)),
+      score(), 
+      pickup(path(AutoPath.Pickup13)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto2_0_2_1");
+  } 
+
   public Command auto2_0_2_1_3() {
     return 
     Commands.sequence(
@@ -280,6 +311,20 @@ public class AutoCommands {
     )
     .deadlineWith(start())
     .withName("Auto2_0_2_1_3");
+  } 
+
+  public Command auto2_0_2_3() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload2)),
+      score(),
+      pickup(path(AutoPath.Pickup2)),
+      score(), 
+      pickup(path(AutoPath.Pickup31)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto2_0_2_3");
   } 
 
   public Command auto2_0_2_3_1() {
@@ -518,6 +563,23 @@ public class AutoCommands {
     .deadlineWith(start())
     .withName("Auto3_0_3_2_1_51");
   } 
+
+  public Command auto3_0_3_2_62() {
+    return 
+    Commands.sequence(
+      move(path(AutoPath.ScorePreload3)),
+      score(),
+      pickup(path(AutoPath.Pickup3)),
+      score(), 
+      pickup(path(AutoPath.Pickup23)),
+      score(),
+      pickup(path(AutoPath.Pickup62)),
+      move(path(AutoPath.ScoreStage2)),
+      score()
+    )
+    .deadlineWith(start())
+    .withName("Auto1_0_1_2_3");
+  }  
 
   public Command auto3_0_3_62() {
     return 

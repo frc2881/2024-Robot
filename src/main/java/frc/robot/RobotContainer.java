@@ -217,52 +217,57 @@ public class RobotContainer {
 
     m_autoChooser.setDefaultOption("None", Commands::none);
 
-    m_autoChooser.addOption("[ 1 ] 0", m_autoCommands::auto0); // TESTED
-    m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands::auto10_1); // TESTED
-    m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands::auto1_0_1); // TESTED
-    m_autoChooser.addOption("[ 1 ] _0_1_2_3", m_autoCommands::auto1_0_1_2_3); // TESTED
-    m_autoChooser.addOption("[ 1 ] _0_1_41", m_autoCommands::auto1_0_1_41); // TESTED
-    m_autoChooser.addOption("[ 1 ] _0_1_41_51", m_autoCommands::auto1_0_1_41_51); // TESTED
-    m_autoChooser.addOption("[ 1 ] _0_1_51", m_autoCommands::auto1_0_1_51); // TESTED
-    m_autoChooser.addOption("[ 1 ] _0_1_51_41", m_autoCommands::auto1_0_1_51_41); // TESTED
-    m_autoChooser.addOption("[ 1 ] _0_1_51_61", m_autoCommands::auto1_0_1_51_61);
-    m_autoChooser.addOption("[ 1 ] _0_1_51_62", m_autoCommands::auto1_0_1_51_62);
+    m_autoChooser.addOption("[ 1 ] 0", m_autoCommands::auto0);
+    m_autoChooser.addOption("[ 1 ] 0_1", m_autoCommands::auto10_1); 
+    m_autoChooser.addOption("[ 1 ] _0_1", m_autoCommands::auto1_0_1);
+    m_autoChooser.addOption("[ 1 ] _0_1_2_3", m_autoCommands::auto1_0_1_2_3);
+    m_autoChooser.addOption("[ 1 ] _0_1_2_3_83", m_autoCommands::auto1_0_1_2_3_83); // TESTING NEEDED
+    m_autoChooser.addOption("[ 1 ] _0_1_2_62", m_autoCommands::auto1_0_1_2_62); // TESTING NEEDED
+    m_autoChooser.addOption("[ 1 ] _0_1_41", m_autoCommands::auto1_0_1_41);
+    m_autoChooser.addOption("[ 1 ] _0_1_41_51", m_autoCommands::auto1_0_1_41_51);
+    m_autoChooser.addOption("[ 1 ] _0_1_51", m_autoCommands::auto1_0_1_51);
+    m_autoChooser.addOption("[ 1 ] _0_1_51_41", m_autoCommands::auto1_0_1_51_41);
+    m_autoChooser.addOption("[ 1 ] _0_1_51_61", m_autoCommands::auto1_0_1_51_61); // TESTING NEEDED
+    m_autoChooser.addOption("[ 1 ] _0_1_51_62", m_autoCommands::auto1_0_1_51_62); // TESTING NEEDED
 
-    m_autoChooser.addOption("[ 2 ] 0", m_autoCommands::auto0); // TESTED
-    m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands::auto20_2); // TESTED
-    m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands::auto2_0_2); // TESTED
-    m_autoChooser.addOption("[ 2 ] _0_2_1_3", m_autoCommands::auto2_0_2_1_3);
-    m_autoChooser.addOption("[ 2 ] _0_2_3_1", m_autoCommands::auto2_0_2_3_1);
-    m_autoChooser.addOption("[ 2 ] _0_2_62", m_autoCommands::auto2_0_2_62); // TESTED
-    m_autoChooser.addOption("[ 2 ] _0_2_62_51", m_autoCommands::auto2_0_2_62_51);
-    m_autoChooser.addOption("[ 2 ] _0_2_62_72", m_autoCommands::auto2_0_2_62_72); // TESTED
-    m_autoChooser.addOption("[ 2 ] _0_2_72", m_autoCommands::auto2_0_2_72); // TESTED
-    m_autoChooser.addOption("[ 2 ] _0_2_72_62", m_autoCommands::auto2_0_2_72_62); // TESTED
+    m_autoChooser.addOption("[ 2 ] 0", m_autoCommands::auto0); 
+    m_autoChooser.addOption("[ 2 ] 0_2", m_autoCommands::auto20_2); 
+    m_autoChooser.addOption("[ 2 ] _0_2", m_autoCommands::auto2_0_2); 
+    m_autoChooser.addOption("[ 2 ] _0_2_1", m_autoCommands::auto2_0_2_1); // TESTING NEEDED
+    m_autoChooser.addOption("[ 2 ] _0_2_1_3", m_autoCommands::auto2_0_2_1_3); // TESTING NEEDED
+    m_autoChooser.addOption("[ 2 ] _0_2_3", m_autoCommands::auto2_0_2_3); // TESTING NEEDED
+    m_autoChooser.addOption("[ 2 ] _0_2_3_1", m_autoCommands::auto2_0_2_3_1); // TESTING NEEDED
+    m_autoChooser.addOption("[ 2 ] _0_2_62", m_autoCommands::auto2_0_2_62); 
+    m_autoChooser.addOption("[ 2 ] _0_2_62_51", m_autoCommands::auto2_0_2_62_51); // TESTING NEEDED
+    m_autoChooser.addOption("[ 2 ] _0_2_62_72", m_autoCommands::auto2_0_2_62_72);
+    m_autoChooser.addOption("[ 2 ] _0_2_72", m_autoCommands::auto2_0_2_72);
+    m_autoChooser.addOption("[ 2 ] _0_2_72_62", m_autoCommands::auto2_0_2_72_62); 
 
-    m_autoChooser.addOption("[ 3 ] 0", m_autoCommands::auto0); // TESTED
-    m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands::auto30_3); // TESTED
-    m_autoChooser.addOption("[ 3 ] 0_73", m_autoCommands::auto30_73); // TESTED
-    m_autoChooser.addOption("[ 3 ] 0_83", m_autoCommands::auto30_83); // TESTED
-    m_autoChooser.addOption("[ 3 ] 0_73_83", m_autoCommands::auto30_73_83); // TESTED
-    m_autoChooser.addOption("[ 3 ] 0_83_73", m_autoCommands::auto30_83_73); // TESTED
+    m_autoChooser.addOption("[ 3 ] 0", m_autoCommands::auto0);
+    m_autoChooser.addOption("[ 3 ] 0_3", m_autoCommands::auto30_3);
+    m_autoChooser.addOption("[ 3 ] 0_73", m_autoCommands::auto30_73);
+    m_autoChooser.addOption("[ 3 ] 0_83", m_autoCommands::auto30_83);
+    m_autoChooser.addOption("[ 3 ] 0_73_83", m_autoCommands::auto30_73_83);
+    m_autoChooser.addOption("[ 3 ] 0_83_73", m_autoCommands::auto30_83_73);
 
-    m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands::auto3_0_3); // TESTED
-    m_autoChooser.addOption("[ 3 ] _0_3_2_1", m_autoCommands::auto3_0_3_2_1); // TESTED
-    m_autoChooser.addOption("[ 3 ] _0_3_2_1_41", m_autoCommands::auto3_0_3_2_1_41);
-    m_autoChooser.addOption("[ 3 ] _0_3_2_1_51", m_autoCommands::auto3_0_3_2_1_51);
-    m_autoChooser.addOption("[ 3 ] _0_3_62", m_autoCommands::auto3_0_3_62);
-    m_autoChooser.addOption("[ 3 ] _0_3_62_72", m_autoCommands::auto3_0_3_62_72);
-    m_autoChooser.addOption("[ 3 ] _0_3_72", m_autoCommands::auto3_0_3_72); // TESTED
-    m_autoChooser.addOption("[ 3 ] _0_3_72_62", m_autoCommands::auto3_0_3_72_62); // TESTED
-    m_autoChooser.addOption("[ 3 ] _0_3_73", m_autoCommands::auto3_0_3_73); // TESTED
-    m_autoChooser.addOption("[ 3 ] _0_3_73_83", m_autoCommands::auto3_0_3_73_83);  // TESTED
-    m_autoChooser.addOption("[ 3 ] _0_3_82", m_autoCommands::auto3_0_3_82);
-    m_autoChooser.addOption("[ 3 ] _0_3_83", m_autoCommands::auto3_0_3_83); // TESTED
-    m_autoChooser.addOption("[ 3 ] _0_3_82_62", m_autoCommands::auto3_0_3_82_62);
-    m_autoChooser.addOption("[ 3 ] _0_3_82_72", m_autoCommands::auto3_0_3_82_72);
-    m_autoChooser.addOption("[ 3 ] _0_3_83_62", m_autoCommands::auto3_0_3_83_62); // TESTED
-    m_autoChooser.addOption("[ 3 ] _0_3_83_72", m_autoCommands::auto3_0_3_83_72); // TESTED
-    m_autoChooser.addOption("[ 3 ] _0_3_83_73", m_autoCommands::auto3_0_3_83_73); // TESTED
+    m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands::auto3_0_3);
+    m_autoChooser.addOption("[ 3 ] _0_3_2_1", m_autoCommands::auto3_0_3_2_1);
+    m_autoChooser.addOption("[ 3 ] _0_3_2_1_41", m_autoCommands::auto3_0_3_2_1_41); // TESTING NEEDED
+    m_autoChooser.addOption("[ 3 ] _0_3_2_1_51", m_autoCommands::auto3_0_3_2_1_51); // TESTING NEEDED
+    m_autoChooser.addOption("[ 3 ] _0_3_2_62", m_autoCommands::auto3_0_3_2_62); // TESTING NEEDED
+    m_autoChooser.addOption("[ 3 ] _0_3_62", m_autoCommands::auto3_0_3_62); // TESTING NEEDED
+    m_autoChooser.addOption("[ 3 ] _0_3_62_72", m_autoCommands::auto3_0_3_62_72); // TESTING NEEDED
+    m_autoChooser.addOption("[ 3 ] _0_3_72", m_autoCommands::auto3_0_3_72); 
+    m_autoChooser.addOption("[ 3 ] _0_3_72_62", m_autoCommands::auto3_0_3_72_62); 
+    m_autoChooser.addOption("[ 3 ] _0_3_73", m_autoCommands::auto3_0_3_73);
+    m_autoChooser.addOption("[ 3 ] _0_3_73_83", m_autoCommands::auto3_0_3_73_83);
+    m_autoChooser.addOption("[ 3 ] _0_3_82", m_autoCommands::auto3_0_3_82); // TESTING NEEDED
+    m_autoChooser.addOption("[ 3 ] _0_3_83", m_autoCommands::auto3_0_3_83); 
+    m_autoChooser.addOption("[ 3 ] _0_3_82_62", m_autoCommands::auto3_0_3_82_62); // TESTING NEEDED
+    m_autoChooser.addOption("[ 3 ] _0_3_82_72", m_autoCommands::auto3_0_3_82_72); // TESTING NEEDED
+    m_autoChooser.addOption("[ 3 ] _0_3_83_62", m_autoCommands::auto3_0_3_83_62); 
+    m_autoChooser.addOption("[ 3 ] _0_3_83_72", m_autoCommands::auto3_0_3_83_72); 
+    m_autoChooser.addOption("[ 3 ] _0_3_83_73", m_autoCommands::auto3_0_3_83_73); 
 
     SmartDashboard.putData("Robot/Auto/Command", m_autoChooser);
   }

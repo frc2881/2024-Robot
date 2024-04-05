@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.827806603677419,
+      "y": 6.619306005373106
+    },
+    "rotation": 59.931417178137615
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScorePreload1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup21"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Pickup62"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreStage2"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
