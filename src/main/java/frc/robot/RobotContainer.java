@@ -141,7 +141,9 @@ public class RobotContainer {
     m_driverController.rightTrigger().whileTrue(m_gameCommands.runIntakeCommand());
     m_driverController.rightBumper().whileTrue(m_gameCommands.runEjectCommand());
     m_driverController.leftTrigger().whileTrue(m_gameCommands.alignLauncherForShuttleCommand());
-    m_driverController.leftBumper().whileTrue(m_gameCommands.climbCommand());
+    m_driverController.leftBumper()
+      .whileTrue(m_gameCommands.manualClimbSetupCommand())
+      .onFalse(m_gameCommands.manualClimbCommand());
     m_driverController.rightStick().whileTrue(m_gameCommands.alignRobotToTargetCommand());
     m_driverController.leftStick().whileTrue(m_driveSubsystem.setLockedCommand());
     m_driverController.povUp().whileTrue(m_climberSubsystem.moveArmUpCommand()); 

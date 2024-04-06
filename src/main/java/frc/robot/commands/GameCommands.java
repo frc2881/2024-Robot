@@ -221,7 +221,7 @@ public class GameCommands {
     .withName("RunLauncherForAmp");
   }
 
-  public Command climbCommand() {
+  public Command autoClimbCommand() {
     return Commands.sequence(
       Commands.runOnce(
         () -> m_climberBeamBreakSensor.resetTrigger()),
@@ -240,6 +240,29 @@ public class GameCommands {
       )
     )
     .withName("Climb");
+  }
+
+  public Command manualClimbSetupCommand() {
+    return Commands.sequence(
+      Commands.runOnce(
+        () -> m_climberBeamBreakSensor.resetTrigger()),
+      Commands.parallel(
+        m_launcherArmSubsystem.alignToPositionAutoCommand(1.0),
+        m_climberSubsystem.moveArmUpCommand()
+      )
+    )
+    .withName("Climb");
+  }
+
+  public Command manualClimbCommand() {
+    return Commands.race(
+      m_climberSubsystem.moveArmDownCommand(),
+      Commands.sequence(
+        new WaitCommand(2.5),
+        m_climberSubsystem.lockArmCommand().withTimeout(3.0),
+        rumbleControllersCommand(true, false).withTimeout(1.0)
+      )
+    ).withName("ManualClimb");
   }
 
   public Command rumbleControllersCommand(boolean isDriverRumbleEnabled, boolean isRumbleOperatorEnabled) {

@@ -86,7 +86,7 @@ public final class Constants {
 
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
-    public static final PathConstraints kPathFindingConstraints = new PathConstraints(5.8, 3.7, Units.degreesToRadians(540), Units.degreesToRadians(720));
+    public static final PathConstraints kPathFindingConstraints = new PathConstraints(5.8, 3.6, Units.degreesToRadians(540), Units.degreesToRadians(720));
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;
@@ -134,7 +134,7 @@ public final class Constants {
     public static final double kBottomBeltMotorMaxForwardOutput = 0.6;
     public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kCoast;
 
-    public static final double kIntakeBeltSpeeds = 0.75;
+    public static final double kIntakeBeltSpeeds = 0.8;
     public static final double kIntakeBeltWaitTime = 0.033;
 
     public static final int kRollerMotorCurrentLimit = 60;
@@ -187,11 +187,11 @@ public final class Constants {
 
     public static final LauncherArmPosition[] kArmPositions = new LauncherArmPosition[] {
       new LauncherArmPosition(1.00, 13),
-      new LauncherArmPosition(1.35, 12.7),
-      new LauncherArmPosition(2.3, 8.2),
-      new LauncherArmPosition(3.65, 5.8), // 6.2
-      new LauncherArmPosition(5.0, 4.19), // 4.3
-      new LauncherArmPosition(6.2, 3.94) // 4.0 (3/31)
+      new LauncherArmPosition(1.35, 12.6),
+      new LauncherArmPosition(2.3, 8.15),
+      new LauncherArmPosition(3.65, 5.77), // 6.2
+      new LauncherArmPosition(5.0, 4.16), // 4.3
+      new LauncherArmPosition(6.2, 3.93) // 4.0 (3/31)
     };
   }
 

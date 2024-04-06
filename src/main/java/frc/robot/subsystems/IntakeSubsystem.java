@@ -88,7 +88,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public Command runAdjustNotePositionCommand(Supplier<Boolean> launcherTopHasTarget, Supplier<Boolean> launcherBottomHasTarget) {
     return Commands.run(
       () -> {
-        runTopBelts(MotorDirection.Reverse, 0.4);
+        runTopBelts(MotorDirection.Reverse, 0.3);
       }
     )
     .until(() -> !launcherTopHasTarget.get())
