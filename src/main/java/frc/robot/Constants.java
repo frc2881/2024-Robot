@@ -189,9 +189,9 @@ public final class Constants {
       new LauncherArmPosition(1.00, 13),
       new LauncherArmPosition(1.35, 12.6),
       new LauncherArmPosition(2.3, 8.15),
-      new LauncherArmPosition(3.65, 5.77), // 6.2
-      new LauncherArmPosition(5.0, 4.16), // 4.3
-      new LauncherArmPosition(6.2, 3.93) // 4.0 (3/31)
+      new LauncherArmPosition(3.65, 5.8), // 6.2
+      new LauncherArmPosition(5.0, 4.17), // 4.3
+      new LauncherArmPosition(6.2, 3.94) // 4.0 (3/31)
     };
   }
 
