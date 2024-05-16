@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -61,10 +60,5 @@ public class LauncherRollerSubsystem extends SubsystemBase {
   private void updateTelemetry() {
     SmartDashboard.putNumber("Robot/Launcher/Roller/Top/Speed", m_topRollerMotor.get());
     SmartDashboard.putNumber("Robot/Launcher/Roller/Bottom/Speed", m_bottomRollerMotor.get());
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
   }
 }

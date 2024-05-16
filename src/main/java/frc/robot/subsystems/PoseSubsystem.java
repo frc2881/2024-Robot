@@ -15,7 +15,6 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -54,7 +53,7 @@ public class PoseSubsystem extends SubsystemBase {
     return m_poseEstimator.getEstimatedPosition();
   }
 
-  public void updatePose() {
+  private void updatePose() {
     m_poseEstimator.update(m_gyroRotation.get(), m_swerveModulePositions.get());
     m_poseSensors.forEach(poseSensor -> {
       poseSensor.getEstimatedRobotPose().ifPresent(estimatedRobotPose -> {
@@ -75,15 +74,24 @@ public class PoseSubsystem extends SubsystemBase {
     });
   }
 
+  public void resetPose(Pose2d pose) {
+    // NO-OP as current pose is always maintained by pose sensors in the configuration for this robot
+    // m_poseEstimator.resetPosition(m_gyroRotation.get(), m_swerveModulePositions.get(), pose);
+  }
+
   private boolean isPoseOnField(Pose2d pose) {
     double x = pose.getX();
     double y = pose.getY();
     return (x >= 0.0 && x <= Constants.Game.Field.kAprilTagFieldLayout.getFieldLength()) && (y >= 0.0 && y <= Constants.Game.Field.kAprilTagFieldLayout.getFieldWidth());
   }
 
-  public void resetPose(Pose2d pose) {
-    // NO-OP as current pose is always maintained by pose sensors in the configuration for this robot
-    // m_poseEstimator.resetPosition(m_gyroRotation.get(), m_swerveModulePositions.get(), pose);
+  public boolean hasVisionTargets() {
+    for (PoseSensor poseSensor : m_poseSensors) {
+      if(poseSensor.hasTarget()){
+        return true;
+      }
+    }
+    return false;
   }
 
   public Pose3d getTargetPose() {
@@ -140,29 +148,11 @@ public class PoseSubsystem extends SubsystemBase {
     );
   }
 
-  public boolean hasVisionTargets() {
-    for (PoseSensor poseSensor : m_poseSensors) {
-      if(poseSensor.hasTarget()){
-        return true;
-      }
-    }
-    return false;
-  }
-
   private void updateTelemetry() {
     Pose2d robotPose = getPose();
-    SmartDashboard.putString("Robot/Pose", Utils.objectToJson(robotPose));
-    SmartDashboard.putString("Robot/Pose/Target/Pose", Utils.objectToJson(getTargetPose()));
+    SmartDashboard.putNumberArray("Robot/Pose/Current", new double[] { robotPose.getX(), robotPose.getY(), robotPose.getRotation().getDegrees() });
     SmartDashboard.putNumber("Robot/Pose/Target/Yaw", getTargetYaw());
     SmartDashboard.putNumber("Robot/Pose/Target/Pitch", getTargetPitch());
     SmartDashboard.putNumber("Robot/Pose/Target/Distance", getTargetDistance());
-    SmartDashboard.putNumberArray("Robot/Pose/Values", new double[] { robotPose.getX(), robotPose.getY(), robotPose.getRotation().getRadians() });
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
-    Pose2d robotPose = getPose();
-    builder.addDoubleArrayProperty("Pose", () -> new double[] { robotPose.getX(), robotPose.getY(), robotPose.getRotation().getRadians() }, null);
   }
 }

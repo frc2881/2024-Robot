@@ -9,7 +9,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -93,7 +92,7 @@ public class LauncherArmSubsystem extends SubsystemBase {
   public Command alignToSpeakerCommand(Supplier<Double> targetDistance) {
     return
     run(() -> {
-      double position = calculatePositionForSpeaker(targetDistance.get()); 
+      double position = calculateTargetPosition(targetDistance.get()); 
       m_armPIDController.setReference(position, ControlType.kSmartMotion);
       m_isAlignedToTarget = Math.abs(m_armEncoder.getPosition() - position) < Constants.Launcher.kArmTargetAlignmentPositionTolerance;
     })
@@ -108,16 +107,12 @@ public class LauncherArmSubsystem extends SubsystemBase {
     .until(() -> m_isAlignedToTarget);
   }
 
-  private double calculatePositionForSpeaker(double distance) {
+  private double calculateTargetPosition(double distance) {
     double position = Utils.getLinearInterpolation(m_distances, m_positions, distance);
     return 
     Utils.isValueInRange(position, Constants.Launcher.kArmMotorReverseSoftLimit, Constants.Launcher.kArmMotorForwardSoftLimit) 
       ? position 
       : Constants.Launcher.kArmPositionSubwoofer;
-  }
-
-  public double getArmPosition() {
-    return m_armEncoder.getPosition();
   }
 
   public boolean isAlignedToTarget() {
@@ -156,10 +151,5 @@ public class LauncherArmSubsystem extends SubsystemBase {
   private void updateTelemetry() {
     SmartDashboard.putNumber("Robot/Launcher/Arm/Position", m_armEncoder.getPosition());
     SmartDashboard.putBoolean("Robot/Launcher/Arm/IsAlignedToTarget", m_isAlignedToTarget);
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
   }
 }

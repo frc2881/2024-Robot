@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -56,7 +55,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }, () -> {})
     .onlyWhile(() -> !launcherBottomHasTarget.get())
     .andThen(
-      new WaitCommand(Constants.Intake.kIntakeBeltWaitTime)
+      new WaitCommand(Constants.Intake.kIntakeCompletionDelay)
     )
     .finallyDo(() -> {
       runTopBelts(MotorDirection.None);
@@ -196,10 +195,5 @@ public class IntakeSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Robot/Intake/Belt/Top/Speed", m_topBeltMotor.get());
     SmartDashboard.putNumber("Robot/Intake/Belt/Bottom/Speed", m_bottomBeltMotor.get());
     SmartDashboard.putNumber("Robot/Intake/Roller/Speed", m_rollerMotor.get());
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
   }
 }

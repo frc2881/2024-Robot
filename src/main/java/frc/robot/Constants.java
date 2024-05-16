@@ -40,15 +40,6 @@ public final class Constants {
   }
 
   public static final class Drive {
-    public static final int kSwerveModuleFrontLeftDrivingMotorCANId = 3;
-    public static final int kSwerveModuleFrontLeftTurningMotorCANId = 4;
-    public static final int kSwerveModuleFrontRightDrivingMotorCANId = 7;
-    public static final int kSwerveModuleFrontRightTurningMotorCANId = 8;
-    public static final int kSwerveModuleRearLeftDrivingMotorCANId = 5;
-    public static final int kSwerveModuleRearLeftTurningMotorCANId = 6;
-    public static final int kSwerveModuleRearRightDrivingMotorCANId = 9;
-    public static final int kSwerveModuleRearRightTurningMotorCANId = 10;
-
     public static final double kTrackWidth = Units.inchesToMeters(24.5);
     public static final double kWheelBase = Units.inchesToMeters(21.5);
     public static final double kDriveBaseRadius = new Translation2d().getDistance(new Translation2d(kWheelBase / 2, kTrackWidth / 2));
@@ -56,22 +47,8 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond = 6.32;
     public static final double kMaxAngularSpeed = 4 * Math.PI;
 
-    public static final double kSwerveModuleFrontLeftOffset = -Math.PI / 2;
-    public static final double kSwerveModuleFrontRightOffset = 0;
-    public static final double kSwerveModuleRearLeftOffset = Math.PI;
-    public static final double kSwerveModuleRearRightOffset = Math.PI / 2;
-
-    public static final Translation2d kSwerveModuleFrontLeftTranslation = new Translation2d(Constants.Drive.kWheelBase / 2, Constants.Drive.kTrackWidth / 2);
-    public static final Translation2d kSwerveModuleFrontRightTranslation = new Translation2d(Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2);
-    public static final Translation2d kSwerveModuleRearLeftTranslation = new Translation2d(-Constants.Drive.kWheelBase / 2, Constants.Drive.kTrackWidth / 2);
-    public static final Translation2d kSwerveModuleRearRightTranslation = new Translation2d(-Constants.Drive.kWheelBase / 2, -Constants.Drive.kTrackWidth / 2);
-
-    public static final SwerveDriveKinematics kSwerveDriveKinematics = new SwerveDriveKinematics(
-      kSwerveModuleFrontLeftTranslation, 
-      kSwerveModuleFrontRightTranslation, 
-      kSwerveModuleRearLeftTranslation, 
-      kSwerveModuleRearRightTranslation
-    );
+    public static final double kDriveInputLimiter = 0.6;
+    public static final double kDriveInputRateLimit = 0.5;
 
     public static final PIDConstants kDriftCorrectionThetaControllerPIDConstants = new PIDConstants(0.01, 0, 0, 0);
     public static final double kDriftCorrectionThetaControllerPositionTolerance = 0.5;
@@ -81,12 +58,35 @@ public final class Constants {
     public static final double kTargetAlignmentThetaControllerPositionTolerance = 1.0;
     public static final double kTargetAlignmentThetaControllerVelocityTolerance = 1.0;
 
-    public static final double kDriveInputLimiter = 0.6;
-    public static final double kDriveInputRateLimit = 0.5;
-
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerTranslationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
     public static final com.pathplanner.lib.util.PIDConstants kPathFollowerRotationPIDConstants = new com.pathplanner.lib.util.PIDConstants(5, 0, 0);
     public static final PathConstraints kPathFindingConstraints = new PathConstraints(5.8, 3.6, Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+    public static final int kSwerveModuleFrontLeftDrivingMotorCANId = 3;
+    public static final int kSwerveModuleFrontLeftTurningMotorCANId = 4;
+    public static final int kSwerveModuleFrontRightDrivingMotorCANId = 7;
+    public static final int kSwerveModuleFrontRightTurningMotorCANId = 8;
+    public static final int kSwerveModuleRearLeftDrivingMotorCANId = 5;
+    public static final int kSwerveModuleRearLeftTurningMotorCANId = 6;
+    public static final int kSwerveModuleRearRightDrivingMotorCANId = 9;
+    public static final int kSwerveModuleRearRightTurningMotorCANId = 10;
+
+    public static final double kSwerveModuleFrontLeftOffset = -Math.PI / 2;
+    public static final double kSwerveModuleFrontRightOffset = 0;
+    public static final double kSwerveModuleRearLeftOffset = Math.PI;
+    public static final double kSwerveModuleRearRightOffset = Math.PI / 2;
+
+    public static final Translation2d kSwerveModuleFrontLeftTranslation = new Translation2d(kWheelBase / 2, kTrackWidth / 2);
+    public static final Translation2d kSwerveModuleFrontRightTranslation = new Translation2d(kWheelBase / 2, -kTrackWidth / 2);
+    public static final Translation2d kSwerveModuleRearLeftTranslation = new Translation2d(-kWheelBase / 2, kTrackWidth / 2);
+    public static final Translation2d kSwerveModuleRearRightTranslation = new Translation2d(-kWheelBase / 2, -kTrackWidth / 2);
+
+    public static final SwerveDriveKinematics kSwerveDriveKinematics = new SwerveDriveKinematics(
+      kSwerveModuleFrontLeftTranslation, 
+      kSwerveModuleFrontRightTranslation, 
+      kSwerveModuleRearLeftTranslation, 
+      kSwerveModuleRearRightTranslation
+    );
 
     public static final class SwerveModule {
       public static final int kDrivingMotorPinionTeeth = 14;
@@ -135,7 +135,7 @@ public final class Constants {
     public static final IdleMode kBottomBeltMotorIdleMode = IdleMode.kCoast;
 
     public static final double kIntakeBeltSpeeds = 0.8;
-    public static final double kIntakeBeltWaitTime = 0.033;
+    public static final double kIntakeCompletionDelay = 0.033;
 
     public static final int kRollerMotorCurrentLimit = 60;
     public static final double kRollerMotorMaxReverseOutput = -0.6;
@@ -174,14 +174,10 @@ public final class Constants {
     public static final LauncherRollerSpeeds kWarmupLauncherSpeeds = new LauncherRollerSpeeds(0.6, 0.6);
     public static final LauncherRollerSpeeds kShuttleLauncherSpeeds = new LauncherRollerSpeeds(0.6, 0.6);
     public static final LauncherRollerSpeeds kAmpLauncherSpeeds = new LauncherRollerSpeeds(0.27, 0.27);
-    public static final LauncherRollerSpeeds kTrapLauncherSpeeds = new LauncherRollerSpeeds(0.60, 0.61);
-
     public static final double kArmTargetAlignmentPositionTolerance = 0.1;
-    
     public static final double kArmPositionIntake = 7.0;
     public static final double kArmPositionAmp = 13;
     public static final double kArmPositionShuttle = 12.0;
-
     public static final double kArmPositionSubwoofer = 12.9;
     public static final double kArmPositionPodium = 10.35;
 
@@ -196,8 +192,8 @@ public final class Constants {
   }
 
   public static final class Climber {
-    public static final int kArmMotorCANId = 16;
-    public static final int kRollerMotorCANId = 17;
+    public static final int kArmLeftMotorCANId = 16;
+    public static final int kArmRightMotorCANId = 17;
 
     public static final int kArmMotorCurrentLimit = 100;
     public static final double kArmMotorMaxReverseOutput = -1.0;
@@ -293,7 +289,7 @@ public final class Constants {
         entry(AutoPath.Pickup21, PathPlannerPath.fromPathFile("Pickup21")),
         entry(AutoPath.Pickup23, PathPlannerPath.fromPathFile("Pickup23")),
         entry(AutoPath.Pickup3, PathPlannerPath.fromPathFile("Pickup3")),
-        entry(AutoPath.Pickup31, PathPlannerPath.fromPathFile("Pickup3")),
+        entry(AutoPath.Pickup31, PathPlannerPath.fromPathFile("Pickup31")),
         entry(AutoPath.Pickup4, PathPlannerPath.fromPathFile("Pickup4")),
         entry(AutoPath.Pickup5, PathPlannerPath.fromPathFile("Pickup5")),
         entry(AutoPath.Pickup61, PathPlannerPath.fromPathFile("Pickup61")),

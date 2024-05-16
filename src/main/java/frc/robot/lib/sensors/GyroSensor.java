@@ -2,7 +2,6 @@ package frc.robot.lib.sensors;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -118,20 +117,10 @@ public class GyroSensor extends ADIS16470_IMU {
   }
 
   public void updateTelemetry() {
-    SmartDashboard.putNumber("Robot/Sensor/Gyro/Roll", getRoll());
-    SmartDashboard.putNumber("Robot/Sensor/Gyro/Pitch", getPitch());
     SmartDashboard.putNumber("Robot/Sensor/Gyro/Yaw", getYaw());
+    SmartDashboard.putNumber("Robot/Sensor/Gyro/Pitch", getPitch());
+    SmartDashboard.putNumber("Robot/Sensor/Gyro/Roll", getRoll());
     SmartDashboard.putNumber("Robot/Sensor/Gyro/Heading", getHeading());
     SmartDashboard.putNumber("Robot/Sensor/Gyro/TurnRate", getTurnRate());
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
-    builder.addDoubleProperty("Roll", this::getRoll, null);
-    builder.addDoubleProperty("Pitch", this::getPitch, null);
-    builder.addDoubleProperty("Yaw", this::getYaw, null);
-    builder.addDoubleProperty("Heading", this::getHeading, null);
-    builder.addDoubleProperty("TurnRate", this::getTurnRate, null);
   }
 }

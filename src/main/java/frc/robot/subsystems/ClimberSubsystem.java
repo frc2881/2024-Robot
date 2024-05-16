@@ -7,7 +7,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -28,11 +27,9 @@ public class ClimberSubsystem extends SubsystemBase {
   private final SparkPIDController m_armLeftPIDController;
 
   private boolean m_hasInitialZeroReset = false;
-  public boolean m_isBrakeApplied = false;
-  public boolean m_isBeamBreakTriggered = false;
   
   public ClimberSubsystem() {
-    m_armMotorLeft = new CANSparkMax(Constants.Climber.kArmMotorCANId, MotorType.kBrushless);
+    m_armMotorLeft = new CANSparkMax(Constants.Climber.kArmLeftMotorCANId, MotorType.kBrushless);
     m_armMotorLeft.restoreFactoryDefaults();
     m_armMotorLeft.setIdleMode(Constants.Climber.kArmMotorIdleMode); 
     m_armMotorLeft.setSmartCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
@@ -52,7 +49,7 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armLeftPIDController.setD(Constants.Climber.kArmMotorPIDConstants.D());
     m_armLeftPIDController.setOutputRange(Constants.Climber.kArmMotorMaxReverseOutput, Constants.Climber.kArmMotorMaxForwardOutput);
 
-    m_armMotorRight = new CANSparkMax(Constants.Climber.kRollerMotorCANId, MotorType.kBrushless);
+    m_armMotorRight = new CANSparkMax(Constants.Climber.kArmRightMotorCANId, MotorType.kBrushless);
     m_armMotorRight.restoreFactoryDefaults();
     m_armMotorRight.setIdleMode(Constants.Climber.kArmMotorIdleMode); 
     m_armMotorRight.setSmartCurrentLimit(Constants.Climber.kArmMotorCurrentLimit);
@@ -105,7 +102,6 @@ public class ClimberSubsystem extends SubsystemBase {
     return Commands.runOnce(
       () -> {
         m_brakeServo.setPosition(1.0);
-        m_isBrakeApplied = false;
       }
     );
   }
@@ -114,26 +110,14 @@ public class ClimberSubsystem extends SubsystemBase {
     return Commands.runOnce(
       () -> {
         m_brakeServo.setPosition(0);
-        m_isBrakeApplied = true;
       }
     );
   }
 
-  public Command testArmCommand() {
-    return Commands.sequence(
-      unlockArmCommand(),
-      resetZeroCommand()
-    );
-  }
-  
-  public void moveArmToStartingPosition() {
-    m_armLeftPIDController.setReference(Constants.Climber.kArmPositionStarting, ControlType.kPosition);
-  }
-
   public Command moveArmToStartingPositionCommand() {
     return Commands.runOnce(
-      () -> m_armLeftPIDController.setReference(Constants.Climber.kArmPositionStarting, ControlType.kPosition));
-     
+      () -> m_armLeftPIDController.setReference(Constants.Climber.kArmPositionStarting, ControlType.kPosition)
+    );
   }
 
   public Command resetZeroCommand() {
@@ -161,9 +145,6 @@ public class ClimberSubsystem extends SubsystemBase {
     m_armMotorLeft.set(0.0);
     m_armMotorRight.set(0.0);
 
-    m_isBrakeApplied = false;
-    m_isBeamBreakTriggered = false;
-
     m_brakeServo.setPosition(1.0);
 
     m_armLeftPIDController.setReference(Constants.Climber.kArmPositionStarting, ControlType.kPosition);
@@ -175,10 +156,5 @@ public class ClimberSubsystem extends SubsystemBase {
 
     double armRightPosition = m_armRightEncoder.getPosition();
     SmartDashboard.putNumber("Robot/Climber/ArmRight/Position", armRightPosition);
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder);
   }
 }

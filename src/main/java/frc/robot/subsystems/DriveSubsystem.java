@@ -12,7 +12,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,7 +41,7 @@ public class DriveSubsystem extends SubsystemBase {
   private DriveSpeedMode m_speedMode = DriveSpeedMode.Competition;
   private DriveLockState m_lockState = DriveLockState.Unlocked;
   private DriveDriftCorrection m_driftCorrection = DriveDriftCorrection.Enabled;
-  private boolean m_isRotationLocked = false;
+  private boolean m_isDriftCorrectionActive = false;
   private boolean m_isAlignedToTarget = false;
 
   public DriveSubsystem(Supplier<Double> gyroHeading) {
@@ -114,45 +113,33 @@ public class DriveSubsystem extends SubsystemBase {
     updateTelemetry();
   }
 
-  public void setOrientation(DriveOrientation orientation) {
-    m_orientation = orientation;
-  }
-
-  public void setSpeedMode(DriveSpeedMode speedMode) {
-    m_speedMode = speedMode;
-  }
-
-  public void setDriftCorrection(DriveDriftCorrection driftCorrection) {
-    m_driftCorrection = driftCorrection;
-  }
-
   public Command driveWithControllerCommand(Supplier<Double> controllerLeftY, Supplier<Double> controllerLeftX, Supplier<Double> controllerRightX) {
     return 
     run(() -> {
       double speedX = controllerLeftY.get();
       double speedY = controllerLeftX.get();
       double speedRotation = controllerRightX.get();
-      if (m_speedMode == DriveSpeedMode.Training) {
-        speedX = m_driveInputXFilter.calculate(speedX * Constants.Drive.kDriveInputLimiter);
-        speedY = m_driveInputYFilter.calculate(speedY * Constants.Drive.kDriveInputLimiter);
-        speedRotation = m_driveInputRotFilter.calculate(speedRotation * Constants.Drive.kDriveInputLimiter);
-      }
       if (m_driftCorrection == DriveDriftCorrection.Enabled) {
         boolean isRotating = (speedRotation != 0.0);
         boolean isTranslating = ((speedX != 0.0) || (speedY != 0.0));
-        if (!m_isRotationLocked && !isRotating && isTranslating) {
-          m_isRotationLocked = true;
+        if (!m_isDriftCorrectionActive && !isRotating && isTranslating) {
+          m_isDriftCorrectionActive = true;
           m_driftCorrectionThetaController.reset();
           m_driftCorrectionThetaController.setSetpoint(m_gyroHeading.get());
         } else if (isRotating || !isTranslating) {
-          m_isRotationLocked = false;
+          m_isDriftCorrectionActive = false;
         }
-        if (m_isRotationLocked) {
+        if (m_isDriftCorrectionActive) {
           speedRotation = m_driftCorrectionThetaController.calculate(m_gyroHeading.get());
           if (m_driftCorrectionThetaController.atSetpoint()) {
             speedRotation = 0.0;
           }
         }
+      }
+      if (m_speedMode == DriveSpeedMode.Training) {
+        speedX = m_driveInputXFilter.calculate(speedX * Constants.Drive.kDriveInputLimiter);
+        speedY = m_driveInputYFilter.calculate(speedY * Constants.Drive.kDriveInputLimiter);
+        speedRotation = m_driveInputRotFilter.calculate(speedRotation * Constants.Drive.kDriveInputLimiter);
       }
       drive(speedX, speedY, speedRotation);
     })
@@ -200,7 +187,7 @@ public class DriveSubsystem extends SubsystemBase {
     };
   }
 
-  public void setSwerveModuleStates(SwerveModuleState[] swerveModuleStates) {
+  private void setSwerveModuleStates(SwerveModuleState[] swerveModuleStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Drive.kMaxSpeedMetersPerSecond);
     m_swerveModuleFrontLeft.setTargetState(swerveModuleStates[0]);
     m_swerveModuleFrontRight.setTargetState(swerveModuleStates[1]);
@@ -208,23 +195,13 @@ public class DriveSubsystem extends SubsystemBase {
     m_swerveModuleRearRight.setTargetState(swerveModuleStates[3]);
   }
 
-  public SwerveModuleState[] convertToSwerveModuleStates(double speedX, double speedY, double speedRotation) {
-    ChassisSpeeds chassisSpeeds = new ChassisSpeeds(speedX, speedY, speedRotation);
-    SwerveModuleState[] moduleStates = Constants.Drive.kSwerveDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-    return moduleStates;
-  }
-
-  private void setSwerveModuleStatesToLocked() {
-    m_swerveModuleFrontLeft.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-    m_swerveModuleFrontRight.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_swerveModuleRearLeft.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-    m_swerveModuleRearRight.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-  }
-
   public void setLockState(DriveLockState lockState) {
     m_lockState = lockState;
     if (m_lockState == DriveLockState.Locked) {
-      setSwerveModuleStatesToLocked();
+      m_swerveModuleFrontLeft.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+      m_swerveModuleFrontRight.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+      m_swerveModuleRearLeft.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
+      m_swerveModuleRearRight.setTargetState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
     }
   }
 
@@ -238,14 +215,6 @@ public class DriveSubsystem extends SubsystemBase {
     .withName("SetDriveLockedState");
   }
 
-  public void setIdleMode(IdleMode idleMode) {
-    m_swerveModuleFrontLeft.setIdleMode(idleMode);
-    m_swerveModuleFrontRight.setIdleMode(idleMode);
-    m_swerveModuleRearLeft.setIdleMode(idleMode);
-    m_swerveModuleRearRight.setIdleMode(idleMode);
-    SmartDashboard.putString("Robot/Drive/IdleMode/selected", idleMode == IdleMode.kBrake ? "Brake" : "Coast");
-  }
-
   public Command alignToTargetCommand(Supplier<Pose2d> robotPose, Supplier<Double> targetYaw) {
     return
     run(() -> {
@@ -256,7 +225,7 @@ public class DriveSubsystem extends SubsystemBase {
         speedRotation = 0.0;
         m_isAlignedToTarget = true;
       }
-      setSwerveModuleStates(convertToSwerveModuleStates(0.0, 0.0, speedRotation));
+      setSwerveModuleStates(Constants.Drive.kSwerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(0.0, 0.0, speedRotation)));
     })
     .beforeStarting(() -> {
       m_isAlignedToTarget = false;
@@ -276,6 +245,26 @@ public class DriveSubsystem extends SubsystemBase {
     m_isAlignedToTarget = false;
   }
 
+  public void setOrientation(DriveOrientation orientation) {
+    m_orientation = orientation;
+  }
+
+  public void setSpeedMode(DriveSpeedMode speedMode) {
+    m_speedMode = speedMode;
+  }
+
+  public void setDriftCorrection(DriveDriftCorrection driftCorrection) {
+    m_driftCorrection = driftCorrection;
+  }
+
+  public void setIdleMode(IdleMode idleMode) {
+    m_swerveModuleFrontLeft.setIdleMode(idleMode);
+    m_swerveModuleFrontRight.setIdleMode(idleMode);
+    m_swerveModuleRearLeft.setIdleMode(idleMode);
+    m_swerveModuleRearRight.setIdleMode(idleMode);
+    SmartDashboard.putString("Robot/Drive/IdleMode/selected", idleMode == IdleMode.kBrake ? "Brake" : "Coast");
+  }
+
   public void reset() {
     setIdleMode(IdleMode.kBrake);
     drive(0.0, 0.0, 0.0);
@@ -288,14 +277,5 @@ public class DriveSubsystem extends SubsystemBase {
     m_swerveModuleRearRight.updateTelemetry();
     SmartDashboard.putString("Robot/Drive/LockState", m_lockState.toString());
     SmartDashboard.putBoolean("Robot/Drive/IsAlignedToTarget", m_isAlignedToTarget);
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    super.initSendable(builder); 
-    m_swerveModuleFrontLeft.initSendable(builder);
-    m_swerveModuleFrontRight.initSendable(builder);
-    m_swerveModuleRearLeft.initSendable(builder);
-    m_swerveModuleRearRight.initSendable(builder);
   }
 }

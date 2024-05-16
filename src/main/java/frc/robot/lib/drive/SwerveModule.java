@@ -13,14 +13,12 @@ import com.revrobotics.SparkAbsoluteEncoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.lib.common.Enums.SwerveModuleLocation;
 import frc.robot.lib.common.Utils;
 import frc.robot.Constants;
 
-public class SwerveModule implements Sendable {
+public class SwerveModule {
   private final SwerveModuleLocation m_location;
 
   private final CANSparkFlex m_drivingMotor;
@@ -102,17 +100,8 @@ public class SwerveModule implements Sendable {
   public void updateTelemetry() {
     SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Driving/Speed/Target", m_setSpeed);
     SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Driving/Speed/Actual", m_drivingEncoder.getVelocity());
-    SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Driving/Position/Actual", m_drivingEncoder.getPosition());
-    SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Turning/Position", m_turningEncoder.getPosition());
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder) {
-    String location = m_location.toString() + "/";
-    builder.addDoubleProperty(location + "Driving/Position", m_drivingEncoder::getPosition, null);
-    builder.addDoubleProperty(location + "Driving/Velocity", m_drivingEncoder::getVelocity, null);
-    builder.addDoubleProperty(location + "Driving/AppliedOutput", m_drivingMotor::getAppliedOutput, null);
-    builder.addDoubleProperty(location + "Driving/SetSpeed", () -> m_setSpeed, null);
-    builder.addDoubleProperty(location + "Turning/Position", m_turningEncoder::getPosition, null);
+    SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Driving/AppliedOutput", m_drivingMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Driving/RelativePosition", m_drivingEncoder.getPosition());
+    SmartDashboard.putNumber("Robot/Drive/SwerveModule/" + m_location + "/Turning/AbsolutePosition", m_turningEncoder.getPosition());
   }
 }

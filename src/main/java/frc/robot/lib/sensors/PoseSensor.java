@@ -6,11 +6,8 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -40,6 +37,7 @@ public class PoseSensor {
   }
 
   public void updateTelemetry() {
-    SmartDashboard.putBoolean("Robot/Sensor/Pose/" + m_photonCamera.getName() + "/HasTargets", m_photonCamera.getLatestResult().hasTargets());
+    SmartDashboard.putBoolean("Robot/Sensor/Pose/" + m_photonCamera.getName() + "/IsConnected", m_photonCamera.isConnected());
+    SmartDashboard.putBoolean("Robot/Sensor/Pose/" + m_photonCamera.getName() + "/HasTarget", m_photonCamera.getLatestResult().hasTargets());
   }
 }

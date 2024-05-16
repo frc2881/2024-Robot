@@ -33,6 +33,7 @@ public class ObjectSensor {
   }
 
   public void updateTelemetry() {
+    SmartDashboard.putBoolean(m_topicName + "/IsConnected", m_photonCamera.isConnected());
     SmartDashboard.putBoolean(m_topicName + "/HasTarget", hasTarget());
     SmartDashboard.putNumber(m_topicName + "/Target/Yaw", getTargetYaw());
     SmartDashboard.putNumber(m_topicName + "/Target/Area", getTargetArea());

@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -52,9 +51,6 @@ public class GameCommands {
     m_climberSubsystem = climberSubsystem;
     m_driverController = driverController;
     m_operatorControlller = operatorControlller;
-
-    SmartDashboard.putNumber("Robot/Launcher/Roller/Top/SpeedForAmp", Constants.Launcher.kAmpLauncherSpeeds.top());
-    SmartDashboard.putNumber("Robot/Launcher/Roller/Bottom/SpeedForAmp", Constants.Launcher.kAmpLauncherSpeeds.bottom());
   }
 
   public Command runIntakeCommand() {
@@ -146,12 +142,8 @@ public class GameCommands {
   public Command alignLauncherToAmpCommand(boolean isRollersEnabled) {
     return
     m_launcherArmSubsystem.alignToPositionCommand(Constants.Launcher.kArmPositionAmp)
-    .alongWith(
-      m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kAmpLauncherSpeeds)
-      .onlyIf(() -> isRollersEnabled),
-      Commands.runOnce(
-        () -> System.out.println("%%%%%%%%%%%%%%% AMP"))
-    )
+    .alongWith(m_launcherRollerSubsystem.runCommand(() -> Constants.Launcher.kAmpLauncherSpeeds))
+    .onlyIf(() -> isRollersEnabled)
     .withName("AlignLauncherToAmp");
   }
 
@@ -206,8 +198,8 @@ public class GameCommands {
   public Command runLauncherForAmpCommand() {
     return 
     m_launcherRollerSubsystem.runCommand(() -> new LauncherRollerSpeeds(
-      SmartDashboard.getNumber("Robot/Launcher/Roller/Top/SpeedForAmp", Constants.Launcher.kAmpLauncherSpeeds.top()),
-      SmartDashboard.getNumber("Robot/Launcher/Roller/Bottom/SpeedForAmp", Constants.Launcher.kAmpLauncherSpeeds.bottom())
+      Constants.Launcher.kAmpLauncherSpeeds.top(),
+      Constants.Launcher.kAmpLauncherSpeeds.bottom()
     ))
     .alongWith(
       Commands.waitSeconds(0.75)

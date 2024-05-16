@@ -104,12 +104,12 @@ public class RobotContainer {
     );
 
     // SUBSYSTEMS ========================================
-    m_climberSubsystem = new ClimberSubsystem();
+    m_driveSubsystem = new DriveSubsystem(m_gyroSensor::getHeading);
+    m_poseSubsystem = new PoseSubsystem(m_poseSensors, m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
     m_intakeSubsystem = new IntakeSubsystem();
     m_launcherArmSubsystem = new LauncherArmSubsystem();
     m_launcherRollerSubsystem = new LauncherRollerSubsystem();
-    m_driveSubsystem = new DriveSubsystem(m_gyroSensor::getHeading);
-    m_poseSubsystem = new PoseSubsystem(m_poseSensors, m_gyroSensor::getRotation2d, m_driveSubsystem::getSwerveModulePositions);
+    m_climberSubsystem = new ClimberSubsystem();
     
     // COMMANDS ========================================
     m_gameCommands = new GameCommands(
@@ -125,7 +125,6 @@ public class RobotContainer {
       m_driverController, 
       m_operatorController
     );
-
     m_autoCommands = new AutoCommands(m_gameCommands);
     m_autoChooser = new SendableChooser<Supplier<Command>>();
 
@@ -261,7 +260,6 @@ public class RobotContainer {
     m_autoChooser.addOption("[ 3 ] 0_83", m_autoCommands::auto30_83);
     m_autoChooser.addOption("[ 3 ] 0_73_83", m_autoCommands::auto30_73_83);
     m_autoChooser.addOption("[ 3 ] 0_83_73", m_autoCommands::auto30_83_73);
-
     m_autoChooser.addOption("[ 3 ] _0_3", m_autoCommands::auto3_0_3);
     m_autoChooser.addOption("[ 3 ] _0_3_2_1", m_autoCommands::auto3_0_3_2_1);
     m_autoChooser.addOption("[ 3 ] _0_3_2_1_41", m_autoCommands::auto3_0_3_2_1_41); // TESTING NEEDED
